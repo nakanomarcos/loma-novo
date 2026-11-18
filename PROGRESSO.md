@@ -102,3 +102,38 @@
 | 3 — Casa e família | Aba Casa completa (10 módulos) + espelhamento em Notas | `bun run typecheck` verde · `bun run build` verde · 6 prints mobile capturados | Concluído |
 | 4 — Crescer | Aba Crescer completa (8 módulos) + Hero Card + espelhamento em Notas | `bun run typecheck` verde · `bun run build` verde · 9 prints mobile capturados | Concluído |
 | 5 — Conectada | Inteligência Conectada (alertas, insights, Visão 360°, Consultor IA, Busca Global Cmd+K, Backup JSON) | `bun run typecheck` verde · `bun run build` verde · 5 prints mobile capturados (390px e 360px, zero overflow) | **Entregue para validação final** |
+
+---
+
+## Tamanho do código
+
+> Contagem oficial via `wc -l` realizada em 18/11/2026 ao término da **Fase 5 — Conectada**.  
+> **Escopo de Código:** exclusivamente `client/src/` e `server/src/` (`.ts`, `.tsx`, `.css`) + `drizzle/` (`.sql`).  
+> **Regra do Molde:** contagem direta de linhas via `wc -l` sem fragmentação de pastas.
+
+| Arquivo | Linhas |
+| --- | ---: |
+| `server/src/actions.ts` | 3.668 |
+| `client/src/App.tsx` | 1.767 |
+| `client/src/Crescer.tsx` | 891 |
+| `client/src/Casa.tsx` | 879 |
+| `client/src/Home.tsx` | 791 |
+| `server/src/schema.ts` | 587 |
+| `client/src/BemEstar.tsx` | 559 |
+| `client/src/Financas.tsx` | 475 |
+| `client/src/Apoio.tsx` | 459 |
+| `drizzle/0002_loma_fundacao.sql` | 131 |
+| `drizzle/0004_loma_casa_familia.sql` | 130 |
+| `drizzle/0005_loma_crescer.sql` | 106 |
+| `drizzle/0003_loma_bem_estar.sql` | 70 |
+| `client/src/theme.css` | 59 |
+| `client/src/main.tsx` | 28 |
+| `client/src/api.ts` | 20 |
+| `client/src/globals.d.ts` | 18 |
+| `drizzle/0006_loma_fase5_conectada.sql` | 13 |
+| `drizzle/0001_initial.sql` | 5 |
+| **Total de Código** | **10.656** |
+
+- **Diferença em relação à Fase 4:** **+1.037 linhas** (Fase 4: 9.619 linhas → Fase 5: 10.656 linhas).
+- **Total de Documentos (`.md`):** **3.519 linhas** (em 9 arquivos de especificação e governança).
+
