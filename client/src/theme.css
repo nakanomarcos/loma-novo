@@ -1,0 +1,59 @@
+@import "tailwindcss";
+@import "tailwindcss-safe-area";
+
+:root {
+  color-scheme: light;
+  --font-serif: "DM Serif Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --color-cream: #FAF7F2;
+  --color-sand: #F2ECE3;
+  --color-white: #FFFFFF;
+  --color-espresso: #231B16;
+  --color-espresso-soft: #3A2E27;
+  --color-text-sec: #6E6259;
+  --color-text-muted: #9B8F85;
+  --color-rose: #C47882;
+  --color-rose-hover: #B36670;
+  --color-rose-soft: #F8ECEE;
+  --color-sage: #3B7A6B;
+  --color-sage-soft: #E9F3F0;
+  --color-amber: #9E6123;
+  --color-amber-soft: #FBF2E6;
+  --color-slate: #465768;
+  --color-slate-soft: #EDF1F5;
+  --color-plum: #6F4C7D;
+  --color-plum-soft: #F3EDF6;
+  --color-border: #EAE2D6;
+  --color-border-focus: #DDD2C3;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  background-color: var(--color-cream);
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root, [data-generated-space-root], .hatch-space-root {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.font-serif-loma {
+  font-family: var(--font-serif);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+client/dist/
+server/dist/
+*.tsbuildinfo*
+.tsbuildinfo*
+*.db*
+.space-sdk/
+data/
+.DS_Store
