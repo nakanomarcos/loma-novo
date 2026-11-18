@@ -135,5 +135,5 @@
 | **Total de Código** | **10.656** |
 
 - **Diferença em relação à Fase 4:** **+1.037 linhas** (Fase 4: 9.619 linhas → Fase 5: 10.656 linhas).
-- **Total de Documentos (`.md`):** **3.519 linhas** (em 9 arquivos de especificação e governança).
+- **Total de Documentos (`.md`):** **3.554 linhas** (em 9 arquivos de especificação e governança).
 
