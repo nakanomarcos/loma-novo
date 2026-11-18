@@ -21,19 +21,19 @@
 
 - **Fase 2 — Corpo e mente (18/11/2026): CONCLUÍDA E VALIDADA.**
   - **Aba Bem-estar ativada com os 7 módulos integrados ([BemEstar.tsx](file:///Users/nakanomarcos/Desktop/PROJETOS/loma-pacote-novo-molde/client/src/BemEstar.tsx)):**
-    1. **Visão Geral:** Hero Card Espresso com métricas de síntese (saúde pendente, treinos da semana, sono médio, cuidados e humor mais recente) e atalhos rápidos.
-    2. **Saúde Preventiva:** Consultas, exames, medicamentos e vacinas com médico/clínica, data, detalhes e checkbox de conclusão com atualização instantânea no banco.
-    3. **Corpo & Treinos:** Registro de atividades físicas (musculação, corrida, caminhada, natação), duração e anotações técnicas.
-    4. **Cuidados & Autocuidado:** Rotinas de cuidados pessoais (pele, cabelo, corpo, unhas) com frequência e alternância diária.
-    5. **Humor, Sono & Energia:** Registro de humor (radiante, calmo, cansado, ansioso, desafiador), nível de energia (1 a 5), horas de sono e notas reflexivas.
-    6. **Devocional & Espiritualidade:** Leituras bíblicas, orações e motivos de gratidão, com badges de passagem bíblica e reflexão do dia.
-    7. **Alimentação & Cozinha:** Planejamento de cardápio semanal (café, almoço, jantar, lanche) por dia da semana e receitas favoritas.
-  - **Espelhamento Automático no Agregador de Notas:** Treinos e reflexões do Devocional criam automaticamente notas na tabela compartilhada `notes`, rotuladas com seus respectivos módulos de origem (`Treinos`, `Devocional`) e tags de identificação.
+    1. **Visão Geral:** Hero Card Espresso com métricas de síntese e atalhos rápidos.
+    2. **Saúde Preventiva:** Consultas, exames, medicamentos e vacinas com médico/clínica, data, detalhes e checkbox de conclusão.
+    3. **Corpo & Treinos:** Registro de atividades físicas, duração e notas.
+    4. **Cuidados & Autocuidado:** Rotinas de cuidados pessoais com frequência e alternância diária.
+    5. **Humor, Sono & Energia:** Registro de humor, energia (1 a 5), horas de sono e notas reflexivas.
+    6. **Devocional & Espiritualidade:** Leituras bíblicas, orações e gratidão.
+    7. **Alimentação & Cozinha:** Planejamento de cardápio semanal e receitas favoritas.
+  - **Espelhamento Automático no Agregador de Notas:** Treinos e reflexões do Devocional espelhados em `notes`.
   - **Migração Drizzle:** [0003_loma_bem_estar.sql](file:///Users/nakanomarcos/Desktop/PROJETOS/loma-pacote-novo-molde/drizzle/0003_loma_bem_estar.sql).
 
 - **Fase 3 — Casa e família (18/11/2026): CONCLUÍDA E VALIDADA.**
   - **Aba Casa ativada com os 10 módulos integrados ([Casa.tsx](file:///Users/nakanomarcos/Desktop/PROJETOS/loma-pacote-novo-molde/client/src/Casa.tsx)):**
-    1. **Visão Geral:** Hero Card Espresso com métricas de gestão doméstica e listas rápidas.
+    1. **Visão Geral:** Hero Card Espresso com métricas domésticas e listas rápidas.
     2. **Mercado & Despensa:** Lista de compras com categorias e alternância de carrinho.
     3. **Casa / Manutenções Domésticas:** Reparos por cômodo, prazos e custos.
     4. **Filhos & Rotina Escolar:** Acompanhamento de Sofia.
@@ -43,52 +43,37 @@
     8. **Patrimônio & Bens:** Bens materiais e garantias.
     9. **Segurança & Emergência:** Contatos essenciais de urgência.
     10. **Família & Rede:** Relacionamentos e aniversários.
-  - **Correção e Validação de Responsividade Mobile (390 px e 360 px):** Validação visual via Chrome DevTools Protocol (`hasOverflow: false` em 100% das telas).
-  - Aceite formal do Marcos recebido.
+  - **Responsividade Mobile:** Validação visual em 390 px e 360 px com zero overflow.
 
 - **Fase 4 — Crescimento e futuro (18/11/2026): CONCLUÍDA E VALIDADA.**
   - Aba Crescer ativada com os 8 módulos integrados ([Crescer.tsx](file:///Users/nakanomarcos/Desktop/PROJETOS/loma-pacote-novo-molde/client/src/Crescer.tsx)): Trabalho, Estudos, Livros, Projetos, Viagens, Documentos, Filmes & Séries, Música.
   - Espelhamento automático de resenhas e anotações em Notas.
-  - Testes e prints mobile em 390 px e 360 px validados.
-  - Aceite formal do Marcos recebido.
 
-- **Fase 5 — Conectada & Inteligência Transversal (18/11/2026): CONCLUÍDA E TESTADA.**
-  - **Inteligência Conectada (Orquestrador Transversal & Insights):**
-    - Seção de **Alertas Inteligentes Proativos** na Home com severidades (`Urgente`, `Aviso`, `Info`), botões de ação com 1 clique (ex: "Criar Tarefa de Renovação", "Lançar Aporte") e opção de dispensar.
-    - Seção de **Cruzamento entre Módulos** com correlações analíticas reais (Saúde × Finanças, Sono × Carreira, Casa × Manutenção, Viagens × Documentos).
-  - **Visão 360° & Relatório de Vida:**
-    - Painel consolidado no Drawer de Apoio com índices percentuais para os 4 pilares da vida familiar:
-      - Saúde & Bem-estar: 92% (Ótimo)
-      - Finanças & Reserva: 88% (Sólido)
-      - Casa & Família: 90% (Ativo)
-      - Crescer & Estudos: 86% (Fluindo)
-      - **Harmonia Geral: 89/100**
-    - Síntese diagnóstica, focos de atenção preventiva e lista de conquistas/pontos fortes da família.
-  - **Consultor Loma IA (Transversal & Explicável):**
-    - Orientador de vida que responde a dúvidas do usuário fundamentando-se exclusivamente em fatos reais do banco de dados (saldo disponível, tarefas abertas, leitura ativa, exames agendados).
-    - Botões rápidos com perguntas frequentes ("Como está o equilíbrio da família?", "Como estão os planos para a viagem?", etc.).
-    - Exibição explícita da lista de evidências do sistema antes de qualquer recomendação (conforme `specs/01` e `specs/02`).
-  - **Busca Global & Command Palette (`Cmd+K` / `🔍`):**
-    - Ativação instantânea via teclado (`⌘K` / `Ctrl+K`) ou botão de lupa no cabeçalho superior.
-    - Pesquisa em tempo real unificando **todas** as tabelas do Loma (compromissos, tarefas, notas, finanças, consultas, treinos, compras, pet, veículos, livros, cursos, viagens, documentos).
-    - Clique no resultado que fecha o modal e navega direto para a aba e sub-aba correspondente.
-  - **Soberania de Dados & Backup em 1 Clique:**
-    - Botão de exportação no Drawer de Apoio que gera e faz download do arquivo `loma-backup-YYYY-MM-DD.json` consolidando as 27 tabelas do sistema.
-  - **Drizzle Schema & Migração:**
-    - Nova tabela `smart_alerts` criada em `server/src/schema.ts`.
-    - Migração Drizzle [0006_loma_fase5_conectada.sql](file:///Users/nakanomarcos/Desktop/PROJETOS/loma-pacote-novo-molde/drizzle/0006_loma_fase5_conectada.sql) criada e registrada no `_journal.json`.
-  - **Actions Zod:**
-    - `getInteligenciaOverview`, `dismissSmartAlert`, `executeSmartAlertAction`, `askLifeConsultant`, `globalSearch`, `exportAllData`.
-    - Integração de alertas em `loadDemoData` e `clearDemoData`.
-  - **Estrutura Estrita do Molde Mantida:**
-    - Exatamente **12 arquivos de código** (teto de 15 a 20 respeitado).
-    - Zero fragmentação em subpastas (`components/`, `hooks/`, etc.).
-    - Sem `localStorage`, sem Express, banco via `ctx.db()`.
-  - **Testes & Validação:**
-    - `bun run typecheck`: 0 erros.
-    - `bun run build`: build limpo de servidor (0.30 MB) e cliente.
-    - Suíte de integração automatizada (`scratch/test-fase5.ts`) passou com 100% de sucesso.
-    - 5 novos prints mobile capturados em 390 px e 360 px com zero overflow lateral.
+- **Fase 5 — Conectada & Inteligência Transversal (18/11/2026): CONCLUÍDA E VALIDADA.**
+  - Alertas Inteligentes Proativos na Home com ações em 1 clique.
+  - Cruzamento analítico entre módulos (Saúde × Finanças, Sono × Carreira, etc.).
+  - Visão 360° & Relatório de Vida com harmonia geral familiar.
+  - Consultor Loma IA com fundamentação estrita em evidências do sistema.
+  - Busca Global & Command Palette (`Cmd+K` / `🔍`).
+  - Migração Drizzle [0006_loma_fase5_conectada.sql](file:///Users/nakanomarcos/Desktop/PROJETOS/loma-pacote-novo-molde/drizzle/0006_loma_fase5_conectada.sql).
+
+- **Ajustes de Padrão Visual e Dados (Loma Atual) — 18/11/2026: CONCLUÍDO E TESTADO.**
+  1. **Cartões no Padrão do Loma Atual (Medidas Reduzidas):**
+     - Cada item é um **cartão individual empilhado** (eliminada qualquer lista agrupada com divisórias internas).
+     - **Cartão expansível:** toque no cartão abre a sanfona de detalhes com botões "Editar" e "Excluir" embutidos.
+     - **Conclusão:** círculo de 32px (área de toque ≥40px); ao concluir, risca o título e move o cartão com opacidade reduzida para o fim da lista.
+     - **Design canônico aplicado:** raio 24px (`rounded-[24px]`), fundo `#FFFDF8`, borda suave `#EFE5D5` com linha delicada (`shadow-[0_1px_0_rgba(223,213,196,0.5)]`), sem sombra pesada.
+     - **Medidas exatas:** padding vertical 12px (`py-3`), horizontal 16px (`px-4`); altura fechada ≈62–64px (`min-h-[62px]`); espaçamento entre cartões 8px (`space-y-2`); título 16px semibold (`text-[16px] font-semibold text-[#2C241E]`); linha meta 13px (`text-[13px] text-[#7C6E62]`); título de seção serifado 20px (`font-serif text-[20px] font-medium text-[#2C241E]`); hero card com padding 16px (`p-4 rounded-[24px]`); botões pílula de 44–48px.
+  2. **Aba Lateral (Apoio) Refeita em Cartões:**
+     - Removido o painel com abas internas horizontais.
+     - Reconstruído no modelo do menu "Mais" do Loma atual: lista de cartões individuais empilhados nas medidas canônicas — *Visão 360°*, *Consultor Loma IA*, *Pessoas da Casa*, *Personalizar*, *Dados & Backup*, *Log do Sistema*, *Limpar Dados de Exemplo*.
+     - Toque no cartão abre a tela respectiva com cabeçalho contextual e botão "← Voltar ao Menu".
+  3. **Exportação e Importação em Todos os Formatos:**
+     - **Exportação:** JSON (backup completo de todas as 27 tabelas), CSV (por módulo, com colunas específicas), Markdown (relatório estruturado Área → Módulo → Itens) e PDF (relatório formatado para leitura/impressão via `@media print`).
+     - **Importação:** aceita arquivos `.json`, `.csv`, `.md`, `.markdown`, `.pdf`, `.txt`. O parser converte as linhas/seções e mapeia para os módulos canônicos.
+     - **Tela de Conferência Prévia Obrigatória:** nenhuma importação é gravada diretamente. A tela exibe prévia editável dos itens (título ajustável, categoria, módulo dono), checkboxes de seleção, detecção automática e badge `⚠️ Possível Duplicado`, botão para desmarcar duplicados em lote e botão para confirmar gravação via action `importVerifiedItems` no SQLite.
+  4. **Responsividade e Anti-overflow:**
+     - 100% testado em 390 px e 360 px com zero overflow horizontal (`hasOverflow: false`).
 
 ---
 
@@ -101,27 +86,28 @@
 | 2 — Corpo e mente | Aba Bem-estar completa (7 módulos) + espelhamento em Notas | `bun run typecheck` verde · `bun run build` verde · 4 prints mobile capturados | Concluído |
 | 3 — Casa e família | Aba Casa completa (10 módulos) + espelhamento em Notas | `bun run typecheck` verde · `bun run build` verde · 6 prints mobile capturados | Concluído |
 | 4 — Crescer | Aba Crescer completa (8 módulos) + Hero Card + espelhamento em Notas | `bun run typecheck` verde · `bun run build` verde · 9 prints mobile capturados | Concluído |
-| 5 — Conectada | Inteligência Conectada (alertas, insights, Visão 360°, Consultor IA, Busca Global Cmd+K, Backup JSON) | `bun run typecheck` verde · `bun run build` verde · 5 prints mobile capturados (390px e 360px, zero overflow) | **Entregue para validação final** |
+| 5 — Conectada | Inteligência Conectada (alertas, insights, Visão 360°, Consultor IA, Busca Global Cmd+K, Backup JSON) | `bun run typecheck` verde · `bun run build` verde · 5 prints mobile capturados | Concluído |
+| Padrão Visual & Dados | Cartões Loma Atual (individuais, expansíveis, 24px, 62px, reordenação de concluídos), Apoio em cartões, Export/Import multi-formato (JSON, CSV, MD, PDF) com tela de conferência prévia | `bun run typecheck` verde · `bun run build` verde · 14 prints mobile novos (390px e 360px, zero overflow) | **Aguardando aceite** |
 
 ---
 
 ## Tamanho do código
 
-> Contagem oficial via `wc -l` realizada em 18/11/2026 ao término da **Fase 5 — Conectada**.  
+> Contagem oficial via `wc -l` realizada em 18/11/2026 após aplicação do **Padrão Visual do Loma Atual e Exportação/Importação Multi-formato**.  
 > **Escopo de Código:** exclusivamente `client/src/` e `server/src/` (`.ts`, `.tsx`, `.css`) + `drizzle/` (`.sql`).  
-> **Regra do Molde:** contagem direta de linhas via `wc -l` sem fragmentação de pastas.
+> **Regra do Molde:** contagem direta de linhas via `wc -l` sem fragmentação de pastas (máximo de 15 a 20 arquivos).
 
 | Arquivo | Linhas |
 | --- | ---: |
-| `server/src/actions.ts` | 3.668 |
-| `client/src/App.tsx` | 1.767 |
-| `client/src/Crescer.tsx` | 891 |
-| `client/src/Casa.tsx` | 879 |
-| `client/src/Home.tsx` | 791 |
+| `server/src/actions.ts` | 3.777 |
+| `client/src/App.tsx` | 1.772 |
+| `client/src/Apoio.tsx` | 1.204 |
+| `client/src/Crescer.tsx` | 895 |
+| `client/src/Casa.tsx` | 805 |
+| `client/src/Home.tsx` | 799 |
+| `client/src/BemEstar.tsx` | 611 |
 | `server/src/schema.ts` | 587 |
-| `client/src/BemEstar.tsx` | 559 |
-| `client/src/Financas.tsx` | 475 |
-| `client/src/Apoio.tsx` | 459 |
+| `client/src/Financas.tsx` | 476 |
 | `drizzle/0002_loma_fundacao.sql` | 131 |
 | `drizzle/0004_loma_casa_familia.sql` | 130 |
 | `drizzle/0005_loma_crescer.sql` | 106 |
@@ -132,8 +118,8 @@
 | `client/src/globals.d.ts` | 18 |
 | `drizzle/0006_loma_fase5_conectada.sql` | 13 |
 | `drizzle/0001_initial.sql` | 5 |
-| **Total de Código** | **10.656** |
+| **Total de Código** | **11.506** |
 
-- **Diferença em relação à Fase 4:** **+1.037 linhas** (Fase 4: 9.619 linhas → Fase 5: 10.656 linhas).
-- **Total de Documentos (`.md`):** **3.554 linhas** (em 9 arquivos de especificação e governança).
-
+- **Diferença em relação à contagem anterior (Fase 5):** **+850 linhas** (Fase 5: 10.656 linhas → Atual: 11.506 linhas).
+  - *Adições:* Parser multi-formato (JSON, CSV, MD, PDF), tela interativa de conferência com detecção de duplicados, botões de exportação múltipla no Apoio, padronização canônica de cartões individuais expansíveis em todas as telas e action `importVerifiedItems` com validação Zod.
+- **Total de Documentos (`.md`):** **3.550 linhas** (em 9 arquivos de especificação e governança).

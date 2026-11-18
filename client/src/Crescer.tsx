@@ -10,6 +10,125 @@ interface CrescerProps {
   onOpenAddModal: (type: "projeto_trabalho" | "curso_estudo" | "livro" | "projeto_pessoal" | "viagem" | "documento" | "filme_serie" | "musica") => void;
 }
 
+// ========================================================
+// COMPONENTE CANÔNICO: CARTÃO LOMA (PADRÃO REDUZIDO & EXPANSÍVEL)
+// ========================================================
+function LomaCard({
+  title,
+  meta,
+  category,
+  isCompleted,
+  onToggle,
+  onDelete,
+  children,
+  badge,
+}: {
+  id?: string | number;
+  title: string;
+  meta?: React.ReactNode;
+  category?: string;
+  isCompleted?: boolean;
+  onToggle?: () => void;
+  onDelete?: () => void;
+  children?: React.ReactNode;
+  badge?: React.ReactNode;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div
+      className={`rounded-[24px] bg-[#FFFDF8] border border-[#EFE5D5] shadow-[0_1px_0_rgba(223,213,196,0.5)] transition-all overflow-hidden ${
+        isCompleted ? "opacity-75 bg-[#FAF7F2]" : ""
+      }`}
+    >
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex min-h-[62px] items-center justify-between gap-3 py-3 px-4 cursor-pointer select-none"
+      >
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          {onToggle && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle();
+              }}
+              className="min-w-[40px] min-h-[40px] -ml-1 flex items-center justify-center cursor-pointer shrink-0"
+              aria-label="Concluir"
+            >
+              <div
+                className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold transition-all ${
+                  isCompleted
+                    ? "bg-[#3B7A6B] border-[#3B7A6B] text-white"
+                    : "border-[#DDD2C3] bg-white hover:border-[#C47882]"
+                }`}
+              >
+                {isCompleted && "✓"}
+              </div>
+            </button>
+          )}
+
+          <div className="min-w-0 flex-1">
+            <h4
+              className={`text-[16px] font-semibold leading-tight truncate ${
+                isCompleted ? "line-through text-[#9B8F85]" : "text-[#2C241E]"
+              }`}
+            >
+              {title}
+            </h4>
+            {(meta || category) && (
+              <div className="text-[13px] text-[#7C6E62] truncate mt-0.5 flex items-center gap-1.5">
+                {category && <span className="font-medium text-[#9E6123]">{category} •</span>}
+                {meta}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {badge}
+          <span className={`text-[#A89A8E] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
+            ▼
+          </span>
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div className="border-t border-[#F2ECE3] bg-[#FAF7F2]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
+          {children}
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EFE5D5]">
+            {onToggle && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle();
+                }}
+                className="h-10 px-4 rounded-full bg-[#EAE2D6] text-[#2C241E] font-medium text-xs hover:bg-[#DDD2C3] transition cursor-pointer"
+              >
+                {isCompleted ? "Reabrir" : "Marcar Concluído"}
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                className="h-10 px-4 rounded-full bg-[#F8ECEE] text-[#B36670] font-medium text-xs hover:bg-[#F2D7DB] transition cursor-pointer"
+              >
+                Excluir
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
   const initialSub = (new URLSearchParams(window.location.search).get("sub") as any) || "resumo";
   const [subTab, setSubTab] = useState<
@@ -134,7 +253,7 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
   const nextTrip = trips.find((t) => t.status === "planejada" || t.status === "confirmada") || trips[0];
 
   return (
-    <div className="flex flex-col gap-5 pb-24">
+    <div className="flex flex-col gap-4 pb-24">
       {/* Sub-navegação dos módulos de Crescer */}
       <div className="w-full max-w-full min-w-0 flex gap-1.5 overflow-x-auto pb-1 text-xs">
         {[
@@ -151,7 +270,7 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
           <button
             key={item.key}
             onClick={() => setSubTab(item.key as any)}
-            className={`cursor-pointer whitespace-nowrap rounded-full px-3.5 py-1.5 font-medium transition ${
+            className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
               subTab === item.key
                 ? "bg-[#231B16] text-[#FAF7F2] shadow-xs"
                 : "bg-[#F2ECE3] text-[#6E6259] hover:bg-[#EAE2D6]"
@@ -166,18 +285,18 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* 1. VISÃO GERAL (RESUMO CRESCER) */}
       {/* ======================================================== */}
       {subTab === "resumo" && (
-        <div className="flex flex-col gap-5">
-          {/* Hero Card Espresso */}
-          <div className="relative overflow-hidden rounded-3xl bg-[#231B16] p-6 text-[#FAF7F2] shadow-md">
+        <div className="flex flex-col gap-4">
+          {/* Herói com padding 16px e raio 24px */}
+          <div className="relative overflow-hidden rounded-[24px] bg-[#231B16] p-4 text-[#FAF7F2] shadow-md">
             <div
               className="pointer-events-none absolute -top-12 -right-12 h-44 w-44 rounded-full"
               style={{ background: "radial-gradient(circle, rgba(196, 120, 130, 0.35) 0%, transparent 70%)" }}
             />
-            <div className="relative z-10 flex flex-col gap-3">
-              <span className="text-xs font-semibold tracking-wider text-[#C47882] uppercase">
+            <div className="relative z-10 flex flex-col gap-2">
+              <span className="text-[11px] font-bold tracking-wider text-[#C47882] uppercase">
                 Crescimento & Futuro
               </span>
-              <h2 className="font-serif-loma text-2xl text-[#FAF7F2] leading-tight">
+              <h2 className="font-serif text-2xl text-[#FAF7F2] leading-tight">
                 Construindo o amanhã, com clareza e dedicação<span className="text-[#C47882]">.</span>
               </h2>
               <p className="text-xs text-[#FAF7F2]/70">
@@ -185,22 +304,22 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
               </p>
 
               {/* Indicadores Chave */}
-              <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2.5 pt-2 text-center">
-                <div className="min-w-0 flex flex-col items-center rounded-2xl bg-white/5 p-2 sm:p-3 backdrop-blur-xs">
+              <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2.5 pt-2 text-center border-t border-white/10">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
                   <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Livros Lidos</span>
-                  <span className="font-serif-loma mt-1 text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
                     {summary.booksReadThisYear} lidos
                   </span>
                 </div>
-                <div className="min-w-0 flex flex-col items-center rounded-2xl bg-white/5 p-2 sm:p-3 backdrop-blur-xs">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
                   <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Projetos Ativos</span>
-                  <span className="font-serif-loma mt-1 text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
                     {summary.activePersonalProjectsCount} projetos
                   </span>
                 </div>
-                <div className="min-w-0 flex flex-col items-center rounded-2xl bg-white/5 p-2 sm:p-3 backdrop-blur-xs">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
                   <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Cursos</span>
-                  <span className="font-serif-loma mt-1 text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
                     {summary.activeCoursesCount} ativos
                   </span>
                 </div>
@@ -210,140 +329,123 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
 
           {/* Destaque 1: Livro em Leitura Ativa */}
           {currentBook && (
-            <div className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-              <div className="flex items-center justify-between gap-2 min-w-0 pb-3">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="h-2 w-2 rounded-full bg-[#9E6123] shrink-0" />
-                  <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Leitura em Andamento</h3>
-                </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between mb-1 px-1">
+                <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Leitura em Andamento</h3>
                 <button
                   onClick={() => setSubTab("livros")}
-                  className="shrink-0 cursor-pointer text-xs font-medium text-[#C47882] hover:underline whitespace-nowrap"
+                  className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
                 >
                   Ver Estante →
                 </button>
               </div>
 
-              <div className="rounded-2xl border border-[#EAE2D6] bg-[#FAF7F2] p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-serif-loma text-base font-bold text-[#231B16]">{currentBook.title}</h4>
-                    <p className="text-xs text-[#6E6259]">por {currentBook.author} • {currentBook.category}</p>
-                  </div>
-                  <span className="rounded-full bg-[#F2ECE3] px-2 py-0.5 text-[10px] font-semibold text-[#9E6123] capitalize">
+              <LomaCard
+                id={currentBook.id}
+                title={currentBook.title}
+                category={currentBook.author}
+                meta={currentBook.category}
+                badge={
+                  <span className="rounded-full bg-[#F2ECE3] px-2.5 py-1 text-[10px] font-semibold text-[#9E6123] capitalize">
                     {currentBook.status}
                   </span>
+                }
+              >
+                <div className="flex flex-col gap-2">
+                  {currentBook.totalPages > 0 && (
+                    <div>
+                      <div className="flex justify-between text-xs text-[#6E6259] tabular-nums">
+                        <span>Progresso: {Math.round((currentBook.currentPage / currentBook.totalPages) * 100)}%</span>
+                        <span>{currentBook.currentPage} de {currentBook.totalPages} páginas</span>
+                      </div>
+                      <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
+                        <div
+                          className="h-full rounded-full bg-[#9E6123] transition-all"
+                          style={{ width: `${Math.min(100, Math.round((currentBook.currentPage / currentBook.totalPages) * 100))}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {currentBook.reviewOrNotes && (
+                    <p className="text-xs italic text-[#6E6259]">"{currentBook.reviewOrNotes}"</p>
+                  )}
                 </div>
-
-                {currentBook.totalPages > 0 && (
-                  <div className="mt-3">
-                    <div className="flex justify-between text-xs text-[#6E6259] tabular-nums">
-                      <span>Progresso: {Math.round((currentBook.currentPage / currentBook.totalPages) * 100)}%</span>
-                      <span>{currentBook.currentPage} de {currentBook.totalPages} páginas</span>
-                    </div>
-                    <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
-                      <div
-                        className="h-full rounded-full bg-[#9E6123] transition-all"
-                        style={{ width: `${Math.min(100, Math.round((currentBook.currentPage / currentBook.totalPages) * 100))}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {currentBook.reviewOrNotes && (
-                  <p className="mt-3 text-xs italic text-[#6E6259] border-t border-[#EAE2D6] pt-2.5">
-                    "{currentBook.reviewOrNotes}"
-                  </p>
-                )}
-              </div>
+              </LomaCard>
             </div>
           )}
 
-          {/* Destaque 2: Projeto Prioritário */}
+          {/* Destaque 2: Projeto em Foco */}
           {activeProject && (
-            <div className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-              <div className="flex items-center justify-between gap-2 min-w-0 pb-3">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="h-2 w-2 rounded-full bg-[#3B7A6B] shrink-0" />
-                  <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Projeto em Foco</h3>
-                </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between mb-1 px-1">
+                <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Projeto em Foco</h3>
                 <button
                   onClick={() => setSubTab("projetos")}
-                  className="shrink-0 cursor-pointer text-xs font-medium text-[#C47882] hover:underline whitespace-nowrap"
+                  className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
                 >
                   Ver Projetos →
                 </button>
               </div>
 
-              <div className="rounded-2xl border border-[#EAE2D6] bg-[#FAF7F2] p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-bold text-sm text-[#231B16]">{activeProject.title}</h4>
-                    <p className="text-xs text-[#6E6259] capitalize">Categoria: {activeProject.category}</p>
-                  </div>
+              <LomaCard
+                id={activeProject.id}
+                title={activeProject.title}
+                category={activeProject.category}
+                meta={`Progresso: ${activeProject.progressPercent}%`}
+                badge={
                   <span className="font-bold text-xs text-[#3B7A6B] tabular-nums">
                     {activeProject.progressPercent}%
                   </span>
-                </div>
-
-                <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
-                  <div
-                    className="h-full rounded-full bg-[#3B7A6B] transition-all"
-                    style={{ width: `${activeProject.progressPercent}%` }}
-                  />
-                </div>
-
-                {activeProject.nextMilestone && (
-                  <div className="mt-3 flex items-center gap-2 rounded-xl bg-white p-2.5 text-xs text-[#231B16] border border-[#EAE2D6]">
-                    <span className="font-semibold text-[#3B7A6B]">Próximo marco:</span>
-                    <span className="text-[#6E6259] truncate">{activeProject.nextMilestone}</span>
+                }
+              >
+                <div className="flex flex-col gap-2">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
+                    <div
+                      className="h-full rounded-full bg-[#3B7A6B] transition-all"
+                      style={{ width: `${activeProject.progressPercent}%` }}
+                    />
                   </div>
-                )}
-              </div>
+                  {activeProject.nextMilestone && (
+                    <p className="text-xs text-[#2C241E]">
+                      <strong>Próximo marco: </strong>{activeProject.nextMilestone}
+                    </p>
+                  )}
+                </div>
+              </LomaCard>
             </div>
           )}
 
           {/* Destaque 3: Próxima Viagem */}
           {nextTrip && (
-            <div className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-              <div className="flex items-center justify-between gap-2 min-w-0 pb-3">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="h-2 w-2 rounded-full bg-[#465768] shrink-0" />
-                  <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Próxima Viagem</h3>
-                </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between mb-1 px-1">
+                <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Próxima Viagem</h3>
                 <button
                   onClick={() => setSubTab("viagens")}
-                  className="shrink-0 cursor-pointer text-xs font-medium text-[#C47882] hover:underline whitespace-nowrap"
+                  className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
                 >
                   Roteiros →
                 </button>
               </div>
 
-              <div className="rounded-2xl border border-[#EAE2D6] bg-[#FAF7F2] p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-serif-loma text-base font-bold text-[#231B16]">✈ {nextTrip.destination}</h4>
-                    <p className="text-xs text-[#6E6259] tabular-nums">
-                      {nextTrip.startDate} até {nextTrip.endDate}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-[#EDF1F5] px-2.5 py-0.5 text-xs font-bold text-[#465768] capitalize">
+              <LomaCard
+                id={nextTrip.id}
+                title={`✈ ${nextTrip.destination}`}
+                category={nextTrip.status}
+                meta={`${nextTrip.startDate} a ${nextTrip.endDate}`}
+                badge={
+                  <span className="rounded-full bg-[#EDF1F5] px-2.5 py-1 text-xs font-bold text-[#465768] capitalize">
                     {nextTrip.status}
                   </span>
+                }
+              >
+                <div className="flex flex-col gap-1 text-xs text-[#6E6259]">
+                  {nextTrip.accommodation && <p><strong>Hospedagem: </strong>{nextTrip.accommodation}</p>}
+                  {nextTrip.budgetEstimatedCents > 0 && (
+                    <p>Orçamento estimado: {formatMoney(nextTrip.budgetEstimatedCents)}</p>
+                  )}
                 </div>
-
-                {nextTrip.accommodation && (
-                  <p className="mt-2 text-xs text-[#6E6259]">
-                    <strong>Hospedagem:</strong> {nextTrip.accommodation}
-                  </p>
-                )}
-
-                {nextTrip.budgetEstimatedCents > 0 && (
-                  <p className="mt-1 text-xs text-[#9B8F85] tabular-nums">
-                    Orçamento estimado: {formatMoney(nextTrip.budgetEstimatedCents)}
-                  </p>
-                )}
-              </div>
+              </LomaCard>
             </div>
           )}
         </div>
@@ -353,32 +455,31 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* 2. TRABALHO & CARREIRA */}
       {/* ======================================================== */}
       {subTab === "trabalho" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Trabalho & Carreira</h2>
-              <p className="text-xs text-[#6E6259] truncate">Projetos profissionais, consultorias e contratos ativos.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Trabalho & Carreira</h3>
+              <p className="text-[13px] text-[#7C6E62]">Projetos profissionais, consultorias e contratos ativos.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("projeto_trabalho")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Novo Trabalho
+              + Trabalho
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col space-y-2">
             {workProjects.map((item) => (
-              <div key={item.id} className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0 flex-1">
-                    <h4 className="font-medium text-sm text-[#231B16] truncate">{item.title}</h4>
-                    <p className="text-xs text-[#9B8F85]">
-                      {item.clientOrCompany ? `${item.clientOrCompany} • ` : ""}{item.area}
-                    </p>
-                  </div>
+              <LomaCard
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                category={item.area}
+                meta={item.clientOrCompany ? `Cliente: ${item.clientOrCompany}` : undefined}
+                badge={
                   <span
-                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase ${
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase ${
                       item.status === "concluido"
                         ? "bg-[#E9F3F0] text-[#3B7A6B]"
                         : item.status === "em_andamento"
@@ -388,43 +489,26 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
                   >
                     {item.status.replace("_", " ")}
                   </span>
+                }
+                onDelete={() => deleteWork.mutate(item.id)}
+              >
+                <div className="flex flex-col gap-2 text-xs text-[#6E6259]">
+                  <p>Prazo: {item.deadline || "Sem prazo fixo"}. {item.feeCents > 0 && `Honorários: ${formatMoney(item.feeCents)}.`}</p>
+                  {item.notes && <p className="italic">{item.notes}</p>}
+                  <div className="flex items-center justify-between pt-1 border-t border-[#F2ECE3]">
+                    <span>Status:</span>
+                    <select
+                      value={item.status}
+                      onChange={(e) => updateWork.mutate({ id: item.id, status: e.target.value as any })}
+                      className="rounded-full border border-[#D5CCC2] bg-[#FAF7F2] px-3 py-1 text-xs text-[#231B16]"
+                    >
+                      <option value="proposta">Proposta</option>
+                      <option value="em_andamento">Em Andamento</option>
+                      <option value="concluido">Concluído</option>
+                    </select>
+                  </div>
                 </div>
-
-                <div className="flex items-center justify-between text-xs text-[#6E6259] pt-1">
-                  <span>
-                    {item.deadline ? `Prazo: ${item.deadline}` : "Sem prazo fixado"}
-                  </span>
-                  {item.feeCents > 0 && (
-                    <span className="font-semibold text-[#231B16] tabular-nums">
-                      {formatMoney(item.feeCents)}
-                    </span>
-                  )}
-                </div>
-
-                {item.notes && (
-                  <p className="mt-1 rounded-xl bg-[#FAF7F2] p-2.5 text-xs text-[#6E6259]">
-                    {item.notes}
-                  </p>
-                )}
-
-                <div className="flex items-center justify-between pt-2 border-t border-[#F2ECE3]">
-                  <select
-                    value={item.status}
-                    onChange={(e) => updateWork.mutate({ id: item.id, status: e.target.value as any })}
-                    className="rounded-lg border border-[#D5CCC2] bg-[#FAF7F2] px-2 py-0.5 text-xs text-[#231B16]"
-                  >
-                    <option value="proposta">Proposta</option>
-                    <option value="em_andamento">Em Andamento</option>
-                    <option value="concluido">Concluído</option>
-                  </select>
-                  <button
-                    onClick={() => deleteWork.mutate(item.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    Remover
-                  </button>
-                </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -434,61 +518,48 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* 3. ESTUDOS & CURSOS */}
       {/* ======================================================== */}
       {subTab === "estudos" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Estudos & Cursos</h2>
-              <p className="text-xs text-[#6E6259] truncate">Idiomas, qualificações técnicas e desenvolvimento intelectual.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Estudos & Cursos</h3>
+              <p className="text-[13px] text-[#7C6E62]">Idiomas, qualificações e desenvolvimento.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("curso_estudo")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Novo Curso
+              + Curso
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col space-y-2">
             {courses.map((c) => (
-              <div key={c.id} className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-semibold text-sm text-[#231B16]">{c.title}</h4>
-                    <p className="text-xs text-[#6E6259]">
-                      {c.platformOrInstitution ? `${c.platformOrInstitution} • ` : ""}{c.category.toUpperCase()}
-                    </p>
+              <LomaCard
+                key={c.id}
+                id={c.id}
+                title={c.title}
+                category={c.category.toUpperCase()}
+                meta={c.platformOrInstitution}
+                badge={
+                  <span className="font-bold text-xs text-[#3B7A6B] tabular-nums">
+                    {c.progressPercent}%
+                  </span>
+                }
+                onDelete={() => deleteCourse.mutate(c.id)}
+              >
+                <div className="flex flex-col gap-2 text-xs text-[#6E6259]">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
+                    <div className="h-full rounded-full bg-[#3B7A6B]" style={{ width: `${c.progressPercent}%` }} />
                   </div>
-                  <span className="font-bold text-xs text-[#3B7A6B] tabular-nums">{c.progressPercent}%</span>
-                </div>
-
-                <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
-                  <div className="h-full rounded-full bg-[#3B7A6B] transition-all" style={{ width: `${c.progressPercent}%` }} />
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-[#9B8F85] pt-1">
-                  <span>Horas: {c.completedHours}h de {c.totalHours}h</span>
-                  <span className="capitalize text-[#231B16] font-medium">{c.status}</span>
-                </div>
-
-                {c.notes && (
-                  <p className="rounded-xl bg-[#FAF7F2] p-2 text-xs text-[#6E6259]">{c.notes}</p>
-                )}
-
-                <div className="flex items-center justify-between pt-1">
+                  <p>Horas cumpridas: {c.completedHours}h de {c.totalHours}h.</p>
                   <button
                     onClick={() => updateCourse.mutate({ id: c.id, progressPercent: Math.min(100, c.progressPercent + 10) })}
-                    className="cursor-pointer text-xs font-semibold text-[#3B7A6B] hover:underline"
+                    className="self-start text-xs font-semibold text-[#3B7A6B] hover:underline cursor-pointer"
                   >
-                    + 10% Progresso
-                  </button>
-                  <button
-                    onClick={() => deleteCourse.mutate(c.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    Excluir
+                    + 10% de Progresso
                   </button>
                 </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -498,28 +569,29 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* 4. LIVROS & LEITURAS */}
       {/* ======================================================== */}
       {subTab === "livros" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Livros & Leituras</h2>
-              <p className="text-xs text-[#6E6259] truncate">Estante viva com leituras atuais, lidos e metas do ano.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Livros & Leituras</h3>
+              <p className="text-[13px] text-[#7C6E62]">Estante viva com leituras atuais, lidos e metas.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("livro")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Novo Livro
+              + Livro
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
+          <div className="flex flex-col space-y-2">
             {books.map((b) => (
-              <div key={b.id} className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-serif-loma text-base font-bold text-[#231B16]">{b.title}</h4>
-                    <p className="text-xs text-[#6E6259]">por {b.author} • {b.category}</p>
-                  </div>
+              <LomaCard
+                key={b.id}
+                id={b.id}
+                title={b.title}
+                category={b.author}
+                meta={b.category}
+                badge={
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase ${
                       b.status === "lido"
@@ -531,52 +603,38 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
                   >
                     {b.status.replace("_", " ")}
                   </span>
-                </div>
-
-                {b.totalPages > 0 && b.status === "lendo" && (
-                  <div className="mt-1">
-                    <div className="flex justify-between text-xs text-[#6E6259] tabular-nums">
+                }
+                onDelete={() => deleteBook.mutate(b.id)}
+              >
+                <div className="flex flex-col gap-2 text-xs text-[#6E6259]">
+                  {b.totalPages > 0 && (
+                    <div>
                       <span>Página {b.currentPage} de {b.totalPages}</span>
-                      <span>{Math.round((b.currentPage / b.totalPages) * 100)}%</span>
+                      <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
+                        <div
+                          className="h-full rounded-full bg-[#9E6123]"
+                          style={{ width: `${Math.min(100, Math.round((b.currentPage / b.totalPages) * 100))}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
-                      <div
-                        className="h-full rounded-full bg-[#9E6123]"
-                        style={{ width: `${Math.min(100, Math.round((b.currentPage / b.totalPages) * 100))}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {b.reviewOrNotes && (
-                  <p className="mt-1 rounded-xl bg-[#FAF7F2] p-2.5 text-xs text-[#6E6259] italic">
-                    "{b.reviewOrNotes}"
-                  </p>
-                )}
-
-                <div className="flex items-center justify-between pt-1 border-t border-[#F2ECE3]">
-                  <span className="text-xs text-[#9E6123]">
-                    {"★".repeat(b.rating || 5)}{"☆".repeat(5 - (b.rating || 5))}
-                  </span>
-                  <div className="flex items-center gap-2">
+                  )}
+                  {b.reviewOrNotes && <p className="italic">"{b.reviewOrNotes}"</p>}
+                  <div className="flex items-center justify-between pt-1 border-t border-[#F2ECE3]">
+                    <span className="text-[#9E6123]">
+                      {"★".repeat(b.rating || 5)}{"☆".repeat(5 - (b.rating || 5))}
+                    </span>
                     <select
                       value={b.status}
                       onChange={(e) => updateBook.mutate({ id: b.id, status: e.target.value as any })}
-                      className="rounded-lg border border-[#D5CCC2] bg-[#FAF7F2] px-2 py-0.5 text-xs text-[#231B16]"
+                      className="rounded-full border border-[#D5CCC2] bg-[#FAF7F2] px-3 py-1 text-xs text-[#2C241E]"
                     >
                       <option value="lendo">Lendo</option>
                       <option value="lido">Lido</option>
                       <option value="quero_ler">Quero Ler</option>
                     </select>
-                    <button
-                      onClick={() => deleteBook.mutate(b.id)}
-                      className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                    >
-                      ✕
-                    </button>
                   </div>
                 </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -586,58 +644,48 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* 5. PROJETOS AUTORAIS */}
       {/* ======================================================== */}
       {subTab === "projetos" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Projetos Autorais</h2>
-              <p className="text-xs text-[#6E6259] truncate">Iniciativas pessoais, criações e construções familiares.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Projetos Autorais</h3>
+              <p className="text-[13px] text-[#7C6E62]">Iniciativas pessoais e construções familiares.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("projeto_pessoal")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Novo Projeto
+              + Projeto
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col space-y-2">
             {personalProjects.map((p) => (
-              <div key={p.id} className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-bold text-sm text-[#231B16]">{p.title}</h4>
-                    <span className="text-xs text-[#6E6259] capitalize">Categoria: {p.category}</span>
+              <LomaCard
+                key={p.id}
+                id={p.id}
+                title={p.title}
+                category={p.category}
+                meta={p.nextMilestone ? `Próximo: ${p.nextMilestone}` : undefined}
+                badge={
+                  <span className="font-bold text-xs text-[#3B7A6B] tabular-nums">
+                    {p.progressPercent}%
+                  </span>
+                }
+                onDelete={() => deleteProject.mutate(p.id)}
+              >
+                <div className="flex flex-col gap-2 text-xs text-[#6E6259]">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
+                    <div className="h-full rounded-full bg-[#3B7A6B]" style={{ width: `${p.progressPercent}%` }} />
                   </div>
-                  <span className="font-bold text-xs text-[#3B7A6B] tabular-nums">{p.progressPercent}%</span>
-                </div>
-
-                <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-[#EAE2D6]">
-                  <div className="h-full rounded-full bg-[#3B7A6B] transition-all" style={{ width: `${p.progressPercent}%` }} />
-                </div>
-
-                {p.nextMilestone && (
-                  <p className="text-xs text-[#231B16] bg-[#FAF7F2] p-2 rounded-lg border border-[#EAE2D6]">
-                    <strong>Próximo Marco: </strong>{p.nextMilestone}
-                  </p>
-                )}
-
-                {p.notes && <p className="text-xs text-[#6E6259]">{p.notes}</p>}
-
-                <div className="flex items-center justify-between pt-1 border-t border-[#F2ECE3]">
+                  {p.notes && <p>{p.notes}</p>}
                   <button
                     onClick={() => updateProject.mutate({ id: p.id, progressPercent: Math.min(100, p.progressPercent + 10) })}
-                    className="cursor-pointer text-xs font-semibold text-[#3B7A6B] hover:underline"
+                    className="self-start text-xs font-semibold text-[#3B7A6B] hover:underline cursor-pointer"
                   >
                     + 10% Conclusão
                   </button>
-                  <button
-                    onClick={() => deleteProject.mutate(p.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    Remover
-                  </button>
                 </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -647,70 +695,54 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* 6. VIAGENS */}
       {/* ======================================================== */}
       {subTab === "viagens" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Viagens & Férias</h2>
-              <p className="text-xs text-[#6E6259] truncate">Destinos planejados, orçamentos e listas de bagagem.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Viagens & Roteiros</h3>
+              <p className="text-[13px] text-[#7C6E62]">Destinos planejados, orçamentos e experiências.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("viagem")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Nova Viagem
+              + Viagem
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col space-y-2">
             {trips.map((t) => (
-              <div key={t.id} className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-serif-loma text-base font-bold text-[#231B16]">✈ {t.destination}</h4>
-                    <p className="text-xs text-[#6E6259] tabular-nums">
-                      {t.startDate} a {t.endDate}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-[#EDF1F5] px-2.5 py-0.5 text-xs font-bold text-[#465768] capitalize">
+              <LomaCard
+                key={t.id}
+                id={t.id}
+                title={`✈ ${t.destination}`}
+                category={t.status}
+                meta={`${t.startDate} a ${t.endDate}`}
+                badge={
+                  <span className="rounded-full bg-[#EDF1F5] px-2.5 py-1 text-xs font-bold text-[#465768] capitalize">
                     {t.status}
                   </span>
-                </div>
-
-                {t.accommodation && (
-                  <p className="text-xs text-[#6E6259]">
-                    <strong>Hospedagem: </strong>{t.accommodation}
-                  </p>
-                )}
-
-                {t.checklistItems && (
-                  <p className="text-xs text-[#6E6259] bg-[#FAF7F2] p-2 rounded-lg">
-                    <strong>Checklist: </strong>{t.checklistItems}
-                  </p>
-                )}
-
-                <div className="flex items-center justify-between pt-1 border-t border-[#F2ECE3]">
-                  <span className="text-xs font-semibold text-[#231B16] tabular-nums">
-                    {formatMoney(t.budgetEstimatedCents)}
-                  </span>
-                  <div className="flex items-center gap-2">
+                }
+                onDelete={() => deleteTrip.mutate(t.id)}
+              >
+                <div className="flex flex-col gap-2 text-xs text-[#6E6259]">
+                  {t.accommodation && <p><strong>Hospedagem: </strong>{t.accommodation}</p>}
+                  {t.checklistItems && <p><strong>Checklist: </strong>{t.checklistItems}</p>}
+                  <div className="flex items-center justify-between pt-1 border-t border-[#F2ECE3]">
+                    <span className="font-semibold text-[#2C241E] tabular-nums">
+                      {formatMoney(t.budgetEstimatedCents)}
+                    </span>
                     <select
                       value={t.status}
                       onChange={(e) => updateTrip.mutate({ id: t.id, status: e.target.value as any })}
-                      className="rounded-lg border border-[#D5CCC2] bg-[#FAF7F2] px-2 py-0.5 text-xs text-[#231B16]"
+                      className="rounded-full border border-[#D5CCC2] bg-[#FAF7F2] px-3 py-1 text-xs text-[#2C241E]"
                     >
                       <option value="planejada">Planejada</option>
                       <option value="confirmada">Confirmada</option>
                       <option value="realizada">Realizada</option>
                     </select>
-                    <button
-                      onClick={() => deleteTrip.mutate(t.id)}
-                      className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                    >
-                      ✕
-                    </button>
                   </div>
                 </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -720,50 +752,35 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* 7. DOCUMENTOS */}
       {/* ======================================================== */}
       {subTab === "documentos" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Documentos & Validades</h2>
-              <p className="text-xs text-[#6E6259] truncate">Passaportes, CNH, certidões e alertas de renovação.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Documentos & Validades</h3>
+              <p className="text-[13px] text-[#7C6E62]">Passaportes, CNH, certidões e alertas de renovação.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("documento")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Novo Documento
+              + Documento
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col space-y-2">
             {documents.map((d) => (
-              <div key={d.id} className="flex items-center justify-between rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm text-[#231B16]">{d.title}</span>
-                    <span className="rounded-full bg-[#F2ECE3] px-2 py-0.5 text-[10px] font-semibold text-[#6E6259]">
-                      {d.personName}
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#9B8F85] mt-0.5">
-                    {d.documentNumber ? `Nº ${d.documentNumber} • ` : ""}
-                    Validade: <strong className="text-[#231B16]">{d.expirationDate || "Indeterminada"}</strong>
-                  </p>
-                  {d.notes && <p className="text-[11px] text-[#6E6259] mt-1">{d.notes}</p>}
+              <LomaCard
+                key={d.id}
+                id={d.id}
+                title={d.title}
+                category={d.personName}
+                meta={d.expirationDate ? `Validade: ${d.expirationDate}` : "Indeterminada"}
+                onDelete={() => deleteDocument.mutate(d.id)}
+              >
+                <div className="text-xs text-[#6E6259]">
+                  {d.documentNumber && <p>Número: {d.documentNumber}</p>}
+                  {d.notes && <p>Observações: {d.notes}</p>}
                 </div>
-                <div className="flex items-center gap-2">
-                  {d.renewalAlert === 1 && (
-                    <span className="rounded-full bg-[#E9F3F0] px-2 py-0.5 text-[10px] font-semibold text-[#3B7A6B]">
-                      Vigente
-                    </span>
-                  )}
-                  <button
-                    onClick={() => deleteDocument.mutate(d.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -773,115 +790,102 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* 8. FILMES & SÉRIES */}
       {/* ======================================================== */}
       {subTab === "filmes" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Filmes & Séries</h2>
-              <p className="text-xs text-[#6E6259] truncate">Watchlist cultural e momentos de lazer cinematográfico.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Filmes & Séries</h3>
+              <p className="text-[13px] text-[#7C6E62]">Watchlist cultural e conteúdos recomendados para a família.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("filme_serie")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Novo Título
+              + Conteúdo
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="flex flex-col space-y-2">
             {culturalMedia.map((m) => (
-              <div key={m.id} className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-serif-loma text-base font-bold text-[#231B16]">{m.title}</h4>
-                    <p className="text-xs text-[#6E6259]">
-                      {m.type.toUpperCase()} • {m.platform}
-                    </p>
-                  </div>
-                  <span className="text-xs text-[#C47882] font-bold">
-                    {"★".repeat(m.rating || 5)}
+              <LomaCard
+                key={m.id}
+                id={m.id}
+                title={m.title}
+                category={m.type.toUpperCase()}
+                meta={m.platform}
+                badge={
+                  <span className="rounded-full bg-[#F2ECE3] px-2.5 py-1 text-[10px] font-bold text-[#6E6259] uppercase">
+                    {m.status.replace("_", " ")}
                   </span>
+                }
+                onDelete={() => deleteMedia.mutate(m.id)}
+              >
+                <div className="flex flex-col gap-2 text-xs text-[#6E6259]">
+                  {m.recommendedBy && <p>Indicado por: {m.recommendedBy}</p>}
+                  {m.genre && <p>Gênero: {m.genre}</p>}
+                  <div className="flex items-center justify-between pt-1 border-t border-[#F2ECE3]">
+                    <span className="text-[#9E6123]">
+                      {"★".repeat(m.rating || 5)}{"☆".repeat(5 - (m.rating || 5))}
+                    </span>
+                    <select
+                      value={m.status}
+                      onChange={(e) => updateMedia.mutate({ id: m.id, status: e.target.value as any })}
+                      className="rounded-full border border-[#D5CCC2] bg-[#FAF7F2] px-3 py-1 text-xs text-[#2C241E]"
+                    >
+                      <option value="quero_assistir">Quero Assistir</option>
+                      <option value="assistindo">Assistindo</option>
+                      <option value="assistido">Assistido</option>
+                    </select>
+                  </div>
                 </div>
-
-                {m.genre && <span className="text-[11px] text-[#9B8F85]">Gênero: {m.genre}</span>}
-                {m.recommendedBy && (
-                  <span className="text-[11px] text-[#6E6259]">Recomendado por: {m.recommendedBy}</span>
-                )}
-
-                <div className="flex items-center justify-between pt-1 border-t border-[#F2ECE3]">
-                  <select
-                    value={m.status}
-                    onChange={(e) => updateMedia.mutate({ id: m.id, status: e.target.value as any })}
-                    className="rounded-lg border border-[#D5CCC2] bg-[#FAF7F2] px-2 py-0.5 text-xs text-[#231B16]"
-                  >
-                    <option value="assistindo">Assistindo</option>
-                    <option value="quero_assistir">Quero Assistir</option>
-                    <option value="assistido">Assistido</option>
-                  </select>
-                  <button
-                    onClick={() => deleteMedia.mutate(m.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* 9. MÚSICA & MOMENTOS */}
+      {/* 9. MÚSICA & PLAYLISTS */}
       {/* ======================================================== */}
       {subTab === "musica" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Música & Playlists</h2>
-              <p className="text-xs text-[#6E6259] truncate">Trilhas sonoras para foco, oração, paz e encontros.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Música & Memórias</h3>
+              <p className="text-[13px] text-[#7C6E62]">Trilhas sonoras que marcam a história da família.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("musica")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Nova Faixa
+              + Música
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
-            {musicTracks.map((trk) => (
-              <div key={trk.id} className="flex items-center justify-between rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FAF7F2] border border-[#EAE2D6] text-base font-bold text-[#231B16]">
-                    ♫
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-sm text-[#231B16]">{trk.title}</h4>
-                    <p className="text-xs text-[#6E6259]">
-                      {trk.artistOrCurator} {trk.playlistOrAlbum ? `• ${trk.playlistOrAlbum}` : ""}
-                    </p>
-                    <span className="inline-block mt-0.5 rounded-full bg-[#F2ECE3] px-2 py-0.2 text-[10px] font-semibold text-[#465768] capitalize">
-                      {trk.momentOrMood}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
+          <div className="flex flex-col space-y-2">
+            {musicTracks.map((tr) => (
+              <LomaCard
+                key={tr.id}
+                id={tr.id}
+                title={tr.title}
+                category={tr.artistOrCurator}
+                meta={tr.playlistOrAlbum || tr.momentOrMood}
+                badge={
                   <button
-                    onClick={() => toggleMusicFav.mutate(trk.id)}
-                    className={`cursor-pointer text-base ${trk.isFavorite === 1 ? "text-[#C47882]" : "text-[#DDD2C3] hover:text-[#C47882]"}`}
-                    title="Favoritar"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleMusicFav.mutate(tr.id);
+                    }}
+                    className="text-base text-[#C47882] cursor-pointer px-1"
                   >
-                    ★
+                    {tr.isFavorite === 1 ? "♥" : "♡"}
                   </button>
-                  <button
-                    onClick={() => deleteMusic.mutate(trk.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    ✕
-                  </button>
+                }
+                onDelete={() => deleteMusic.mutate(tr.id)}
+              >
+                <div className="text-xs text-[#6E6259]">
+                  <p>Momento: {tr.momentOrMood} • Plataforma: {tr.platform}</p>
                 </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>

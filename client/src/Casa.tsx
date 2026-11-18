@@ -10,6 +10,125 @@ interface CasaProps {
   onOpenAddModal: (type: "item_mercado" | "manutencao_casa" | "rotina_filho" | "desejo_compra" | "cuidado_pet" | "contato_emergencia") => void;
 }
 
+// ========================================================
+// COMPONENTE CANÔNICO: CARTÃO LOMA (PADRÃO REDUZIDO & EXPANSÍVEL)
+// ========================================================
+function LomaCard({
+  title,
+  meta,
+  category,
+  isCompleted,
+  onToggle,
+  onDelete,
+  children,
+  badge,
+}: {
+  id?: string | number;
+  title: string;
+  meta?: React.ReactNode;
+  category?: string;
+  isCompleted?: boolean;
+  onToggle?: () => void;
+  onDelete?: () => void;
+  children?: React.ReactNode;
+  badge?: React.ReactNode;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div
+      className={`rounded-[24px] bg-[#FFFDF8] border border-[#EFE5D5] shadow-[0_1px_0_rgba(223,213,196,0.5)] transition-all overflow-hidden ${
+        isCompleted ? "opacity-75 bg-[#FAF7F2]" : ""
+      }`}
+    >
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex min-h-[62px] items-center justify-between gap-3 py-3 px-4 cursor-pointer select-none"
+      >
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          {onToggle && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle();
+              }}
+              className="min-w-[40px] min-h-[40px] -ml-1 flex items-center justify-center cursor-pointer shrink-0"
+              aria-label="Concluir"
+            >
+              <div
+                className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold transition-all ${
+                  isCompleted
+                    ? "bg-[#3B7A6B] border-[#3B7A6B] text-white"
+                    : "border-[#DDD2C3] bg-white hover:border-[#C47882]"
+                }`}
+              >
+                {isCompleted && "✓"}
+              </div>
+            </button>
+          )}
+
+          <div className="min-w-0 flex-1">
+            <h4
+              className={`text-[16px] font-semibold leading-tight truncate ${
+                isCompleted ? "line-through text-[#9B8F85]" : "text-[#2C241E]"
+              }`}
+            >
+              {title}
+            </h4>
+            {(meta || category) && (
+              <div className="text-[13px] text-[#7C6E62] truncate mt-0.5 flex items-center gap-1.5">
+                {category && <span className="font-medium text-[#9E6123]">{category} •</span>}
+                {meta}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {badge}
+          <span className={`text-[#A89A8E] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
+            ▼
+          </span>
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div className="border-t border-[#F2ECE3] bg-[#FAF7F2]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
+          {children}
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EFE5D5]">
+            {onToggle && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle();
+                }}
+                className="h-10 px-4 rounded-full bg-[#EAE2D6] text-[#2C241E] font-medium text-xs hover:bg-[#DDD2C3] transition cursor-pointer"
+              >
+                {isCompleted ? "Reabrir" : "Marcar Concluído"}
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                className="h-10 px-4 rounded-full bg-[#F8ECEE] text-[#B36670] font-medium text-xs hover:bg-[#F2D7DB] transition cursor-pointer"
+              >
+                Excluir
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
   const initialSub = (new URLSearchParams(window.location.search).get("sub") as any) || "resumo";
   const [subTab, setSubTab] = useState<
@@ -119,8 +238,20 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
   const formatMoney = (cents: number) =>
     (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+  const sortedGroceries = groceries
+    .slice()
+    .sort((a, b) => (a.isPurchased ? 1 : 0) - (b.isPurchased ? 1 : 0));
+
+  const sortedMaintenances = maintenances
+    .slice()
+    .sort((a, b) => (a.status === "concluido" ? 1 : 0) - (b.status === "concluido" ? 1 : 0));
+
+  const sortedChildren = childrenRoutines
+    .slice()
+    .sort((a, b) => (a.status === "concluido" ? 1 : 0) - (b.status === "concluido" ? 1 : 0));
+
   return (
-    <div className="flex flex-col gap-5 pb-24">
+    <div className="flex flex-col gap-4 pb-24">
       {/* Sub-navegação dos módulos de Casa & Família */}
       <div className="w-full max-w-full min-w-0 flex gap-1.5 overflow-x-auto pb-1 text-xs">
         {[
@@ -138,7 +269,7 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
           <button
             key={item.key}
             onClick={() => setSubTab(item.key as any)}
-            className={`cursor-pointer whitespace-nowrap rounded-full px-3.5 py-1.5 font-medium transition ${
+            className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
               subTab === item.key
                 ? "bg-[#231B16] text-[#FAF7F2] shadow-xs"
                 : "bg-[#F2ECE3] text-[#6E6259] hover:bg-[#EAE2D6]"
@@ -153,18 +284,18 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* 1. VISÃO GERAL (RESUMO CASA & FAMÍLIA) */}
       {/* ======================================================== */}
       {subTab === "resumo" && (
-        <div className="flex flex-col gap-5">
-          {/* Hero Card Espresso */}
-          <div className="relative overflow-hidden rounded-3xl bg-[#231B16] p-6 text-[#FAF7F2] shadow-md">
+        <div className="flex flex-col gap-4">
+          {/* Herói com padding 16px e raio 24px */}
+          <div className="relative overflow-hidden rounded-[24px] bg-[#231B16] p-4 text-[#FAF7F2] shadow-md">
             <div
               className="pointer-events-none absolute -top-12 -right-12 h-44 w-44 rounded-full"
               style={{ background: "radial-gradient(circle, rgba(196, 120, 130, 0.35) 0%, transparent 70%)" }}
             />
-            <div className="relative z-10 flex flex-col gap-3">
-              <span className="text-xs font-semibold tracking-wider text-[#C47882] uppercase">
+            <div className="relative z-10 flex flex-col gap-2">
+              <span className="text-[11px] font-bold tracking-wider text-[#C47882] uppercase">
                 Gestão Doméstica & Familiar
               </span>
-              <h2 className="font-serif-loma text-2xl text-[#FAF7F2] leading-tight">
+              <h2 className="font-serif text-2xl text-[#FAF7F2] leading-tight">
                 O lar em harmonia, com cuidado e zelo<span className="text-[#C47882]">.</span>
               </h2>
               <p className="text-xs text-[#FAF7F2]/70">
@@ -172,22 +303,22 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
               </p>
 
               {/* Indicadores Chave */}
-              <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2.5 pt-2 text-center">
-                <div className="min-w-0 flex flex-col items-center rounded-2xl bg-white/5 p-2 sm:p-3 backdrop-blur-xs">
+              <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2.5 pt-2 text-center border-t border-white/10">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
                   <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Mercado</span>
-                  <span className="font-serif-loma mt-1 text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
                     {summary.groceriesToBuyCount}
                   </span>
                 </div>
-                <div className="min-w-0 flex flex-col items-center rounded-2xl bg-white/5 p-2 sm:p-3 backdrop-blur-xs">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
                   <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Manutenções</span>
-                  <span className="font-serif-loma mt-1 text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
                     {summary.pendingMaintenancesCount}
                   </span>
                 </div>
-                <div className="min-w-0 flex flex-col items-center rounded-2xl bg-white/5 p-2 sm:p-3 backdrop-blur-xs">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
                   <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Bens</span>
-                  <span className="font-serif-loma mt-1 text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
                     {formatMoney(summary.totalPropertyAssetsValue).replace(",00", "")}
                   </span>
                 </div>
@@ -195,136 +326,80 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
             </div>
           </div>
 
-          {/* Destaque 1: Itens de Mercado Pendentes */}
-          <div className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-            <div className="flex items-center justify-between gap-2 min-w-0 pb-3">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="h-2 w-2 rounded-full bg-[#9E6123] shrink-0" />
-                <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Lista de Mercado Rápida</h3>
-              </div>
+          {/* Destaque 1: Itens de Mercado */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Lista de Mercado Rápida</h3>
               <button
                 onClick={() => onOpenAddModal("item_mercado")}
-                className="shrink-0 cursor-pointer text-xs font-medium text-[#C47882] hover:underline whitespace-nowrap"
+                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
               >
                 + Item
               </button>
             </div>
-            <div className="flex flex-col divide-y divide-[#F2ECE3]">
-              {groceries.filter((g) => !g.isPurchased).slice(0, 4).map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-2.5">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => toggleGrocery.mutate(item.id)}
-                      className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border border-[#D5CCC2] text-xs transition hover:border-[#9E6123]"
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-[#231B16]">{item.name}</span>
-                      <span className="text-[11px] text-[#9B8F85]">
-                        {item.quantity} {item.unit} • {item.category}
+
+            <div className="flex flex-col space-y-2">
+              {sortedGroceries.slice(0, 3).map((item) => (
+                <LomaCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.name}
+                  category={item.category}
+                  meta={`${item.quantity} ${item.unit}`}
+                  isCompleted={item.isPurchased}
+                  onToggle={() => toggleGrocery.mutate(item.id)}
+                  onDelete={() => deleteGrocery.mutate(item.id)}
+                  badge={
+                    item.isEssential ? (
+                      <span className="rounded-full bg-[#F2ECE3] px-2.5 py-1 text-[10px] font-semibold text-[#9E6123]">
+                        Essencial
                       </span>
-                    </div>
-                  </div>
-                  {item.isEssential && (
-                    <span className="rounded-full bg-[#F2ECE3] px-2 py-0.5 text-[10px] font-semibold text-[#9E6123]">
-                      Essencial
-                    </span>
-                  )}
-                </div>
+                    ) : null
+                  }
+                >
+                  <p className="text-xs text-[#6E6259]">
+                    Item da categoria {item.category}. Quantidade: {item.quantity} {item.unit}.
+                  </p>
+                </LomaCard>
               ))}
-              {groceries.filter((g) => !g.isPurchased).length === 0 && (
-                <p className="py-3 text-center text-xs text-[#9B8F85]">Todos os itens já foram comprados!</p>
-              )}
             </div>
           </div>
 
-          {/* Destaque 2: Manutenções Domésticas Pendentes */}
-          <div className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-            <div className="flex items-center justify-between gap-2 min-w-0 pb-3">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="h-2 w-2 rounded-full bg-[#C47882] shrink-0" />
-                <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Manutenções da Casa</h3>
-              </div>
+          {/* Destaque 2: Manutenções Domésticas */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Manutenções da Casa</h3>
               <button
                 onClick={() => onOpenAddModal("manutencao_casa")}
-                className="shrink-0 cursor-pointer text-xs font-medium text-[#C47882] hover:underline whitespace-nowrap"
+                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
               >
                 + Manutenção
               </button>
             </div>
-            <div className="flex flex-col divide-y divide-[#F2ECE3]">
-              {maintenances.slice(0, 3).map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => toggleMaint.mutate(item.id)}
-                      className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border text-xs transition ${
-                        item.status === "concluido"
-                          ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                          : "border-[#D5CCC2] hover:border-[#C47882]"
-                      }`}
-                    >
-                      {item.status === "concluido" && "✓"}
-                    </button>
-                    <div className="flex flex-col">
-                      <span className={`text-sm font-medium ${item.status === "concluido" ? "line-through text-[#9B8F85]" : "text-[#231B16]"}`}>
-                        {item.title}
-                      </span>
-                      <span className="text-[11px] text-[#9B8F85]">
-                        {item.room} {item.dueDate && `• Prazo: ${item.dueDate}`}
-                      </span>
-                    </div>
-                  </div>
-                  {item.costCents > 0 && (
-                    <span className="text-xs font-semibold text-[#231B16] tabular-nums">
-                      {formatMoney(item.costCents)}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Destaque 3: Rotina dos Filhos */}
-          <div className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-            <div className="flex items-center justify-between gap-2 min-w-0 pb-3">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="h-2 w-2 rounded-full bg-[#465768] shrink-0" />
-                <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Acompanhamento dos Filhos</h3>
-              </div>
-              <button
-                onClick={() => onOpenAddModal("rotina_filho")}
-                className="shrink-0 cursor-pointer text-xs font-medium text-[#C47882] hover:underline whitespace-nowrap"
-              >
-                + Registro
-              </button>
-            </div>
-            <div className="flex flex-col divide-y divide-[#F2ECE3]">
-              {childrenRoutines.slice(0, 3).map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => toggleChild.mutate(item.id)}
-                      className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border text-xs transition ${
-                        item.status === "concluido"
-                          ? "border-[#465768] bg-[#465768] text-white"
-                          : "border-[#D5CCC2] hover:border-[#465768]"
-                      }`}
-                    >
-                      {item.status === "concluido" && "✓"}
-                    </button>
-                    <div className="flex flex-col">
-                      <span className={`text-sm font-medium ${item.status === "concluido" ? "line-through text-[#9B8F85]" : "text-[#231B16]"}`}>
-                        {item.title}
+            <div className="flex flex-col space-y-2">
+              {sortedMaintenances.slice(0, 3).map((item) => (
+                <LomaCard
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  category={item.room}
+                  meta={item.dueDate ? `Prazo: ${item.dueDate}` : undefined}
+                  isCompleted={item.status === "concluido"}
+                  onToggle={() => toggleMaint.mutate(item.id)}
+                  onDelete={() => deleteMaint.mutate(item.id)}
+                  badge={
+                    item.costCents > 0 ? (
+                      <span className="text-xs font-semibold text-[#2C241E] tabular-nums">
+                        {formatMoney(item.costCents)}
                       </span>
-                      <span className="text-[11px] text-[#9B8F85]">
-                        {item.childName} • {item.category.toUpperCase()} • {item.date}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="rounded-full bg-[#F2ECE3] px-2 py-0.5 text-[10px] text-[#465768] font-medium">
-                    {item.status}
-                  </span>
-                </div>
+                    ) : null
+                  }
+                >
+                  <p className="text-xs text-[#6E6259]">
+                    Cômodo: {item.room} • Prioridade: {item.priority}. {item.notes ? `Observações: ${item.notes}` : ""}
+                  </p>
+                </LomaCard>
               ))}
             </div>
           </div>
@@ -332,113 +407,81 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       )}
 
       {/* ======================================================== */}
-      {/* 2. MERCADO & DESPENSA */}
+      {/* 2. MERCADO & DESPENSA COMPLETA */}
       {/* ======================================================== */}
       {subTab === "mercado" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Lista de Mercado</h2>
-              <p className="text-xs text-[#6E6259] truncate">Itens para reposição na despensa e compras da semana.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Lista de Mercado</h3>
+              <p className="text-[13px] text-[#7C6E62]">Itens para reposição na despensa e compras da semana.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("item_mercado")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
               + Novo Item
             </button>
           </div>
 
-          {/* Categorias de Mercado */}
-          <div className="grid grid-cols-1 gap-3">
-            {groceries.map((item) => (
-              <div
+          <div className="flex flex-col space-y-2">
+            {sortedGroceries.map((item) => (
+              <LomaCard
                 key={item.id}
-                className={`flex items-center justify-between rounded-2xl border p-4 transition ${
-                  item.isPurchased
-                    ? "border-[#EAE2D6] bg-[#F7F3EE]/60 text-[#9B8F85]"
-                    : "border-[#EAE2D6] bg-white shadow-xs"
-                }`}
-              >
-                <div className="flex items-center gap-3.5">
-                  <button
-                    onClick={() => toggleGrocery.mutate(item.id)}
-                    className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-lg border text-xs font-bold transition ${
-                      item.isPurchased
-                        ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                        : "border-[#D5CCC2] hover:border-[#9E6123]"
-                    }`}
-                  >
-                    {item.isPurchased ? "✓" : ""}
-                  </button>
-                  <div className="flex flex-col">
-                    <span className={`text-sm font-medium ${item.isPurchased ? "line-through" : "text-[#231B16]"}`}>
-                      {item.name}
-                    </span>
-                    <span className="text-[11px] text-[#9B8F85]">
-                      {item.quantity} {item.unit} • {item.category}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {item.isEssential && (
-                    <span className="rounded-full bg-[#F2ECE3] px-2.5 py-0.5 text-[10px] font-semibold text-[#9E6123]">
+                id={item.id}
+                title={item.name}
+                category={item.category}
+                meta={`${item.quantity} ${item.unit}`}
+                isCompleted={item.isPurchased}
+                onToggle={() => toggleGrocery.mutate(item.id)}
+                onDelete={() => deleteGrocery.mutate(item.id)}
+                badge={
+                  item.isEssential ? (
+                    <span className="rounded-full bg-[#F2ECE3] px-2.5 py-1 text-[10px] font-semibold text-[#9E6123]">
                       Essencial
                     </span>
-                  )}
-                  <button
-                    onClick={() => deleteGrocery.mutate(item.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                    title="Excluir"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
+                  ) : null
+                }
+              >
+                <p className="text-xs text-[#6E6259]">
+                  Item de mercado registrado para compra.
+                </p>
+              </LomaCard>
             ))}
           </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* 3. MANUTENÇÕES DOMÉSTICAS */}
+      {/* 3. MANUTENÇÕES DOMÉSTICAS COMPLETA */}
       {/* ======================================================== */}
       {subTab === "manutencoes" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Manutenções da Casa</h2>
-              <p className="text-xs text-[#6E6259] truncate">Reparos preventivos, revisões de cômodos e melhorias no lar.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Manutenções da Casa</h3>
+              <p className="text-[13px] text-[#7C6E62]">Reparos preventivos, revisões de cômodos e melhorias no lar.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("manutencao_casa")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Nova Manutenção
+              + Manutenção
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
-            {maintenances.map((item) => (
-              <div
+          <div className="flex flex-col space-y-2">
+            {sortedMaintenances.map((item) => (
+              <LomaCard
                 key={item.id}
-                className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <button
-                      onClick={() => toggleMaint.mutate(item.id)}
-                      className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border text-xs transition ${
-                        item.status === "concluido"
-                          ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                          : "border-[#D5CCC2] hover:border-[#C47882]"
-                      }`}
-                    >
-                      {item.status === "concluido" && "✓"}
-                    </button>
-                    <span className="font-medium text-[#231B16]">{item.title}</span>
-                  </div>
+                id={item.id}
+                title={item.title}
+                category={item.room}
+                meta={item.dueDate ? `Prazo: ${item.dueDate}` : undefined}
+                isCompleted={item.status === "concluido"}
+                onToggle={() => toggleMaint.mutate(item.id)}
+                onDelete={() => deleteMaint.mutate(item.id)}
+                badge={
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase ${
                       item.priority === "alta"
@@ -450,101 +493,58 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                   >
                     {item.priority}
                   </span>
+                }
+              >
+                <div className="flex flex-col gap-1 text-xs text-[#6E6259]">
+                  <p>Cômodo: <strong>{item.room}</strong> • Custo estimado: {formatMoney(item.costCents)}.</p>
+                  {item.notes && <p className="italic">{item.notes}</p>}
                 </div>
-
-                <div className="flex items-center justify-between text-xs text-[#6E6259] pt-1">
-                  <span>
-                    Cômodo: <strong className="text-[#231B16]">{item.room}</strong>
-                    {item.dueDate && ` • Prazo: ${item.dueDate}`}
-                  </span>
-                  {item.costCents > 0 && (
-                    <span className="font-semibold text-[#231B16] tabular-nums">
-                      {formatMoney(item.costCents)}
-                    </span>
-                  )}
-                </div>
-
-                {item.notes && (
-                  <p className="mt-1 rounded-xl bg-[#FAF7F2] p-2.5 text-xs text-[#6E6259]">
-                    {item.notes}
-                  </p>
-                )}
-
-                <div className="flex justify-end pt-1">
-                  <button
-                    onClick={() => deleteMaint.mutate(item.id)}
-                    className="cursor-pointer text-[11px] text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    Remover
-                  </button>
-                </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* 4. FILHOS & ESCOLA */}
+      {/* 4. FILHOS & ESCOLA COMPLETA */}
       {/* ======================================================== */}
       {subTab === "filhos" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Rotina dos Filhos</h2>
-              <p className="text-xs text-[#6E6259] truncate">Acompanhamento pedagógico, escolar e atividades extracurriculares.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Rotina dos Filhos</h3>
+              <p className="text-[13px] text-[#7C6E62]">Acompanhamento pedagógico, escolar e atividades.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("rotina_filho")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Registro Escolar
+              + Registro
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
-            {childrenRoutines.map((item) => (
-              <div
+          <div className="flex flex-col space-y-2">
+            {sortedChildren.map((item) => (
+              <LomaCard
                 key={item.id}
-                className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-[#FAF7F2] px-2.5 py-0.5 text-xs font-semibold text-[#465768]">
-                      {item.childName}
-                    </span>
-                    <span className="font-medium text-[#231B16]">{item.title}</span>
-                  </div>
-                  <span className="rounded-full bg-[#F2ECE3] px-2 py-0.5 text-[10px] text-[#6E6259] font-medium uppercase">
+                id={item.id}
+                title={item.title}
+                category={item.childName}
+                meta={`Data: ${item.date}`}
+                isCompleted={item.status === "concluido"}
+                onToggle={() => toggleChild.mutate(item.id)}
+                onDelete={() => deleteChild.mutate(item.id)}
+                badge={
+                  <span className="rounded-full bg-[#F2ECE3] px-2.5 py-0.5 text-[10px] text-[#465768] font-medium uppercase">
                     {item.category}
                   </span>
+                }
+              >
+                <div className="text-xs text-[#6E6259]">
+                  <p>Filho(a): <strong>{item.childName}</strong> • Categoria: {item.category}.</p>
+                  {item.notes && <p className="mt-1 italic">{item.notes}</p>}
                 </div>
-
-                <div className="flex items-center justify-between text-xs text-[#9B8F85]">
-                  <span>Data: {item.date}</span>
-                  <button
-                    onClick={() => toggleChild.mutate(item.id)}
-                    className="cursor-pointer text-xs font-semibold text-[#3B7A6B] hover:underline"
-                  >
-                    Status: {item.status}
-                  </button>
-                </div>
-
-                {item.notes && (
-                  <p className="rounded-xl bg-[#FAF7F2] p-2.5 text-xs text-[#6E6259]">
-                    {item.notes}
-                  </p>
-                )}
-
-                <div className="flex justify-end pt-1">
-                  <button
-                    onClick={() => deleteChild.mutate(item.id)}
-                    className="cursor-pointer text-[11px] text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    Excluir
-                  </button>
-                </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -554,63 +554,51 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* 5. DESEJOS & COMPRAS */}
       {/* ======================================================== */}
       {subTab === "compras" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Desejos & Compras</h2>
-              <p className="text-xs text-[#6E6259] truncate">Aquisições planejadas para a casa e para a família.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Desejos & Compras</h3>
+              <p className="text-[13px] text-[#7C6E62]">Aquisições planejadas para a casa e para a família.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("desejo_compra")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Novo Desejo
+              + Desejo
             </button>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col space-y-2">
             {wishlist.map((item) => (
-              <div
+              <LomaCard
                 key={item.id}
-                className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs"
+                id={item.id}
+                title={item.title}
+                category={item.category}
+                meta={`Estimado: ${formatMoney(item.estimatedCostCents)} • Prioridade: ${item.priority}`}
+                onDelete={() => deleteWishlist.mutate(item.id)}
+                badge={
+                  <span className="rounded-full bg-[#F2ECE3] px-2.5 py-0.5 text-[10px] font-bold text-[#2C241E] uppercase">
+                    {item.status}
+                  </span>
+                }
               >
-                <div className="flex items-start justify-between">
-                  <span className="font-medium text-[#231B16]">{item.title}</span>
-                  <span className="font-semibold text-[#231B16] tabular-nums text-sm">
-                    {formatMoney(item.estimatedCostCents)}
-                  </span>
+                <div className="flex flex-col gap-2 text-xs text-[#6E6259]">
+                  <div className="flex items-center justify-between">
+                    <span>Status de Aquisição:</span>
+                    <select
+                      value={item.status}
+                      onChange={(e) => updateWishlist.mutate({ id: item.id, status: e.target.value as any })}
+                      className="rounded-full border border-[#D5CCC2] bg-[#FAF7F2] px-3 py-1 text-xs text-[#231B16]"
+                    >
+                      <option value="desejo">Desejo</option>
+                      <option value="planejado">Planejado</option>
+                      <option value="comprado">Comprado</option>
+                    </select>
+                  </div>
+                  {item.linkOrStore && <p>Referência / Loja: {item.linkOrStore}</p>}
                 </div>
-
-                <div className="flex items-center justify-between text-xs text-[#6E6259]">
-                  <span>
-                    Categoria: <strong>{item.category}</strong> • Prioridade: <strong>{item.priority}</strong>
-                  </span>
-                  <select
-                    value={item.status}
-                    onChange={(e) => updateWishlist.mutate({ id: item.id, status: e.target.value as any })}
-                    className="rounded-lg border border-[#D5CCC2] bg-[#FAF7F2] px-2 py-0.5 text-xs text-[#231B16]"
-                  >
-                    <option value="desejo">Desejo</option>
-                    <option value="planejado">Planejado</option>
-                    <option value="comprado">Comprado</option>
-                  </select>
-                </div>
-
-                {item.linkOrStore && (
-                  <span className="text-[11px] text-[#9B8F85]">
-                    Loja / Referência: {item.linkOrStore}
-                  </span>
-                )}
-
-                <div className="flex justify-end pt-1">
-                  <button
-                    onClick={() => deleteWishlist.mutate(item.id)}
-                    className="cursor-pointer text-[11px] text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    Remover
-                  </button>
-                </div>
-              </div>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -620,72 +608,52 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* 6. PETS & CUIDADOS */}
       {/* ======================================================== */}
       {subTab === "pets" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Pets da Família</h2>
-              <p className="text-xs text-[#6E6259] truncate">Vacinas, consultas veterinárias e banho & tosa.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Pets da Família</h3>
+              <p className="text-[13px] text-[#7C6E62]">Vacinas, consultas veterinárias e cuidados.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("cuidado_pet")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#231B16] px-3.5 py-1.5 text-xs font-semibold text-[#FAF7F2] shadow-xs hover:bg-[#3D312A] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
               + Cuidado Pet
             </button>
           </div>
 
-          {pets.map((pet) => (
-            <div key={pet.id} className="flex flex-col gap-3 rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-base font-bold text-white shadow-xs"
-                  style={{ backgroundColor: pet.avatarColor }}
-                >
-                  🐾
-                </div>
-                <div>
-                  <h3 className="font-serif-loma text-lg text-[#231B16]">{pet.name}</h3>
-                  <p className="text-xs text-[#6E6259]">
-                    {pet.species} • {pet.breed}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-2 flex flex-col divide-y divide-[#F2ECE3]">
-                <h4 className="pb-1 text-xs font-bold text-[#6E6259] uppercase">Histórico e Próximos Cuidados</h4>
-                {pet.careRecords.map((care) => (
-                  <div key={care.id} className="flex items-center justify-between py-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <button
-                        onClick={() => togglePetCare.mutate(care.id)}
-                        className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border text-xs transition ${
-                          care.status === "realizado"
-                            ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                            : "border-[#D5CCC2] hover:border-[#9E6123]"
-                        }`}
-                      >
-                        {care.status === "realizado" && "✓"}
-                      </button>
-                      <div className="flex flex-col">
-                        <span className={`text-sm font-medium ${care.status === "realizado" ? "line-through text-[#9B8F85]" : "text-[#231B16]"}`}>
-                          {care.title}
-                        </span>
-                        <span className="text-[11px] text-[#9B8F85]">
-                          {care.type.toUpperCase()} • {care.date}
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => deletePetCare.mutate(care.id)}
-                      className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                    >
-                      ✕
-                    </button>
+          <div className="flex flex-col space-y-3">
+            {pets.map((pet) => (
+              <div key={pet.id} className="flex flex-col space-y-2">
+                <div className="flex items-center gap-2.5 px-1">
+                  <div
+                    className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white shrink-0"
+                    style={{ backgroundColor: pet.avatarColor }}
+                  >
+                    🐾
                   </div>
+                  <h4 className="font-semibold text-sm text-[#2C241E]">{pet.name} ({pet.species} • {pet.breed})</h4>
+                </div>
+
+                {pet.careRecords.map((care) => (
+                  <LomaCard
+                    key={care.id}
+                    id={care.id}
+                    title={care.title}
+                    category={care.type.toUpperCase()}
+                    meta={`Data: ${care.date}`}
+                    isCompleted={care.status === "realizado"}
+                    onToggle={() => togglePetCare.mutate(care.id)}
+                    onDelete={() => deletePetCare.mutate(care.id)}
+                  >
+                    <p className="text-xs text-[#6E6259]">
+                      Cuidado veterinário programado para {pet.name}.
+                    </p>
+                  </LomaCard>
                 ))}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
@@ -693,51 +661,40 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* 7. VEÍCULOS */}
       {/* ======================================================== */}
       {subTab === "veiculos" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Veículos da Família</h2>
-              <p className="text-xs text-[#6E6259] truncate">Quilometragem, histórico de manutenções e revisões.</p>
-            </div>
+        <div className="flex flex-col gap-3">
+          <div className="mb-1 px-1">
+            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Veículos da Família</h3>
+            <p className="text-[13px] text-[#7C6E62]">Quilometragem, histórico de manutenções e revisões.</p>
           </div>
 
-          {vehicles.map((v) => (
-            <div key={v.id} className="flex flex-col gap-3 rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-serif-loma text-xl text-[#231B16]">{v.brand} {v.model}</h3>
-                  <p className="text-xs text-[#6E6259]">
-                    Ano {v.year} • Placa: {v.licensePlate} • {v.mileage.toLocaleString("pt-BR")} km rodados
-                  </p>
+          <div className="flex flex-col space-y-3">
+            {vehicles.map((v) => (
+              <div key={v.id} className="flex flex-col space-y-2">
+                <div className="flex items-center justify-between px-1">
+                  <h4 className="font-semibold text-sm text-[#2C241E]">
+                    🚗 {v.brand} {v.model} ({v.year})
+                  </h4>
+                  <span className="text-xs text-[#7C6E62] tabular-nums font-medium">{v.mileage.toLocaleString()} km</span>
                 </div>
-              </div>
 
-              <div className="mt-2 flex flex-col divide-y divide-[#F2ECE3]">
-                <h4 className="pb-1 text-xs font-bold text-[#6E6259] uppercase">Histórico de Manutenções</h4>
                 {v.maintenances.map((m) => (
-                  <div key={m.id} className="flex items-center justify-between py-2.5">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-[#231B16]">{m.title}</span>
-                      <span className="text-[11px] text-[#9B8F85]">
-                        Data: {m.date} {m.nextDueMileage && `• Próx. aos ${m.nextDueMileage.toLocaleString("pt-BR")} km`}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-semibold text-[#231B16] tabular-nums">
-                        {formatMoney(m.costCents)}
-                      </span>
-                      <button
-                        onClick={() => deleteVehicleMaint.mutate(m.id)}
-                        className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
+                  <LomaCard
+                    key={m.id}
+                    id={m.id}
+                    title={m.title}
+                    category="Revisão"
+                    meta={`Data: ${m.date} • Custo: ${formatMoney(m.costCents)}`}
+                    onDelete={() => deleteVehicleMaint.mutate(m.id)}
+                  >
+                    <p className="text-xs text-[#6E6259]">
+                      {m.nextDueMileage ? `Próxima revisão: ${m.nextDueMileage.toLocaleString()} km. ` : ""}
+                      {m.notes ? `Observações: ${m.notes}` : ""}
+                    </p>
+                  </LomaCard>
                 ))}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
@@ -745,37 +702,33 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* 8. PATRIMÔNIO & BENS */}
       {/* ======================================================== */}
       {subTab === "patrimonio" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Patrimônio da Casa</h2>
-              <p className="text-xs text-[#6E6259] truncate">Bens duráveis, eletrodomésticos, eletrônicos e prazos de garantia.</p>
-            </div>
+        <div className="flex flex-col gap-3">
+          <div className="mb-1 px-1">
+            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Patrimônio & Bens da Casa</h3>
+            <p className="text-[13px] text-[#7C6E62]">Inventário doméstico, equipamentos e garantias.</p>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col space-y-2">
             {propertyAssets.map((asset) => (
-              <div key={asset.id} className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-start justify-between">
-                  <span className="font-medium text-[#231B16]">{asset.name}</span>
-                  <span className="font-semibold text-[#231B16] tabular-nums text-sm">
+              <LomaCard
+                key={asset.id}
+                id={asset.id}
+                title={asset.name}
+                category={asset.category}
+                meta={asset.notes || undefined}
+                badge={
+                  <span className="text-sm font-bold text-[#2C241E] tabular-nums">
                     {formatMoney(asset.estimatedValueCents)}
                   </span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-[#6E6259]">
-                  <span>Categoria: {asset.category}</span>
-                  {asset.warrantyUntil && <span>Garantia até: <strong>{asset.warrantyUntil}</strong></span>}
-                </div>
-                {asset.notes && <p className="text-xs text-[#9B8F85] bg-[#FAF7F2] p-2 rounded-lg">{asset.notes}</p>}
-                <div className="flex justify-end pt-1">
-                  <button
-                    onClick={() => deleteProperty.mutate(asset.id)}
-                    className="cursor-pointer text-[11px] text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    Remover
-                  </button>
-                </div>
-              </div>
+                }
+                onDelete={() => deleteProperty.mutate(asset.id)}
+              >
+                <p className="text-xs text-[#6E6259]">
+                  {asset.purchaseDate && `Data de aquisição: ${asset.purchaseDate}. `}
+                  {asset.warrantyUntil && `Garantia até: ${asset.warrantyUntil}. `}
+                  {asset.notes && `Observações: ${asset.notes}`}
+                </p>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -785,91 +738,64 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* 9. SEGURANÇA & EMERGÊNCIA */}
       {/* ======================================================== */}
       {subTab === "seguranca" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Segurança & Emergência</h2>
-              <p className="text-xs text-[#6E6259] truncate">Telefones e contatos essenciais para situações de urgência.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Contatos de Emergência</h3>
+              <p className="text-[13px] text-[#7C6E62]">Médicos, socorro e assistência técnica rápida.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("contato_emergencia")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#C47882] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#B36670] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
             >
-              + Contato Útil
+              + Contato
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
+          <div className="flex flex-col space-y-2">
             {emergencyContacts.map((contact) => (
-              <div key={contact.id} className="flex items-center justify-between rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-[#231B16]">{contact.name}</span>
-                  <span className="text-xs text-[#C47882] font-medium">{contact.roleOrRelation}</span>
-                  {contact.addressOrDetails && (
-                    <span className="text-[11px] text-[#9B8F85] mt-0.5">{contact.addressOrDetails}</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <a
-                    href={`tel:${contact.phone.replace(/\D/g, "")}`}
-                    className="rounded-full bg-[#FAF7F2] border border-[#EAE2D6] px-3.5 py-1.5 text-xs font-bold text-[#231B16] tabular-nums transition hover:bg-[#EAE2D6]"
-                  >
-                    📞 {contact.phone}
-                  </a>
-                  <button
-                    onClick={() => deleteEmergency.mutate(contact.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
+              <LomaCard
+                key={contact.id}
+                id={contact.id}
+                title={contact.name}
+                category={contact.roleOrRelation}
+                meta={`Telefone: ${contact.phone}`}
+                onDelete={() => deleteEmergency.mutate(contact.id)}
+              >
+                <p className="text-xs text-[#6E6259]">
+                  {contact.addressOrDetails ? `Detalhes: ${contact.addressOrDetails}` : "Contato de socorro prioritário."}
+                </p>
+              </LomaCard>
             ))}
           </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* 10. FAMÍLIA & REDE (RELACIONAMENTOS) */}
+      {/* 10. RELACIONAMENTOS */}
       {/* ======================================================== */}
       {subTab === "relacionamentos" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="min-w-0 flex-1">
-              <h2 className="font-serif-loma text-lg sm:text-2xl text-[#231B16] truncate">Família & Rede</h2>
-              <p className="text-xs text-[#6E6259] truncate">Parentes, padrinhos e datas especiais para manter contato.</p>
-            </div>
+        <div className="flex flex-col gap-3">
+          <div className="mb-1 px-1">
+            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Rede Familiar & Relacionamentos</h3>
+            <p className="text-[13px] text-[#7C6E62]">Datas especiais e frequência de contato com pessoas queridas.</p>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col space-y-2">
             {relationships.map((rel) => (
-              <div key={rel.id} className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-semibold text-[#231B16]">{rel.name}</h4>
-                    <span className="text-xs text-[#9E6123] font-medium">{rel.relationship}</span>
-                  </div>
-                  {rel.phone && (
-                    <span className="text-xs text-[#6E6259] tabular-nums font-medium">{rel.phone}</span>
-                  )}
-                </div>
-                {rel.birthday && (
-                  <span className="text-[11px] text-[#9B8F85]">
-                    🎂 Aniversário: {rel.birthday}
-                  </span>
-                )}
-                {rel.notes && (
-                  <p className="text-xs text-[#6E6259] bg-[#FAF7F2] p-2 rounded-lg">{rel.notes}</p>
-                )}
-                <div className="flex justify-end pt-1">
-                  <button
-                    onClick={() => deleteRel.mutate(rel.id)}
-                    className="cursor-pointer text-[11px] text-[#9B8F85] hover:text-[#C47882]"
-                  >
-                    Remover
-                  </button>
-                </div>
-              </div>
+              <LomaCard
+                key={rel.id}
+                id={rel.id}
+                title={rel.name}
+                category={rel.relationship}
+                meta={rel.birthday ? `Aniversário: ${rel.birthday}` : rel.phone ? `Tel: ${rel.phone}` : undefined}
+                onDelete={() => deleteRel.mutate(rel.id)}
+              >
+                <p className="text-xs text-[#6E6259]">
+                  Relação: {rel.relationship}. {rel.phone ? `Telefone: ${rel.phone}. ` : ""}
+                  {rel.notes ? `Notas: ${rel.notes}` : ""}
+                </p>
+              </LomaCard>
             ))}
           </div>
         </div>

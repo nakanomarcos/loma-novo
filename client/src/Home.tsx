@@ -11,6 +11,127 @@ interface HomeProps {
   onOpenDrawerTab?: (tab: string) => void;
 }
 
+// ========================================================
+// COMPONENTE CANÔNICO: CARTÃO LOMA (PADRÃO REDUZIDO & EXPANSÍVEL)
+// ========================================================
+function LomaCard({
+  title,
+  meta,
+  category,
+  isCompleted,
+  onToggle,
+  onDelete,
+  children,
+  badge,
+}: {
+  id?: string | number;
+  title: string;
+  meta?: React.ReactNode;
+  category?: string;
+  isCompleted?: boolean;
+  onToggle?: () => void;
+  onDelete?: () => void;
+  children?: React.ReactNode;
+  badge?: React.ReactNode;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div
+      className={`rounded-[24px] bg-[#FFFDF8] border border-[#EFE5D5] shadow-[0_1px_0_rgba(223,213,196,0.5)] transition-all overflow-hidden ${
+        isCompleted ? "opacity-75 bg-[#FAF7F2]" : ""
+      }`}
+    >
+      {/* Cabeçalho do Cartão Fechado (min-h ≈62-64px, py-3 px-4) */}
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex min-h-[62px] items-center justify-between gap-3 py-3 px-4 cursor-pointer select-none"
+      >
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          {onToggle && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle();
+              }}
+              className="min-w-[40px] min-h-[40px] -ml-1 flex items-center justify-center cursor-pointer shrink-0"
+              aria-label="Concluir"
+            >
+              <div
+                className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold transition-all ${
+                  isCompleted
+                    ? "bg-[#3B7A6B] border-[#3B7A6B] text-white"
+                    : "border-[#DDD2C3] bg-white hover:border-[#C47882]"
+                }`}
+              >
+                {isCompleted && "✓"}
+              </div>
+            </button>
+          )}
+
+          <div className="min-w-0 flex-1">
+            <h4
+              className={`text-[16px] font-semibold leading-tight truncate ${
+                isCompleted ? "line-through text-[#9B8F85]" : "text-[#2C241E]"
+              }`}
+            >
+              {title}
+            </h4>
+            {(meta || category) && (
+              <div className="text-[13px] text-[#7C6E62] truncate mt-0.5 flex items-center gap-1.5">
+                {category && <span className="font-medium text-[#9E6123]">{category} •</span>}
+                {meta}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {badge}
+          <span className={`text-[#A89A8E] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
+            ▼
+          </span>
+        </div>
+      </div>
+
+      {/* Sanfona / Detalhe Expansível */}
+      {isExpanded && (
+        <div className="border-t border-[#F2ECE3] bg-[#FAF7F2]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
+          {children}
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EFE5D5]">
+            {onToggle && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle();
+                }}
+                className="h-10 px-4 rounded-full bg-[#EAE2D6] text-[#2C241E] font-medium text-xs hover:bg-[#DDD2C3] transition cursor-pointer"
+              >
+                {isCompleted ? "Reabrir" : "Marcar Concluído"}
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                className="h-10 px-4 rounded-full bg-[#F8ECEE] text-[#B36670] font-medium text-xs hover:bg-[#F2D7DB] transition cursor-pointer"
+              >
+                Excluir
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: HomeProps) {
   const [subTab, setSubTab] = useState<"inicio" | "agenda" | "habitos" | "tarefas" | "notas">("inicio");
   const queryClient = useQueryClient();
@@ -103,10 +224,23 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
   const completedHabitsCount = habits.filter((h) => h.completedToday === 1).length;
   const pendingTasksCount = tasks.filter((t) => t.completed === 0).length;
 
+  // Ordenação: não concluídos primeiro, concluídos ao fim da lista
+  const sortedEvents = upcomingEvents
+    .slice()
+    .sort((a, b) => (a.status === "concluido" ? 1 : 0) - (b.status === "concluido" ? 1 : 0));
+
+  const sortedHabits = habits
+    .slice()
+    .sort((a, b) => a.completedToday - b.completedToday);
+
+  const sortedTasks = tasks
+    .slice()
+    .sort((a, b) => a.completed - b.completed);
+
   return (
-    <div className="flex flex-col gap-5 pb-24">
-      {/* Banner de Demonstração (apenas se houver dados fictícios ou para carregar) */}
-      <div className="rounded-2xl border border-[#EAE2D6] bg-[#FFFFFF] p-3 shadow-xs">
+    <div className="flex flex-col gap-4 pb-24">
+      {/* Banner de Demonstração */}
+      <div className="rounded-[24px] border border-[#EFE5D5] bg-[#FFFDF8] p-3 shadow-[0_1px_0_rgba(223,213,196,0.5)]">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-[#C47882]" />
@@ -125,7 +259,7 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
               <button
                 onClick={() => clearDemo.mutate()}
                 disabled={clearDemo.isPending}
-                className="cursor-pointer rounded-full bg-[#F8ECEE] px-2.5 py-1 text-[11px] font-semibold text-[#B36670] transition hover:bg-[#C47882] hover:text-white"
+                className="h-10 px-3 cursor-pointer rounded-full bg-[#F8ECEE] text-[11px] font-semibold text-[#B36670] transition hover:bg-[#C47882] hover:text-white"
               >
                 {clearDemo.isPending ? "Limpando..." : "Limpar exemplo"}
               </button>
@@ -133,7 +267,7 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
               <button
                 onClick={() => loadDemo.mutate()}
                 disabled={loadDemo.isPending}
-                className="cursor-pointer rounded-full bg-[#E9F3F0] px-2.5 py-1 text-[11px] font-semibold text-[#3B7A6B] transition hover:bg-[#3B7A6B] hover:text-white"
+                className="h-10 px-3 cursor-pointer rounded-full bg-[#E9F3F0] text-[11px] font-semibold text-[#3B7A6B] transition hover:bg-[#3B7A6B] hover:text-white"
               >
                 {loadDemo.isPending ? "Carregando..." : "Carregar exemplo"}
               </button>
@@ -142,8 +276,8 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
         </div>
       </div>
 
-      {/* Sub-navegação da Home */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs max-w-full min-w-0">
+      {/* Navegação Secundária (Pills) */}
+      <div className="flex gap-2 overflow-x-auto py-1 text-xs">
         {[
           { key: "inicio", label: "Início" },
           { key: "agenda", label: "Agenda & Aniversários" },
@@ -154,7 +288,7 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
           <button
             key={item.key}
             onClick={() => setSubTab(item.key as any)}
-            className={`cursor-pointer whitespace-nowrap rounded-full px-3.5 py-1.5 font-medium transition ${
+            className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
               subTab === item.key
                 ? "bg-[#231B16] text-[#FAF7F2] shadow-xs"
                 : "bg-[#F2ECE3] text-[#6E6259] hover:bg-[#EAE2D6]"
@@ -169,24 +303,23 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
       {/* SUB-ABA: INÍCIO (PAINEL DO DIA) */}
       {/* ======================================================== */}
       {subTab === "inicio" && (
-        <div className="flex flex-col gap-5">
-          {/* Hero Card Espresso */}
-          <div className="relative overflow-hidden rounded-3xl bg-[#231B16] p-6 text-[#FAF7F2] shadow-md">
-            {/* Brilho radial no topo */}
+        <div className="flex flex-col gap-4">
+          {/* Herói com padding 16px e raio 24px */}
+          <div className="relative overflow-hidden rounded-[24px] bg-[#231B16] p-4 text-[#FAF7F2] shadow-md">
             <div
               className="pointer-events-none absolute -top-12 -right-12 h-44 w-44 rounded-full"
               style={{ background: "radial-gradient(circle, rgba(196, 120, 130, 0.3) 0%, transparent 70%)" }}
             />
-            <div className="relative z-10 flex flex-col gap-4">
+            <div className="relative z-10 flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold tracking-wider text-[#C47882] uppercase">Seu Dia no Loma</span>
+                <span className="text-[11px] font-bold tracking-wider text-[#C47882] uppercase">Seu Dia no Loma</span>
                 <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-medium text-[#FAF7F2]/80 tabular-nums">
                   {todayDate}
                 </span>
               </div>
 
               <div>
-                <h2 className="font-serif-loma text-2xl text-[#FAF7F2] leading-tight">
+                <h2 className="font-serif text-2xl text-[#FAF7F2] leading-tight">
                   A vida organizada, com calma e propósito<span className="text-[#C47882]">.</span>
                 </h2>
                 <p className="mt-1 text-xs text-[#FAF7F2]/70">
@@ -197,18 +330,18 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
               </div>
 
               {/* 3 Métricas Hero */}
-              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 border-t border-white/10 pt-3 text-center">
-                <div className="rounded-2xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 border-t border-white/10 pt-2.5 text-center">
+                <div className="rounded-xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
                   <span className="block text-[10px] text-[#FAF7F2]/60 truncate w-full">Agenda 14d</span>
                   <span className="text-base sm:text-lg font-bold text-[#FAF7F2] tabular-nums truncate w-full">{upcomingEvents.length}</span>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
+                <div className="rounded-xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
                   <span className="block text-[10px] text-[#FAF7F2]/60 truncate w-full">Hábitos Hoje</span>
                   <span className="text-base sm:text-lg font-bold text-[#C47882] tabular-nums truncate w-full">
                     {completedHabitsCount}/{habits.length}
                   </span>
                 </div>
-                <div className="rounded-2xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
+                <div className="rounded-xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
                   <span className="block text-[10px] text-[#FAF7F2]/60 truncate w-full">Disponível</span>
                   <span className="text-base sm:text-lg font-bold text-[#E9F3F0] tabular-nums truncate w-full">
                     R$ {(financeBrief.availableBalance / 100).toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -218,32 +351,29 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
             </div>
           </div>
 
-          {/* Inteligência Conectada — Alertas & Sugestões da IA */}
+          {/* Inteligência Conectada — Alertas Proativos */}
           {intelData && intelData.smartAlerts.length > 0 && (
-            <section className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-              <div className="mb-3 flex items-center justify-between gap-2 min-w-0">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="h-2 w-2 rounded-full bg-[#C47882] shrink-0 animate-pulse" />
-                  <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Inteligência Conectada</h3>
-                </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between mb-1 px-1">
+                <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Inteligência Conectada</h3>
                 {onOpenDrawerTab && (
                   <button
                     onClick={() => onOpenDrawerTab("visao360")}
-                    className="shrink-0 cursor-pointer text-xs font-semibold text-[#6E6259] hover:text-[#231B16] whitespace-nowrap"
+                    className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
                   >
                     Visão 360° →
                   </button>
                 )}
               </div>
 
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col space-y-2">
                 {intelData.smartAlerts.map((alert) => (
                   <div
                     key={alert.id}
-                    className="flex flex-col gap-2 rounded-2xl border border-[#EAE2D6] bg-[#FAF7F2] p-3 text-xs"
+                    className="rounded-[24px] bg-[#FFFDF8] border border-[#EFE5D5] shadow-[0_1px_0_rgba(223,213,196,0.5)] p-4 flex flex-col gap-2"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
                         <span
                           className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shrink-0 ${
                             alert.severity === "urgente"
@@ -255,25 +385,25 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
                         >
                           {alert.severity}
                         </span>
-                        <h4 className="font-bold text-[#231B16] truncate">{alert.title}</h4>
+                        <h4 className="text-[16px] font-semibold text-[#2C241E] truncate">{alert.title}</h4>
                       </div>
                       <button
                         onClick={() => dismissAlert.mutate(alert.id)}
-                        className="text-[#9B8F85] hover:text-[#231B16] shrink-0 text-sm px-1 cursor-pointer"
+                        className="text-[#9B8F85] hover:text-[#231B16] text-xs px-2 cursor-pointer"
                         title="Dispensar alerta"
                       >
                         ✕
                       </button>
                     </div>
 
-                    <p className="text-[#6E6259] leading-relaxed">{alert.message}</p>
+                    <p className="text-[13px] text-[#7C6E62] leading-relaxed">{alert.message}</p>
 
                     {alert.actionLabel && (
-                      <div className="mt-1 flex items-center gap-2 pt-1 border-t border-[#EAE2D6]/60">
+                      <div className="mt-1 flex items-center gap-2 pt-2 border-t border-[#EFE5D5]">
                         <button
                           onClick={() => executeAlert.mutate(alert.id)}
                           disabled={executeAlert.isPending}
-                          className="cursor-pointer rounded-xl bg-[#231B16] px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-[#3A2E27] disabled:opacity-50"
+                          className="h-11 px-4 cursor-pointer rounded-full bg-[#231B16] text-xs font-semibold text-white transition hover:bg-[#3A2E27] disabled:opacity-50"
                         >
                           {alert.actionLabel}
                         </button>
@@ -282,362 +412,247 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
                   </div>
                 ))}
               </div>
-            </section>
+            </div>
           )}
 
-          {/* Cruzamento entre Módulos (Insights da IA) */}
-          {intelData && intelData.crossInsights.length > 0 && (
-            <section className="rounded-3xl border border-[#EAE2D6] bg-gradient-to-br from-white to-[#FAF7F2] p-5 shadow-xs">
-              <div className="mb-3 flex items-center justify-between gap-2 min-w-0">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="h-2 w-2 rounded-full bg-[#3B7A6B] shrink-0" />
-                  <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Cruzamento entre Módulos</h3>
-                </div>
-                <span className="text-[10px] font-medium text-[#9B8F85] uppercase tracking-wider">Loma IA</span>
-              </div>
-
-              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                {intelData.crossInsights.slice(0, 2).map((insight) => (
-                  <div key={insight.id} className="rounded-2xl border border-[#EAE2D6] bg-white p-3.5 shadow-xs flex flex-col justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {insight.modules.map((m) => (
-                          <span key={m} className="rounded-md bg-[#F2ECE3] px-2 py-0.5 text-[10px] font-semibold text-[#6E6259]">
-                            {m}
-                          </span>
-                        ))}
-                      </div>
-                      <h4 className="font-bold text-xs text-[#231B16] mt-2">{insight.title}</h4>
-                      <p className="text-[11px] text-[#6E6259] mt-1 leading-relaxed">{insight.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Próximos 14 dias (Agenda) */}
-          <section className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-            <div className="mb-3 flex items-center justify-between gap-2 min-w-0">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="h-2 w-2 rounded-full bg-[#8A6399] shrink-0" />
-                <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Próximos Compromissos</h3>
-              </div>
+          {/* Próximos Compromissos (Agenda) */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Próximos Compromissos</h3>
               <button
                 onClick={() => onOpenAddModal("agenda")}
-                className="shrink-0 cursor-pointer text-xs font-semibold text-[#C47882] hover:underline whitespace-nowrap"
+                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
               >
                 + Adicionar
               </button>
             </div>
 
-            {upcomingEvents.length === 0 ? (
+            {sortedEvents.length === 0 ? (
               <p className="py-4 text-center text-xs text-[#9B8F85]">Nenhum compromisso nos próximos 14 dias.</p>
             ) : (
-              <div className="flex flex-col divide-y divide-[#EAE2D6]">
-                {upcomingEvents.slice(0, 4).map((event) => (
-                  <div key={event.id} className="flex items-center justify-between py-2.5">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => toggleEvent.mutate(event.id)}
-                        className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-[7px] border transition ${
-                          event.status === "concluido"
-                            ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                            : "border-[#DDD2C3] bg-[#FAF7F2] hover:border-[#C47882]"
-                        }`}
-                      >
-                        {event.status === "concluido" && <span className="text-xs">✓</span>}
-                      </button>
-                      <div>
-                        <p className={`text-sm font-medium ${event.status === "concluido" ? "text-[#9B8F85] line-through" : "text-[#231B16]"}`}>
-                          {event.title}
-                        </p>
-                        <p className="text-[11px] text-[#6E6259] tabular-nums">
-                          {event.date} {event.time ? `• ${event.time}` : ""}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="rounded-full bg-[#F3EDF6] px-2 py-0.5 text-[10px] font-semibold text-[#6F4C7D]">
-                      {event.category}
-                    </span>
-                  </div>
+              <div className="flex flex-col space-y-2">
+                {sortedEvents.slice(0, 4).map((event) => (
+                  <LomaCard
+                    key={event.id}
+                    id={event.id}
+                    title={event.title}
+                    category={event.category}
+                    meta={`${event.date}${event.time ? ` • ${event.time}` : ""}`}
+                    isCompleted={event.status === "concluido"}
+                    onToggle={() => toggleEvent.mutate(event.id)}
+                    onDelete={() => deleteEvent.mutate(event.id)}
+                  >
+                    <p className="text-xs text-[#6E6259]">
+                      Compromisso registrado na categoria {event.category}. Data: {event.date} {event.time ? `às ${event.time}` : ""}.
+                    </p>
+                  </LomaCard>
                 ))}
               </div>
             )}
-          </section>
+          </div>
 
           {/* Hábitos de Hoje */}
-          <section className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-            <div className="mb-3 flex items-center justify-between gap-2 min-w-0">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="h-2 w-2 rounded-full bg-[#C47882] shrink-0" />
-                <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Hábitos do Dia</h3>
-              </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Hábitos do Dia</h3>
               <button
                 onClick={() => onOpenAddModal("habito")}
-                className="shrink-0 cursor-pointer text-xs font-semibold text-[#C47882] hover:underline whitespace-nowrap"
+                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
               >
                 + Novo
               </button>
             </div>
 
-            {habits.length === 0 ? (
+            {sortedHabits.length === 0 ? (
               <p className="py-4 text-center text-xs text-[#9B8F85]">Nenhum hábito cadastrado para a rotina.</p>
             ) : (
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {habits.map((habit) => (
-                  <div
+              <div className="flex flex-col space-y-2">
+                {sortedHabits.map((habit) => (
+                  <LomaCard
                     key={habit.id}
-                    onClick={() => toggleHabit.mutate(habit.id)}
-                    className={`flex cursor-pointer items-center justify-between rounded-2xl border p-3 transition ${
-                      habit.completedToday === 1
-                        ? "border-[#E9F3F0] bg-[#E9F3F0]/60"
-                        : "border-[#EAE2D6] bg-[#FAF7F2] hover:border-[#DDD2C3]"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div
-                        className={`flex h-6 w-6 items-center justify-center rounded-lg border text-xs font-bold transition ${
-                          habit.completedToday === 1
-                            ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                            : "border-[#DDD2C3] bg-white text-transparent"
-                        }`}
-                      >
-                        ✓
-                      </div>
-                      <span className={`text-xs font-medium ${habit.completedToday === 1 ? "text-[#3B7A6B] line-through" : "text-[#231B16]"}`}>
-                        {habit.title}
+                    id={habit.id}
+                    title={habit.title}
+                    category={habit.period}
+                    meta={`🔥 ${habit.streak} dias seguidos`}
+                    isCompleted={habit.completedToday === 1}
+                    onToggle={() => toggleHabit.mutate(habit.id)}
+                    onDelete={() => deleteHabit.mutate(habit.id)}
+                    badge={
+                      <span className="rounded-full bg-[#FBF2E6] px-2.5 py-1 text-[11px] font-semibold text-[#9E6123] tabular-nums">
+                        🔥 {habit.streak}d
                       </span>
-                    </div>
-                    <span className="text-[11px] font-semibold text-[#9E6123] tabular-nums">
-                      🔥 {habit.streak}d
-                    </span>
-                  </div>
+                    }
+                  >
+                    <p className="text-xs text-[#6E6259]">
+                      Hábito programado para o período {habit.period}. Sequência atual mantida com constância.
+                    </p>
+                  </LomaCard>
                 ))}
               </div>
             )}
-          </section>
+          </div>
 
           {/* Tarefas Prioritárias */}
-          <section className="rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-xs">
-            <div className="mb-3 flex items-center justify-between gap-2 min-w-0">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="h-2 w-2 rounded-full bg-[#3B7A6B] shrink-0" />
-                <h3 className="font-serif-loma text-lg text-[#231B16] truncate">Tarefas Prioritárias</h3>
-              </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Tarefas Prioritárias</h3>
               <button
                 onClick={() => onOpenAddModal("tarefa")}
-                className="shrink-0 cursor-pointer text-xs font-semibold text-[#C47882] hover:underline whitespace-nowrap"
+                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
               >
                 + Adicionar
               </button>
             </div>
 
-            {tasks.length === 0 ? (
+            {sortedTasks.length === 0 ? (
               <p className="py-4 text-center text-xs text-[#9B8F85]">Nenhuma tarefa pendente no momento.</p>
             ) : (
-              <div className="flex flex-col divide-y divide-[#EAE2D6]">
-                {tasks.slice(0, 4).map((task) => (
-                  <div key={task.id} className="flex items-center justify-between py-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <button
-                        onClick={() => toggleTask.mutate(task.id)}
-                        className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-[7px] border transition ${
-                          task.completed === 1
-                            ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                            : "border-[#DDD2C3] bg-[#FAF7F2] hover:border-[#C47882]"
+              <div className="flex flex-col space-y-2">
+                {sortedTasks.slice(0, 4).map((task) => (
+                  <LomaCard
+                    key={task.id}
+                    id={task.id}
+                    title={task.title}
+                    category={task.area}
+                    meta={task.dueDate ? `Prazo: ${task.dueDate}` : undefined}
+                    isCompleted={task.completed === 1}
+                    onToggle={() => toggleTask.mutate(task.id)}
+                    onDelete={() => deleteTask.mutate(task.id)}
+                    badge={
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                          task.priority === "alta"
+                            ? "bg-[#F8ECEE] text-[#B36670]"
+                            : task.priority === "media"
+                            ? "bg-[#FBF2E6] text-[#9E6123]"
+                            : "bg-[#EDF1F5] text-[#465768]"
                         }`}
                       >
-                        {task.completed === 1 && <span className="text-xs">✓</span>}
-                      </button>
-                      <div>
-                        <p className={`text-sm ${task.completed === 1 ? "text-[#9B8F85] line-through" : "font-medium text-[#231B16]"}`}>
-                          {task.title}
-                        </p>
-                        {task.dueDate && (
-                          <span className="text-[10px] text-[#6E6259] tabular-nums">Prazo: {task.dueDate}</span>
-                        )}
-                      </div>
-                    </div>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                        task.priority === "alta"
-                          ? "bg-[#F8ECEE] text-[#B36670]"
-                          : task.priority === "media"
-                          ? "bg-[#FBF2E6] text-[#9E6123]"
-                          : "bg-[#EDF1F5] text-[#465768]"
-                      }`}
-                    >
-                      {task.priority}
-                    </span>
-                  </div>
+                        {task.priority}
+                      </span>
+                    }
+                  >
+                    <p className="text-xs text-[#6E6259]">
+                      Área: {task.area} • Prioridade: {task.priority}. {task.dueDate ? `Prazo de conclusão: ${task.dueDate}.` : "Sem prazo fixo definido."}
+                    </p>
+                  </LomaCard>
                 ))}
               </div>
             )}
-          </section>
+          </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* SUB-ABA: AGENDA & ANIVERSÁRIOS COMPLETA */}
+      {/* SUB-ABA: AGENDA COMPLETA */}
       {/* ======================================================== */}
       {subTab === "agenda" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <h2 className="font-serif-loma text-lg sm:text-xl text-[#231B16] truncate min-w-0 flex-1">Agenda & Aniversários</h2>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
+            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Agenda & Aniversários</h3>
             <button
               onClick={() => onOpenAddModal("agenda")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#C47882] px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#B36670] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27]"
             >
               + Compromisso
             </button>
           </div>
 
-          <div className="flex flex-col divide-y divide-[#EAE2D6] rounded-3xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-            {upcomingEvents.length === 0 ? (
-              <p className="py-8 text-center text-xs text-[#9B8F85]">Nenhum compromisso cadastrado.</p>
-            ) : (
-              upcomingEvents.map((event) => (
-                <div key={event.id} className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => toggleEvent.mutate(event.id)}
-                      className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-[7px] border transition ${
-                        event.status === "concluido"
-                          ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                          : "border-[#DDD2C3] bg-[#FAF7F2] hover:border-[#C47882]"
-                      }`}
-                    >
-                      {event.status === "concluido" && <span className="text-xs">✓</span>}
-                    </button>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-[#231B16]">{event.title}</span>
-                        <span className="rounded-full bg-[#F3EDF6] px-2 py-0.2 text-[10px] font-semibold text-[#6F4C7D]">
-                          {event.category}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#6E6259] tabular-nums">
-                        Data: {event.date} {event.time ? `às ${event.time}` : ""}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => deleteEvent.mutate(event.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#B36670]"
-                    title="Remover"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
+          {sortedEvents.length === 0 ? (
+            <p className="py-8 text-center text-xs text-[#9B8F85]">Nenhum compromisso cadastrado.</p>
+          ) : (
+            <div className="flex flex-col space-y-2">
+              {sortedEvents.map((event) => (
+                <LomaCard
+                  key={event.id}
+                  id={event.id}
+                  title={event.title}
+                  category={event.category}
+                  meta={`Data: ${event.date} ${event.time ? `às ${event.time}` : ""}`}
+                  isCompleted={event.status === "concluido"}
+                  onToggle={() => toggleEvent.mutate(event.id)}
+                  onDelete={() => deleteEvent.mutate(event.id)}
+                >
+                  <p className="text-xs text-[#6E6259]">
+                    Compromisso familiar registrado para {event.date}.
+                  </p>
+                </LomaCard>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* SUB-ABA: HÁBITOS */}
+      {/* SUB-ABA: HÁBITOS COMPLETA */}
       {/* ======================================================== */}
       {subTab === "habitos" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <h2 className="font-serif-loma text-lg sm:text-xl text-[#231B16] truncate min-w-0 flex-1">Hábitos & Rotina</h2>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
+            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Hábitos & Rotina</h3>
             <button
               onClick={() => onOpenAddModal("habito")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#C47882] px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#B36670] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27]"
             >
               + Hábito
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {habits.map((habit) => (
-              <div
+          <div className="flex flex-col space-y-2">
+            {sortedHabits.map((habit) => (
+              <LomaCard
                 key={habit.id}
-                className="flex items-center justify-between rounded-3xl border border-[#EAE2D6] bg-white p-4 shadow-xs"
+                id={habit.id}
+                title={habit.title}
+                category={habit.period}
+                meta={`Sequência: 🔥 ${habit.streak} dias seguidos`}
+                isCompleted={habit.completedToday === 1}
+                onToggle={() => toggleHabit.mutate(habit.id)}
+                onDelete={() => deleteHabit.mutate(habit.id)}
+                badge={
+                  <span className="rounded-full bg-[#FBF2E6] px-2.5 py-1 text-[11px] font-semibold text-[#9E6123] tabular-nums">
+                    🔥 {habit.streak}d
+                  </span>
+                }
               >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-[#231B16]">{habit.title}</span>
-                    <span className="rounded-full bg-[#F2ECE3] px-2 py-0.5 text-[10px] font-medium text-[#6E6259]">
-                      {habit.period}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-[#9E6123] font-semibold tabular-nums">
-                    Sequência: 🔥 {habit.streak} dias seguidos
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => toggleHabit.mutate(habit.id)}
-                    className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-bold transition ${
-                      habit.completedToday === 1
-                        ? "bg-[#3B7A6B] text-white"
-                        : "bg-[#F2ECE3] text-[#6E6259] hover:bg-[#EAE2D6]"
-                    }`}
-                  >
-                    {habit.completedToday === 1 ? "Feito ✓" : "Fazer"}
-                  </button>
-                  <button
-                    onClick={() => deleteHabit.mutate(habit.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#B36670]"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
+                <p className="text-xs text-[#6E6259]">
+                  Rotina configurada para o período: {habit.period}.
+                </p>
+              </LomaCard>
             ))}
           </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* SUB-ABA: TAREFAS */}
+      {/* SUB-ABA: TAREFAS COMPLETA */}
       {/* ======================================================== */}
       {subTab === "tarefas" && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2 min-w-0">
-            <h2 className="font-serif-loma text-lg sm:text-xl text-[#231B16] truncate min-w-0 flex-1">Tarefas da Vida</h2>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between mb-1 px-1">
+            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Tarefas da Vida</h3>
             <button
               onClick={() => onOpenAddModal("tarefa")}
-              className="shrink-0 cursor-pointer rounded-full bg-[#C47882] px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#B36670] whitespace-nowrap"
+              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27]"
             >
               + Tarefa
             </button>
           </div>
 
-          <div className="flex flex-col divide-y divide-[#EAE2D6] rounded-3xl border border-[#EAE2D6] bg-white p-4 shadow-xs">
-            {tasks.map((task) => (
-              <div key={task.id} className="flex items-center justify-between py-3">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => toggleTask.mutate(task.id)}
-                    className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-[7px] border transition ${
-                      task.completed === 1
-                        ? "border-[#3B7A6B] bg-[#3B7A6B] text-white"
-                        : "border-[#DDD2C3] bg-[#FAF7F2] hover:border-[#C47882]"
-                    }`}
-                  >
-                    {task.completed === 1 && <span className="text-xs">✓</span>}
-                  </button>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm ${task.completed === 1 ? "text-[#9B8F85] line-through" : "font-semibold text-[#231B16]"}`}>
-                        {task.title}
-                      </span>
-                      <span className="rounded-full bg-[#EDF1F5] px-2 py-0.2 text-[10px] font-semibold text-[#465768]">
-                        {task.area}
-                      </span>
-                    </div>
-                    {task.dueDate && (
-                      <p className="text-xs text-[#6E6259] tabular-nums">Prazo: {task.dueDate}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
+          <div className="flex flex-col space-y-2">
+            {sortedTasks.map((task) => (
+              <LomaCard
+                key={task.id}
+                id={task.id}
+                title={task.title}
+                category={task.area}
+                meta={task.dueDate ? `Prazo: ${task.dueDate}` : undefined}
+                isCompleted={task.completed === 1}
+                onToggle={() => toggleTask.mutate(task.id)}
+                onDelete={() => deleteTask.mutate(task.id)}
+                badge={
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                    className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
                       task.priority === "alta"
                         ? "bg-[#F8ECEE] text-[#B36670]"
                         : task.priority === "media"
@@ -647,14 +662,12 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
                   >
                     {task.priority}
                   </span>
-                  <button
-                    onClick={() => deleteTask.mutate(task.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#B36670]"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
+                }
+              >
+                <p className="text-xs text-[#6E6259]">
+                  Área: {task.area} • Prioridade: {task.priority}. {task.dueDate ? `Prazo de conclusão: ${task.dueDate}.` : "Sem prazo fixo definido."}
+                </p>
+              </LomaCard>
             ))}
           </div>
         </div>
@@ -674,17 +687,17 @@ function NotasAgregadasView({ onOpenAddModal, onDeleteNote }: { onOpenAddModal: 
   const [filterModule, setFilterModule] = useState<string>("todos");
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-2 min-w-0">
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between mb-1 px-1">
         <div className="min-w-0 flex-1">
-          <h2 className="font-serif-loma text-lg sm:text-xl text-[#231B16] truncate">Notas Agregadas</h2>
-          <p className="text-xs text-[#6E6259] truncate">
+          <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Notas Agregadas</h3>
+          <p className="text-[13px] text-[#7C6E62]">
             Anotações reunidas de todas as áreas (Geral, Devocional, Treinos, etc.).
           </p>
         </div>
         <button
           onClick={onOpenAddModal}
-          className="shrink-0 cursor-pointer rounded-full bg-[#C47882] px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#B36670] whitespace-nowrap"
+          className="h-11 px-4 cursor-pointer rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
         >
           + Nota
         </button>
@@ -721,10 +734,10 @@ function NotasContent({
   return (
     <div className="flex flex-col gap-3">
       {/* Filtro de Módulo de Origem */}
-      <div className="flex gap-1.5 overflow-x-auto text-xs">
+      <div className="flex gap-1.5 overflow-x-auto text-xs py-1">
         <button
           onClick={() => setFilterModule("todos")}
-          className={`cursor-pointer rounded-full px-3 py-1 font-medium transition ${
+          className={`cursor-pointer rounded-full px-4 py-1.5 font-medium transition ${
             filterModule === "todos"
               ? "bg-[#231B16] text-white"
               : "bg-[#F2ECE3] text-[#6E6259] hover:bg-[#EAE2D6]"
@@ -736,7 +749,7 @@ function NotasContent({
           <button
             key={m}
             onClick={() => setFilterModule(m)}
-            className={`cursor-pointer rounded-full px-3 py-1 font-medium transition ${
+            className={`cursor-pointer rounded-full px-4 py-1.5 font-medium transition ${
               filterModule === m
                 ? "bg-[#231B16] text-white"
                 : "bg-[#F2ECE3] text-[#6E6259] hover:bg-[#EAE2D6]"
@@ -748,41 +761,36 @@ function NotasContent({
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-3xl border border-[#EAE2D6] bg-white p-8 text-center text-xs text-[#9B8F85]">
+        <div className="rounded-[24px] border border-[#EFE5D5] bg-[#FFFDF8] p-8 text-center text-xs text-[#9B8F85]">
           Nenhuma nota encontrada neste módulo.
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="flex flex-col space-y-2">
           {filtered.map((note) => (
-            <div
+            <LomaCard
               key={note.id}
-              className="flex flex-col justify-between rounded-3xl border border-[#EAE2D6] bg-white p-4 shadow-xs"
+              id={note.id}
+              title={note.title}
+              category={note.moduleOrigin}
+              meta={note.content}
+              onDelete={() => onDeleteNote(note.id)}
+              badge={
+                <span className="rounded-full bg-[#FAF7F2] px-2.5 py-1 text-[10px] font-semibold text-[#6E6259] border border-[#EFE5D5]">
+                  {note.moduleOrigin}
+                </span>
+              }
             >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="rounded-full bg-[#FAF7F2] px-2 py-0.5 text-[10px] font-semibold text-[#6E6259] border border-[#EAE2D6]">
-                    Origem: {note.moduleOrigin}
-                  </span>
-                  <button
-                    onClick={() => onDeleteNote(note.id)}
-                    className="cursor-pointer text-xs text-[#9B8F85] hover:text-[#B36670]"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <h4 className="mt-2 text-sm font-bold text-[#231B16]">{note.title}</h4>
-                <p className="mt-1 whitespace-pre-wrap text-xs text-[#6E6259] leading-relaxed">{note.content}</p>
-              </div>
+              <p className="whitespace-pre-wrap text-xs text-[#6E6259] leading-relaxed">{note.content}</p>
               {note.tags && (
-                <div className="mt-3 flex flex-wrap gap-1 border-t border-[#EAE2D6] pt-2">
+                <div className="mt-2 flex flex-wrap gap-1 border-t border-[#EFE5D5] pt-2">
                   {note.tags.split(",").map((t, idx) => (
-                    <span key={idx} className="rounded-md bg-[#F2ECE3] px-1.5 py-0.5 text-[9px] font-medium text-[#6E6259]">
+                    <span key={idx} className="rounded-md bg-[#F2ECE3] px-2 py-0.5 text-[10px] font-medium text-[#6E6259]">
                       #{t.trim()}
                     </span>
                   ))}
                 </div>
               )}
-            </div>
+            </LomaCard>
           ))}
         </div>
       )}

@@ -42,7 +42,9 @@ export function App() {
   const initialTab = (new URLSearchParams(window.location.search).get("tab") as TabType) || "home";
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [drawerInitialTab, setDrawerInitialTab] = useState<"visao360" | "consultor" | "pessoas" | "personalizar" | "backup" | "logs">("visao360");
+  const [drawerInitialTab, setDrawerInitialTab] = useState<
+    "visao360" | "consultor" | "pessoas" | "personalizar" | "backup" | "logs" | undefined
+  >(undefined);
   const [modalType, setModalType] = useState<ModalType>(null);
 
   // Busca Global / Command Palette (Cmd+K)
@@ -128,7 +130,10 @@ export function App() {
       <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#EAE2D6]/80 bg-[#FAF7F2]/90 px-3 sm:px-4 backdrop-blur-md">
         {/* Avatar / Menu Lateral */}
         <button
-          onClick={() => setIsDrawerOpen(true)}
+          onClick={() => {
+            setDrawerInitialTab(undefined);
+            setIsDrawerOpen(true);
+          }}
           className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#DDD2C3] bg-[#231B16] text-sm font-bold text-[#FAF7F2] shadow-xs transition hover:opacity-90"
           title="Menu do Usuário & Apoio"
         >

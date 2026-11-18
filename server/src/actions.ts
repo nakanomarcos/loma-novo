@@ -3665,4 +3665,113 @@ export const Actions = {
       };
     },
   }),
+
+  importVerifiedItems: defineAction({
+    description: "Importa itens conferidos e aprovados pelo usuário para seus módulos donos no banco SQLite.",
+    request: z.object({
+      items: z.array(
+        z.object({
+          module: z.string(),
+          title: z.string().trim().min(1).max(200),
+          details: z.string().default(""),
+          date: z.string().optional(),
+          amount: z.number().optional(),
+          category: z.string().optional(),
+        })
+      ),
+    }),
+    response: z.object({
+      success: z.boolean(),
+      importedCount: z.number(),
+    }),
+    async handler(ctx, args) {
+      const db = ctx.db<typeof schema>();
+      let count = 0;
+      for (const item of args.items) {
+        const mod = item.module.toLowerCase();
+        const fallbackDate = new Date().toISOString().split("T")[0];
+        const dateStr = typeof item.date === "string" && item.date.trim().length > 0 ? item.date.trim() : fallbackDate;
+
+        if (mod.includes("tarefa") || mod.includes("rotina")) {
+          await db.insert(schema.tasks).values({
+            title: item.title,
+            area: item.category || "Geral",
+            priority: "media",
+            dueDate: item.date || null,
+            completed: 0,
+            isDemo: 0,
+          });
+          count++;
+        } else if (mod.includes("agenda") || mod.includes("compromisso")) {
+          await db.insert(schema.agendaEvents).values({
+            title: item.title,
+            date: dateStr as string,
+            category: item.category || "Geral",
+            status: "pendente",
+            isDemo: 0,
+          });
+          count++;
+        } else if (mod.includes("finan") || mod.includes("transaç") || mod.includes("gasto")) {
+          const amt = item.amount ? Math.round(item.amount * 100) : 0;
+          await db.insert(schema.financeTransactions).values({
+            description: item.title,
+            amount: amt,
+            category: item.category || "Outros",
+            type: amt >= 0 ? "receita" : "despesa",
+            date: dateStr as string,
+            isDemo: 0,
+          });
+          count++;
+        } else if (mod.includes("nota")) {
+          await db.insert(schema.notes).values({
+            title: item.title,
+            content: item.details || item.title,
+            moduleOrigin: item.category || "Geral",
+            isDemo: 0,
+          });
+          count++;
+        } else if (mod.includes("saúde") || mod.includes("consulta")) {
+          await db.insert(schema.healthRecords).values({
+            type: "consulta",
+            title: item.title,
+            doctorOrClinic: item.details || "Profissional de Saúde",
+            date: dateStr as string,
+            status: "pendente",
+            isDemo: 0,
+          });
+          count++;
+        } else if (mod.includes("manuten") || mod.includes("casa")) {
+          await db.insert(schema.homeMaintenances).values({
+            title: item.title,
+            room: item.category || "Geral",
+            dueDate: item.date || null,
+            priority: "media",
+            status: "pendente",
+            isDemo: 0,
+          });
+          count++;
+        } else if (mod.includes("livro")) {
+          await db.insert(schema.readingBooks).values({
+            title: item.title,
+            author: item.details || "Autor",
+            status: "para_ler",
+            isDemo: 0,
+          });
+          count++;
+        } else {
+          await db.insert(schema.tasks).values({
+            title: item.title,
+            area: item.category || "Importado",
+            priority: "media",
+            dueDate: item.date || null,
+            completed: 0,
+            isDemo: 0,
+          });
+          count++;
+        }
+      }
+      ctx.invalidateQueries();
+      return { success: true, importedCount: count };
+    },
+  }),
 } satisfies ActionsModule;
