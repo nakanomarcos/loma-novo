@@ -14,6 +14,7 @@ interface CasaProps {
 // COMPONENTE CANÔNICO: CARTÃO LOMA (PADRÃO REDUZIDO & EXPANSÍVEL)
 // ========================================================
 function LomaCard({
+  id,
   title,
   meta,
   category,
@@ -23,10 +24,10 @@ function LomaCard({
   children,
   badge,
 }: {
-  id?: string | number;
+  id: number;
   title: string;
-  meta?: React.ReactNode;
-  category?: string;
+  meta?: string | null;
+  category?: string | null;
   isCompleted?: boolean;
   onToggle?: () => void;
   onDelete?: () => void;
@@ -37,8 +38,9 @@ function LomaCard({
 
   return (
     <div
-      className={`rounded-[24px] bg-[#FFFDF8] border border-[#EFE5D5] shadow-[0_1px_0_rgba(223,213,196,0.5)] transition-all overflow-hidden ${
-        isCompleted ? "opacity-75 bg-[#FAF7F2]" : ""
+      data-card-id={id}
+      className={`rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] shadow-[0_1px_0_#E7DBC6] transition-all overflow-hidden ${
+        isCompleted ? "opacity-60 bg-[#FAF4E8]" : ""
       }`}
     >
       <div
@@ -59,8 +61,8 @@ function LomaCard({
               <div
                 className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold transition-all ${
                   isCompleted
-                    ? "bg-[#3B7A6B] border-[#3B7A6B] text-white"
-                    : "border-[#DDD2C3] bg-white hover:border-[#C47882]"
+                    ? "bg-[#7D8C6F] border-[#7D8C6F] text-white"
+                    : "border-[#E7DBC6] bg-[#FFFDF8] hover:border-[#E8836B]"
                 }`}
               >
                 {isCompleted && "✓"}
@@ -71,14 +73,14 @@ function LomaCard({
           <div className="min-w-0 flex-1">
             <h4
               className={`text-[16px] font-semibold leading-tight truncate ${
-                isCompleted ? "line-through text-[#9B8F85]" : "text-[#2C241E]"
+                isCompleted ? "line-through text-[#7A675A]/60" : "text-[#2E2019]"
               }`}
             >
               {title}
             </h4>
             {(meta || category) && (
-              <div className="text-[13px] text-[#7C6E62] truncate mt-0.5 flex items-center gap-1.5">
-                {category && <span className="font-medium text-[#9E6123]">{category} •</span>}
+              <div className="text-[13px] leading-[18px] text-[#7A675A] truncate mt-0.5 flex items-center gap-1.5">
+                {category && <span className="font-medium text-[#C79A3B]">{category} •</span>}
                 {meta}
               </div>
             )}
@@ -87,17 +89,17 @@ function LomaCard({
 
         <div className="flex items-center gap-2 shrink-0">
           {badge}
-          <span className={`text-[#A89A8E] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
+          <span className={`text-[#7A675A] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
             ▼
           </span>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="border-t border-[#F2ECE3] bg-[#FAF7F2]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
+        <div className="border-t border-[#E7DBC6] bg-[#FAF4E8]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
           {children}
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EFE5D5]">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E7DBC6]">
             {onToggle && (
               <button
                 type="button"
@@ -105,7 +107,7 @@ function LomaCard({
                   e.stopPropagation();
                   onToggle();
                 }}
-                className="h-10 px-4 rounded-full bg-[#EAE2D6] text-[#2C241E] font-medium text-xs hover:bg-[#DDD2C3] transition cursor-pointer"
+                className="h-10 px-4 rounded-full border border-[#E7DBC6] bg-[#FFFDF8] text-[#2E2019] font-semibold text-xs hover:bg-[#F3E9D7] transition cursor-pointer"
               >
                 {isCompleted ? "Reabrir" : "Marcar Concluído"}
               </button>
@@ -117,7 +119,7 @@ function LomaCard({
                   e.stopPropagation();
                   onDelete();
                 }}
-                className="h-10 px-4 rounded-full bg-[#F8ECEE] text-[#B36670] font-medium text-xs hover:bg-[#F2D7DB] transition cursor-pointer"
+                className="h-10 px-4 rounded-full border border-[#B3402E]/20 bg-[#B3402E]/10 text-[#B3402E] font-semibold text-xs hover:bg-[#B3402E]/20 transition cursor-pointer"
               >
                 Excluir
               </button>
@@ -215,8 +217,8 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
 
   if (isLoading || !data) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-[#9B8F85]">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#C47882] border-t-transparent" />
+      <div className="flex flex-col items-center justify-center p-12 text-[#7A675A]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#E8836B] border-t-transparent" />
         <span className="mt-3 text-sm">Carregando casa & família...</span>
       </div>
     );
@@ -271,8 +273,8 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
             onClick={() => setSubTab(item.key as any)}
             className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
               subTab === item.key
-                ? "bg-[#231B16] text-[#FAF7F2] shadow-xs"
-                : "bg-[#F2ECE3] text-[#6E6259] hover:bg-[#EAE2D6]"
+                ? "bg-[#2E2019] text-[#FAF4E8] shadow-xs"
+                : "bg-[#F3E9D7] text-[#7A675A] hover:bg-[#E7DBC6]"
             }`}
           >
             {item.label}
@@ -286,39 +288,40 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {subTab === "resumo" && (
         <div className="flex flex-col gap-4">
           {/* Herói com padding 16px e raio 24px */}
-          <div className="relative overflow-hidden rounded-[24px] bg-[#231B16] p-4 text-[#FAF7F2] shadow-md">
-            <div
-              className="pointer-events-none absolute -top-12 -right-12 h-44 w-44 rounded-full"
-              style={{ background: "radial-gradient(circle, rgba(196, 120, 130, 0.35) 0%, transparent 70%)" }}
-            />
+          <div
+            className="relative overflow-hidden rounded-[24px] p-4 text-[#FFF7EA] shadow-md"
+            style={{
+              background: "radial-gradient(circle at top right, rgba(168, 93, 122, 0.20) 0%, transparent 60%), linear-gradient(135deg, #7E354F 0%, #653259 55%, #4C2B57 100%)",
+            }}
+          >
             <div className="relative z-10 flex flex-col gap-2">
-              <span className="text-[11px] font-bold tracking-wider text-[#C47882] uppercase">
+              <span className="text-[11px] font-bold tracking-wider text-[#F3C6D2] uppercase">
                 Gestão Doméstica & Familiar
               </span>
-              <h2 className="font-serif text-2xl text-[#FAF7F2] leading-tight">
-                O lar em harmonia, com cuidado e zelo<span className="text-[#C47882]">.</span>
+              <h2 className="font-serif text-2xl text-[#FFF7EA] leading-tight">
+                O lar em harmonia, com cuidado e zelo<span className="text-[#F3C6D2]">.</span>
               </h2>
-              <p className="text-xs text-[#FAF7F2]/70">
+              <p className="text-xs text-[#FFF7EA]/75">
                 Manutenções em dia, rotinas dos filhos acompanhadas e compras organizadas para a família.
               </p>
 
               {/* Indicadores Chave */}
-              <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2.5 pt-2 text-center border-t border-white/10">
-                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
-                  <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Mercado</span>
-                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+              <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2.5 pt-2 text-center border-t border-white/12">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/10 border border-white/12 p-2">
+                  <span className="text-[10px] text-[#FFF7EA]/75 truncate w-full">Mercado</span>
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#F3C6D2] tabular-nums truncate w-full">
                     {summary.groceriesToBuyCount}
                   </span>
                 </div>
-                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
-                  <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Manutenções</span>
-                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/10 border border-white/12 p-2">
+                  <span className="text-[10px] text-[#FFF7EA]/75 truncate w-full">Manutenções</span>
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#F3C6D2] tabular-nums truncate w-full">
                     {summary.pendingMaintenancesCount}
                   </span>
                 </div>
-                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/5 p-2">
-                  <span className="text-[10px] text-[#FAF7F2]/60 truncate w-full">Bens</span>
-                  <span className="font-serif text-base sm:text-xl font-bold text-[#FAF7F2] tabular-nums truncate w-full">
+                <div className="min-w-0 flex flex-col items-center rounded-xl bg-white/10 border border-white/12 p-2">
+                  <span className="text-[10px] text-[#FFF7EA]/75 truncate w-full">Bens</span>
+                  <span className="font-serif text-base sm:text-xl font-bold text-[#FFF7EA] tabular-nums truncate w-full">
                     {formatMoney(summary.totalPropertyAssetsValue).replace(",00", "")}
                   </span>
                 </div>
@@ -329,10 +332,10 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
           {/* Destaque 1: Itens de Mercado */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between mb-1 px-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Lista de Mercado Rápida</h3>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Lista de Mercado Rápida</h3>
               <button
                 onClick={() => onOpenAddModal("item_mercado")}
-                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
+                className="h-11 px-4 rounded-full bg-[#F3E9D7] text-[#2E2019] text-xs font-semibold hover:bg-[#E7DBC6] transition"
               >
                 + Item
               </button>
@@ -351,13 +354,13 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                   onDelete={() => deleteGrocery.mutate(item.id)}
                   badge={
                     item.isEssential ? (
-                      <span className="rounded-full bg-[#F2ECE3] px-2.5 py-1 text-[10px] font-semibold text-[#9E6123]">
+                      <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-semibold text-[#C79A3B]">
                         Essencial
                       </span>
                     ) : null
                   }
                 >
-                  <p className="text-xs text-[#6E6259]">
+                  <p className="text-xs text-[#7A675A]">
                     Item da categoria {item.category}. Quantidade: {item.quantity} {item.unit}.
                   </p>
                 </LomaCard>
@@ -368,10 +371,10 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
           {/* Destaque 2: Manutenções Domésticas */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between mb-1 px-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Manutenções da Casa</h3>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Manutenções da Casa</h3>
               <button
                 onClick={() => onOpenAddModal("manutencao_casa")}
-                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
+                className="h-11 px-4 rounded-full bg-[#F3E9D7] text-[#2E2019] text-xs font-semibold hover:bg-[#E7DBC6] transition"
               >
                 + Manutenção
               </button>
@@ -390,13 +393,13 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                   onDelete={() => deleteMaint.mutate(item.id)}
                   badge={
                     item.costCents > 0 ? (
-                      <span className="text-xs font-semibold text-[#2C241E] tabular-nums">
+                      <span className="text-xs font-semibold text-[#2E2019] tabular-nums">
                         {formatMoney(item.costCents)}
                       </span>
                     ) : null
                   }
                 >
-                  <p className="text-xs text-[#6E6259]">
+                  <p className="text-xs text-[#7A675A]">
                     Cômodo: {item.room} • Prioridade: {item.priority}. {item.notes ? `Observações: ${item.notes}` : ""}
                   </p>
                 </LomaCard>
@@ -413,12 +416,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Lista de Mercado</h3>
-              <p className="text-[13px] text-[#7C6E62]">Itens para reposição na despensa e compras da semana.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Lista de Mercado</h3>
+              <p className="text-[13px] text-[#7A675A]">Itens para reposição na despensa e compras da semana.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("item_mercado")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Novo Item
             </button>
@@ -437,13 +440,13 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                 onDelete={() => deleteGrocery.mutate(item.id)}
                 badge={
                   item.isEssential ? (
-                    <span className="rounded-full bg-[#F2ECE3] px-2.5 py-1 text-[10px] font-semibold text-[#9E6123]">
+                    <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-semibold text-[#C79A3B]">
                       Essencial
                     </span>
                   ) : null
                 }
               >
-                <p className="text-xs text-[#6E6259]">
+                <p className="text-xs text-[#7A675A]">
                   Item de mercado registrado para compra.
                 </p>
               </LomaCard>
@@ -459,12 +462,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Manutenções da Casa</h3>
-              <p className="text-[13px] text-[#7C6E62]">Reparos preventivos, revisões de cômodos e melhorias no lar.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Manutenções da Casa</h3>
+              <p className="text-[13px] text-[#7A675A]">Reparos preventivos, revisões de cômodos e melhorias no lar.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("manutencao_casa")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Manutenção
             </button>
@@ -485,9 +488,9 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase ${
                       item.priority === "alta"
-                        ? "bg-[#C47882]/15 text-[#C47882]"
+                        ? "bg-[#E8836B]/15 text-[#E8836B]"
                         : item.priority === "media"
-                        ? "bg-[#9E6123]/15 text-[#9E6123]"
+                        ? "bg-[#C79A3B]/15 text-[#C79A3B]"
                         : "bg-[#465768]/15 text-[#465768]"
                     }`}
                   >
@@ -495,7 +498,7 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                   </span>
                 }
               >
-                <div className="flex flex-col gap-1 text-xs text-[#6E6259]">
+                <div className="flex flex-col gap-1 text-xs text-[#7A675A]">
                   <p>Cômodo: <strong>{item.room}</strong> • Custo estimado: {formatMoney(item.costCents)}.</p>
                   {item.notes && <p className="italic">{item.notes}</p>}
                 </div>
@@ -512,12 +515,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Rotina dos Filhos</h3>
-              <p className="text-[13px] text-[#7C6E62]">Acompanhamento pedagógico, escolar e atividades.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Rotina dos Filhos</h3>
+              <p className="text-[13px] text-[#7A675A]">Acompanhamento pedagógico, escolar e atividades.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("rotina_filho")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Registro
             </button>
@@ -535,12 +538,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                 onToggle={() => toggleChild.mutate(item.id)}
                 onDelete={() => deleteChild.mutate(item.id)}
                 badge={
-                  <span className="rounded-full bg-[#F2ECE3] px-2.5 py-0.5 text-[10px] text-[#465768] font-medium uppercase">
+                  <span className="rounded-full bg-[#F3E9D7] px-2.5 py-0.5 text-[10px] text-[#465768] font-medium uppercase">
                     {item.category}
                   </span>
                 }
               >
-                <div className="text-xs text-[#6E6259]">
+                <div className="text-xs text-[#7A675A]">
                   <p>Filho(a): <strong>{item.childName}</strong> • Categoria: {item.category}.</p>
                   {item.notes && <p className="mt-1 italic">{item.notes}</p>}
                 </div>
@@ -557,12 +560,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Desejos & Compras</h3>
-              <p className="text-[13px] text-[#7C6E62]">Aquisições planejadas para a casa e para a família.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Desejos & Compras</h3>
+              <p className="text-[13px] text-[#7A675A]">Aquisições planejadas para a casa e para a família.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("desejo_compra")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Desejo
             </button>
@@ -578,18 +581,18 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                 meta={`Estimado: ${formatMoney(item.estimatedCostCents)} • Prioridade: ${item.priority}`}
                 onDelete={() => deleteWishlist.mutate(item.id)}
                 badge={
-                  <span className="rounded-full bg-[#F2ECE3] px-2.5 py-0.5 text-[10px] font-bold text-[#2C241E] uppercase">
+                  <span className="rounded-full bg-[#F3E9D7] px-2.5 py-0.5 text-[10px] font-bold text-[#2E2019] uppercase">
                     {item.status}
                   </span>
                 }
               >
-                <div className="flex flex-col gap-2 text-xs text-[#6E6259]">
+                <div className="flex flex-col gap-2 text-xs text-[#7A675A]">
                   <div className="flex items-center justify-between">
                     <span>Status de Aquisição:</span>
                     <select
                       value={item.status}
                       onChange={(e) => updateWishlist.mutate({ id: item.id, status: e.target.value as any })}
-                      className="rounded-full border border-[#D5CCC2] bg-[#FAF7F2] px-3 py-1 text-xs text-[#231B16]"
+                      className="rounded-full border border-[#E7DBC6] bg-[#FAF4E8] px-3 py-1 text-xs text-[#2E2019]"
                     >
                       <option value="desejo">Desejo</option>
                       <option value="planejado">Planejado</option>
@@ -611,12 +614,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Pets da Família</h3>
-              <p className="text-[13px] text-[#7C6E62]">Vacinas, consultas veterinárias e cuidados.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Pets da Família</h3>
+              <p className="text-[13px] text-[#7A675A]">Vacinas, consultas veterinárias e cuidados.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("cuidado_pet")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Cuidado Pet
             </button>
@@ -632,7 +635,7 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                   >
                     🐾
                   </div>
-                  <h4 className="font-semibold text-sm text-[#2C241E]">{pet.name} ({pet.species} • {pet.breed})</h4>
+                  <h4 className="font-semibold text-sm text-[#2E2019]">{pet.name} ({pet.species} • {pet.breed})</h4>
                 </div>
 
                 {pet.careRecords.map((care) => (
@@ -646,7 +649,7 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                     onToggle={() => togglePetCare.mutate(care.id)}
                     onDelete={() => deletePetCare.mutate(care.id)}
                   >
-                    <p className="text-xs text-[#6E6259]">
+                    <p className="text-xs text-[#7A675A]">
                       Cuidado veterinário programado para {pet.name}.
                     </p>
                   </LomaCard>
@@ -663,18 +666,18 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {subTab === "veiculos" && (
         <div className="flex flex-col gap-3">
           <div className="mb-1 px-1">
-            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Veículos da Família</h3>
-            <p className="text-[13px] text-[#7C6E62]">Quilometragem, histórico de manutenções e revisões.</p>
+            <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Veículos da Família</h3>
+            <p className="text-[13px] text-[#7A675A]">Quilometragem, histórico de manutenções e revisões.</p>
           </div>
 
           <div className="flex flex-col space-y-3">
             {vehicles.map((v) => (
               <div key={v.id} className="flex flex-col space-y-2">
                 <div className="flex items-center justify-between px-1">
-                  <h4 className="font-semibold text-sm text-[#2C241E]">
+                  <h4 className="font-semibold text-sm text-[#2E2019]">
                     🚗 {v.brand} {v.model} ({v.year})
                   </h4>
-                  <span className="text-xs text-[#7C6E62] tabular-nums font-medium">{v.mileage.toLocaleString()} km</span>
+                  <span className="text-xs text-[#7A675A] tabular-nums font-medium">{v.mileage.toLocaleString()} km</span>
                 </div>
 
                 {v.maintenances.map((m) => (
@@ -686,7 +689,7 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                     meta={`Data: ${m.date} • Custo: ${formatMoney(m.costCents)}`}
                     onDelete={() => deleteVehicleMaint.mutate(m.id)}
                   >
-                    <p className="text-xs text-[#6E6259]">
+                    <p className="text-xs text-[#7A675A]">
                       {m.nextDueMileage ? `Próxima revisão: ${m.nextDueMileage.toLocaleString()} km. ` : ""}
                       {m.notes ? `Observações: ${m.notes}` : ""}
                     </p>
@@ -704,8 +707,8 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {subTab === "patrimonio" && (
         <div className="flex flex-col gap-3">
           <div className="mb-1 px-1">
-            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Patrimônio & Bens da Casa</h3>
-            <p className="text-[13px] text-[#7C6E62]">Inventário doméstico, equipamentos e garantias.</p>
+            <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Patrimônio & Bens da Casa</h3>
+            <p className="text-[13px] text-[#7A675A]">Inventário doméstico, equipamentos e garantias.</p>
           </div>
 
           <div className="flex flex-col space-y-2">
@@ -717,13 +720,13 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                 category={asset.category}
                 meta={asset.notes || undefined}
                 badge={
-                  <span className="text-sm font-bold text-[#2C241E] tabular-nums">
+                  <span className="text-sm font-bold text-[#2E2019] tabular-nums">
                     {formatMoney(asset.estimatedValueCents)}
                   </span>
                 }
                 onDelete={() => deleteProperty.mutate(asset.id)}
               >
-                <p className="text-xs text-[#6E6259]">
+                <p className="text-xs text-[#7A675A]">
                   {asset.purchaseDate && `Data de aquisição: ${asset.purchaseDate}. `}
                   {asset.warrantyUntil && `Garantia até: ${asset.warrantyUntil}. `}
                   {asset.notes && `Observações: ${asset.notes}`}
@@ -741,12 +744,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Contatos de Emergência</h3>
-              <p className="text-[13px] text-[#7C6E62]">Médicos, socorro e assistência técnica rápida.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Contatos de Emergência</h3>
+              <p className="text-[13px] text-[#7A675A]">Médicos, socorro e assistência técnica rápida.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("contato_emergencia")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Contato
             </button>
@@ -762,7 +765,7 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                 meta={`Telefone: ${contact.phone}`}
                 onDelete={() => deleteEmergency.mutate(contact.id)}
               >
-                <p className="text-xs text-[#6E6259]">
+                <p className="text-xs text-[#7A675A]">
                   {contact.addressOrDetails ? `Detalhes: ${contact.addressOrDetails}` : "Contato de socorro prioritário."}
                 </p>
               </LomaCard>
@@ -777,8 +780,8 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {subTab === "relacionamentos" && (
         <div className="flex flex-col gap-3">
           <div className="mb-1 px-1">
-            <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Rede Familiar & Relacionamentos</h3>
-            <p className="text-[13px] text-[#7C6E62]">Datas especiais e frequência de contato com pessoas queridas.</p>
+            <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Rede Familiar & Relacionamentos</h3>
+            <p className="text-[13px] text-[#7A675A]">Datas especiais e frequência de contato com pessoas queridas.</p>
           </div>
 
           <div className="flex flex-col space-y-2">
@@ -791,7 +794,7 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                 meta={rel.birthday ? `Aniversário: ${rel.birthday}` : rel.phone ? `Tel: ${rel.phone}` : undefined}
                 onDelete={() => deleteRel.mutate(rel.id)}
               >
-                <p className="text-xs text-[#6E6259]">
+                <p className="text-xs text-[#7A675A]">
                   Relação: {rel.relationship}. {rel.phone ? `Telefone: ${rel.phone}. ` : ""}
                   {rel.notes ? `Notas: ${rel.notes}` : ""}
                 </p>

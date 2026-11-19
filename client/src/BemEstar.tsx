@@ -14,6 +14,7 @@ interface BemEstarProps {
 // COMPONENTE CANÔNICO: CARTÃO LOMA (PADRÃO REDUZIDO & EXPANSÍVEL)
 // ========================================================
 function LomaCard({
+  id,
   title,
   meta,
   category,
@@ -23,10 +24,10 @@ function LomaCard({
   children,
   badge,
 }: {
-  id?: string | number;
+  id: number;
   title: string;
-  meta?: React.ReactNode;
-  category?: string;
+  meta?: string | null;
+  category?: string | null;
   isCompleted?: boolean;
   onToggle?: () => void;
   onDelete?: () => void;
@@ -37,8 +38,9 @@ function LomaCard({
 
   return (
     <div
-      className={`rounded-[24px] bg-[#FFFDF8] border border-[#EFE5D5] shadow-[0_1px_0_rgba(223,213,196,0.5)] transition-all overflow-hidden ${
-        isCompleted ? "opacity-75 bg-[#FAF7F2]" : ""
+      data-card-id={id}
+      className={`rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] shadow-[0_1px_0_#E7DBC6] transition-all overflow-hidden ${
+        isCompleted ? "opacity-60 bg-[#FAF4E8]" : ""
       }`}
     >
       <div
@@ -59,8 +61,8 @@ function LomaCard({
               <div
                 className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold transition-all ${
                   isCompleted
-                    ? "bg-[#3B7A6B] border-[#3B7A6B] text-white"
-                    : "border-[#DDD2C3] bg-white hover:border-[#C47882]"
+                    ? "bg-[#7D8C6F] border-[#7D8C6F] text-white"
+                    : "border-[#E7DBC6] bg-[#FFFDF8] hover:border-[#E8836B]"
                 }`}
               >
                 {isCompleted && "✓"}
@@ -71,14 +73,14 @@ function LomaCard({
           <div className="min-w-0 flex-1">
             <h4
               className={`text-[16px] font-semibold leading-tight truncate ${
-                isCompleted ? "line-through text-[#9B8F85]" : "text-[#2C241E]"
+                isCompleted ? "line-through text-[#7A675A]/60" : "text-[#2E2019]"
               }`}
             >
               {title}
             </h4>
             {(meta || category) && (
-              <div className="text-[13px] text-[#7C6E62] truncate mt-0.5 flex items-center gap-1.5">
-                {category && <span className="font-medium text-[#9E6123]">{category} •</span>}
+              <div className="text-[13px] leading-[18px] text-[#7A675A] truncate mt-0.5 flex items-center gap-1.5">
+                {category && <span className="font-medium text-[#C79A3B]">{category} •</span>}
                 {meta}
               </div>
             )}
@@ -87,17 +89,17 @@ function LomaCard({
 
         <div className="flex items-center gap-2 shrink-0">
           {badge}
-          <span className={`text-[#A89A8E] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
+          <span className={`text-[#7A675A] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
             ▼
           </span>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="border-t border-[#F2ECE3] bg-[#FAF7F2]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
+        <div className="border-t border-[#E7DBC6] bg-[#FAF4E8]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
           {children}
 
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EFE5D5]">
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E7DBC6]">
             {onToggle && (
               <button
                 type="button"
@@ -105,7 +107,7 @@ function LomaCard({
                   e.stopPropagation();
                   onToggle();
                 }}
-                className="h-10 px-4 rounded-full bg-[#EAE2D6] text-[#2C241E] font-medium text-xs hover:bg-[#DDD2C3] transition cursor-pointer"
+                className="h-10 px-4 rounded-full border border-[#E7DBC6] bg-[#FFFDF8] text-[#2E2019] font-semibold text-xs hover:bg-[#F3E9D7] transition cursor-pointer"
               >
                 {isCompleted ? "Reabrir" : "Marcar Concluído"}
               </button>
@@ -117,7 +119,7 @@ function LomaCard({
                   e.stopPropagation();
                   onDelete();
                 }}
-                className="h-10 px-4 rounded-full bg-[#F8ECEE] text-[#B36670] font-medium text-xs hover:bg-[#F2D7DB] transition cursor-pointer"
+                className="h-10 px-4 rounded-full border border-[#B3402E]/20 bg-[#B3402E]/10 text-[#B3402E] font-semibold text-xs hover:bg-[#B3402E]/20 transition cursor-pointer"
               >
                 Excluir
               </button>
@@ -180,8 +182,8 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
 
   if (isLoading || !data) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-[#9B8F85]">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#C47882] border-t-transparent" />
+      <div className="flex flex-col items-center justify-center p-12 text-[#7A675A]">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#E8836B] border-t-transparent" />
         <span className="mt-3 text-sm">Carregando bem-estar...</span>
       </div>
     );
@@ -215,8 +217,8 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
             onClick={() => setSubTab(item.key as any)}
             className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
               subTab === item.key
-                ? "bg-[#231B16] text-[#FAF7F2] shadow-xs"
-                : "bg-[#F2ECE3] text-[#6E6259] hover:bg-[#EAE2D6]"
+                ? "bg-[#2E2019] text-[#FAF4E8] shadow-xs"
+                : "bg-[#F3E9D7] text-[#7A675A] hover:bg-[#E7DBC6]"
             }`}
           >
             {item.label}
@@ -230,34 +232,35 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
       {subTab === "resumo" && (
         <div className="flex flex-col gap-4">
           {/* Herói com padding 16px e raio 24px */}
-          <div className="relative overflow-hidden rounded-[24px] bg-[#231B16] p-4 text-[#FAF7F2] shadow-md">
-            <div
-              className="pointer-events-none absolute -top-12 -right-12 h-44 w-44 rounded-full"
-              style={{ background: "radial-gradient(circle, rgba(59, 122, 107, 0.35) 0%, transparent 70%)" }}
-            />
+          <div
+            className="relative overflow-hidden rounded-[24px] p-4 text-[#FFF7EA] shadow-md"
+            style={{
+              background: "radial-gradient(circle at top right, rgba(168, 93, 122, 0.20) 0%, transparent 60%), linear-gradient(135deg, #7E354F 0%, #653259 55%, #4C2B57 100%)",
+            }}
+          >
             <div className="relative z-10 flex flex-col gap-2">
-              <span className="text-[11px] font-bold tracking-wider text-[#3B7A6B] uppercase">
+              <span className="text-[11px] font-bold tracking-wider text-[#F3C6D2] uppercase">
                 Saúde & Equilíbrio Integral
               </span>
-              <h2 className="font-serif text-2xl text-[#FAF7F2] leading-tight">
-                Cuidar do corpo, da mente e do espírito<span className="text-[#3B7A6B]">.</span>
+              <h2 className="font-serif text-2xl text-[#FFF7EA] leading-tight">
+                Cuidar do corpo, da mente e do espírito<span className="text-[#F3C6D2]">.</span>
               </h2>
-              <p className="text-xs text-[#FAF7F2]/70">
+              <p className="text-xs text-[#FFF7EA]/75">
                 Rotina de saúde preventiva, atividades físicas regulares e momentos de oração.
               </p>
 
-              <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2 border-t border-white/10 pt-2.5 text-center">
-                <div className="rounded-xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
-                  <span className="block text-[10px] text-[#FAF7F2]/60 truncate w-full">Saúde</span>
-                  <span className="text-base sm:text-lg font-bold text-[#FAF7F2] tabular-nums truncate w-full">{summary.pendingHealthCount}</span>
+              <div className="mt-2 grid grid-cols-3 gap-1.5 sm:gap-2 border-t border-white/12 pt-2.5 text-center">
+                <div className="rounded-xl bg-white/10 border border-white/12 p-2 min-w-0 flex flex-col items-center">
+                  <span className="block text-[10px] text-[#FFF7EA]/75 truncate w-full">Saúde</span>
+                  <span className="font-serif text-base sm:text-lg font-bold text-[#F3C6D2] tabular-nums truncate w-full">{summary.pendingHealthCount}</span>
                 </div>
-                <div className="rounded-xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
-                  <span className="block text-[10px] text-[#FAF7F2]/60 truncate w-full">Treinos</span>
-                  <span className="text-base sm:text-lg font-bold text-[#E9F3F0] tabular-nums truncate w-full">{summary.workoutsCount}</span>
+                <div className="rounded-xl bg-white/10 border border-white/12 p-2 min-w-0 flex flex-col items-center">
+                  <span className="block text-[10px] text-[#FFF7EA]/75 truncate w-full">Treinos</span>
+                  <span className="font-serif text-base sm:text-lg font-bold text-[#F3C6D2] tabular-nums truncate w-full">{summary.workoutsCount}</span>
                 </div>
-                <div className="rounded-xl bg-white/5 p-2 min-w-0 flex flex-col items-center">
-                  <span className="block text-[10px] text-[#FAF7F2]/60 truncate w-full">Sono Médio</span>
-                  <span className="text-base sm:text-lg font-bold text-[#F3EDF6] tabular-nums truncate w-full">{summary.avgSleepHours}h</span>
+                <div className="rounded-xl bg-white/10 border border-white/12 p-2 min-w-0 flex flex-col items-center">
+                  <span className="block text-[10px] text-[#FFF7EA]/75 truncate w-full">Sono Médio</span>
+                  <span className="font-serif text-base sm:text-lg font-bold text-[#FFF7EA] tabular-nums truncate w-full">{summary.avgSleepHours}h</span>
                 </div>
               </div>
             </div>
@@ -266,10 +269,10 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
           {/* Próximas Consultas e Exames (Saúde) */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between mb-1 px-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Saúde Preventiva</h3>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Saúde Preventiva</h3>
               <button
                 onClick={() => onOpenAddModal("saude")}
-                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
+                className="h-11 px-4 rounded-full bg-[#F3E9D7] text-[#2E2019] text-xs font-semibold hover:bg-[#E7DBC6] transition"
               >
                 + Registrar
               </button>
@@ -287,12 +290,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                   onToggle={() => toggleHealth.mutate(h.id)}
                   onDelete={() => deleteHealth.mutate(h.id)}
                   badge={
-                    <span className="rounded-full bg-[#E9F3F0] px-2.5 py-1 text-[10px] font-semibold text-[#3B7A6B] capitalize">
+                    <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-semibold text-[#7D8C6F] capitalize">
                       {h.type}
                     </span>
                   }
                 >
-                  <p className="text-xs text-[#6E6259]">
+                  <p className="text-xs text-[#7A675A]">
                     Profissional: {h.doctorOrClinic || "Não informado"}. Data: {h.date}. {h.details ? `Observações: ${h.details}` : ""}
                   </p>
                 </LomaCard>
@@ -303,10 +306,10 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
           {/* Treinos Recentes */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between mb-1 px-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Corpo & Atividade Física</h3>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Corpo & Atividade Física</h3>
               <button
                 onClick={() => onOpenAddModal("treino")}
-                className="h-11 px-4 rounded-full bg-[#F5EFE6] text-[#2C241E] text-xs font-semibold hover:bg-[#EAE2D6] transition"
+                className="h-11 px-4 rounded-full bg-[#F3E9D7] text-[#2E2019] text-xs font-semibold hover:bg-[#E7DBC6] transition"
               >
                 + Novo Treino
               </button>
@@ -322,12 +325,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                   meta={`Duração: ${w.durationMinutes} min • Data: ${w.date}`}
                   onDelete={() => deleteWorkout.mutate(w.id)}
                   badge={
-                    <span className="rounded-full bg-[#EDF1F5] px-2.5 py-1 text-[10px] font-semibold text-[#465768] capitalize">
+                    <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-semibold text-[#465768] capitalize">
                       {w.category}
                     </span>
                   }
                 >
-                  <p className="text-xs text-[#6E6259]">
+                  <p className="text-xs text-[#7A675A]">
                     Treino realizado em {w.date}. {w.notes ? `Notas: ${w.notes}` : ""}
                   </p>
                 </LomaCard>
@@ -344,12 +347,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Saúde & Consultas</h3>
-              <p className="text-[13px] text-[#7C6E62]">Consultas, exames periódicos e vacinas.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Saúde & Consultas</h3>
+              <p className="text-[13px] text-[#7A675A]">Consultas, exames periódicos e vacinas.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("saude")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Saúde
             </button>
@@ -367,12 +370,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                 onToggle={() => toggleHealth.mutate(h.id)}
                 onDelete={() => deleteHealth.mutate(h.id)}
                 badge={
-                  <span className="rounded-full bg-[#E9F3F0] px-2.5 py-1 text-[10px] font-semibold text-[#3B7A6B] capitalize">
+                  <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-semibold text-[#7D8C6F] capitalize">
                     {h.type}
                   </span>
                 }
               >
-                <p className="text-xs text-[#6E6259]">
+                <p className="text-xs text-[#7A675A]">
                   Profissional / Clínica: {h.doctorOrClinic || "Não informado"} • Data: {h.date}. {h.details ? `Detalhes: ${h.details}` : ""}
                 </p>
               </LomaCard>
@@ -388,12 +391,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Corpo & Esporte</h3>
-              <p className="text-[13px] text-[#7C6E62]">Atividades físicas e treinos da família.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Corpo & Esporte</h3>
+              <p className="text-[13px] text-[#7A675A]">Atividades físicas e treinos da família.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("treino")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Treino
             </button>
@@ -409,12 +412,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                 meta={`Duração: ${w.durationMinutes} min • Data: ${w.date}`}
                 onDelete={() => deleteWorkout.mutate(w.id)}
                 badge={
-                  <span className="rounded-full bg-[#EDF1F5] px-2.5 py-1 text-[10px] font-semibold text-[#465768] uppercase">
+                  <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-semibold text-[#465768] uppercase">
                     {w.category}
                   </span>
                 }
               >
-                <p className="text-xs text-[#6E6259]">
+                <p className="text-xs text-[#7A675A]">
                   {w.notes ? `Observações do treino: ${w.notes}` : "Sem observações registradas."}
                 </p>
               </LomaCard>
@@ -430,12 +433,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Cuidados & Autocuidado</h3>
-              <p className="text-[13px] text-[#7C6E62]">Pele, cabelo, corpo, unhas e rotinas de relaxamento.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Cuidados & Autocuidado</h3>
+              <p className="text-[13px] text-[#7A675A]">Pele, cabelo, corpo, unhas e rotinas de relaxamento.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("cuidado")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Rotina
             </button>
@@ -453,12 +456,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                 onToggle={() => toggleCare.mutate(c.id)}
                 onDelete={() => deleteCare.mutate(c.id)}
                 badge={
-                  <span className="rounded-full bg-[#F8ECEE] px-2.5 py-1 text-[10px] font-semibold text-[#B36670] capitalize">
+                  <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-semibold text-[#CF6248] capitalize">
                     {c.category}
                   </span>
                 }
               >
-                <p className="text-xs text-[#6E6259]">
+                <p className="text-xs text-[#7A675A]">
                   Rotina de autocuidado categoria {c.category}. Frequência recomendada: {c.frequency}.
                 </p>
               </LomaCard>
@@ -474,12 +477,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Humor, Sono & Energia</h3>
-              <p className="text-[13px] text-[#7C6E62]">Acompanhamento emocional e qualidade de recuperação.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Humor, Sono & Energia</h3>
+              <p className="text-[13px] text-[#7A675A]">Acompanhamento emocional e qualidade de recuperação.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("humor")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Registrar
             </button>
@@ -504,12 +507,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                 category="Humor & Sono"
                 meta={`Data: ${m.date} • ${m.sleepHours}h de sono`}
                 badge={
-                  <span className="text-xs text-[#9E6123] font-bold">
+                  <span className="text-xs text-[#C79A3B] font-bold">
                     {"★".repeat(m.energyLevel)}
                   </span>
                 }
               >
-                <div className="text-xs text-[#6E6259] flex flex-col gap-1">
+                <div className="text-xs text-[#7A675A] flex flex-col gap-1">
                   <p>Sono: <strong>{m.sleepHours} horas de descanso</strong> • Nível de energia: {m.energyLevel}/5.</p>
                   {m.notes && <p className="italic mt-1">"{m.notes}"</p>}
                 </div>
@@ -526,12 +529,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Devocional & Vida Espiritual</h3>
-              <p className="text-[13px] text-[#7C6E62]">Leituras bíblicas, orações e motivos de gratidão.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Devocional & Vida Espiritual</h3>
+              <p className="text-[13px] text-[#7A675A]">Leituras bíblicas, orações e motivos de gratidão.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("devocional")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Devocional
             </button>
@@ -547,13 +550,13 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                 meta={`Data: ${d.date}`}
                 onDelete={() => deleteDevotional.mutate(d.id)}
                 badge={
-                  <span className="rounded-full bg-[#F3EDF6] px-2.5 py-1 text-[10px] font-bold text-[#6F4C7D] uppercase">
+                  <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-bold text-[#6F4C7D] uppercase">
                     {d.passageOrVerse || "Palavra"}
                   </span>
                 }
               >
                 {d.reflection && (
-                  <p className="whitespace-pre-wrap text-xs text-[#6E6259] leading-relaxed italic">
+                  <p className="whitespace-pre-wrap text-xs text-[#7A675A] leading-relaxed italic">
                     "{d.reflection}"
                   </p>
                 )}
@@ -570,12 +573,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2C241E]">Alimentação & Cozinha</h3>
-              <p className="text-[13px] text-[#7C6E62]">Cardápio semanal planejado e refeições favoritas.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Alimentação & Cozinha</h3>
+              <p className="text-[13px] text-[#7A675A]">Cardápio semanal planejado e refeições favoritas.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("refeicao")}
-              className="h-11 px-4 rounded-full bg-[#231B16] text-xs font-semibold text-white shadow-xs transition hover:bg-[#3A2E27] shrink-0"
+              className="h-11 px-4 rounded-full bg-[#2E2019] text-xs font-semibold text-white shadow-xs transition hover:bg-[#4A382C] shrink-0"
             >
               + Refeição
             </button>
@@ -591,13 +594,13 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                 meta={`Dia da semana: ${m.dayOfWeek}`}
                 onDelete={() => deleteMeal.mutate(m.id)}
                 badge={
-                  <span className="rounded-full bg-[#FBF2E6] px-2.5 py-1 text-[10px] font-bold text-[#C27D38] uppercase">
+                  <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[10px] font-bold text-[#C27D38] uppercase">
                     {m.mealType}
                   </span>
                 }
               >
                 {m.recipeOrIngredients && (
-                  <p className="text-xs text-[#6E6259] leading-relaxed">
+                  <p className="text-xs text-[#7A675A] leading-relaxed">
                     <strong>Ingredientes / Preparo: </strong>{m.recipeOrIngredients}
                   </p>
                 )}

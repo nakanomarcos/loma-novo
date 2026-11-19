@@ -123,18 +123,18 @@ export function App() {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-full sm:max-w-xl flex-col bg-[#FAF7F2] text-[#231B16] shadow-sm selection:bg-[#F8ECEE] selection:text-[#B36670] overflow-x-hidden">
+    <div className="mx-auto flex min-h-dvh w-full max-w-full sm:max-w-xl flex-col bg-[#FAF4E8] text-[#2E2019] shadow-sm selection:bg-[#F3E9D7] selection:text-[#CF6248] overflow-x-hidden">
       {/* ======================================================== */}
       {/* BARRA SUPERIOR FIXA */}
       {/* ======================================================== */}
-      <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#EAE2D6]/80 bg-[#FAF7F2]/90 px-3 sm:px-4 backdrop-blur-md">
+      <header className="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-b border-[#E7DBC6]/80 bg-[#FAF4E8]/90 px-3 sm:px-4 backdrop-blur-md">
         {/* Avatar / Menu Lateral */}
         <button
           onClick={() => {
             setDrawerInitialTab(undefined);
             setIsDrawerOpen(true);
           }}
-          className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#DDD2C3] bg-[#231B16] text-sm font-bold text-[#FAF7F2] shadow-xs transition hover:opacity-90"
+          className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#E7DBC6] bg-[#2E2019] text-sm font-bold text-[#FAF4E8] shadow-xs transition hover:opacity-90"
           title="Menu do Usuário & Apoio"
         >
           M
@@ -142,13 +142,13 @@ export function App() {
 
         {/* Título da Área Atual */}
         <div className="flex min-w-0 flex-1 items-center justify-center px-2 text-center">
-          <h1 className="font-serif-loma truncate text-lg sm:text-xl font-normal tracking-tight text-[#231B16]">
+          <h1 className="font-serif truncate text-lg sm:text-xl font-normal tracking-tight text-[#2E2019]">
             {activeTab === "home" && "Loma"}
             {activeTab === "bem-estar" && "Bem-estar"}
             {activeTab === "casa" && "Casa & Família"}
             {activeTab === "financas" && "Finanças"}
             {activeTab === "crescer" && "Crescer"}
-            <span className="text-[#C47882]">.</span>
+            <span className="text-[#E8836B]">.</span>
           </h1>
         </div>
 
@@ -156,14 +156,14 @@ export function App() {
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="flex h-9 w-9 sm:h-10 sm:w-10 cursor-pointer items-center justify-center rounded-full border border-[#DDD2C3] bg-[#FAF7F2] text-sm text-[#231B16] shadow-xs transition hover:bg-[#F2ECE3] active:scale-95"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 cursor-pointer items-center justify-center rounded-full border border-[#E7DBC6] bg-[#FAF4E8] text-sm text-[#2E2019] shadow-xs transition hover:bg-[#F3E9D7] active:scale-95"
             title="Busca global em todo o Loma (Cmd+K)"
           >
             🔍
           </button>
           <button
             onClick={handleTopPlusClick}
-            className="flex h-9 w-9 sm:h-10 sm:w-10 cursor-pointer items-center justify-center rounded-full bg-[#C47882] text-xl font-medium text-white shadow-sm transition hover:bg-[#B36670] active:scale-95"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 cursor-pointer items-center justify-center rounded-full bg-[#E8836B] text-xl font-medium text-white shadow-sm transition hover:bg-[#CF6248] active:scale-95"
             title="Novo registro"
           >
             +
@@ -223,7 +223,7 @@ export function App() {
       {/* ======================================================== */}
       {/* BARRA INFERIOR FIXA (5 ABAS — EXATAMENTE 20% CADA) */}
       {/* ======================================================== */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 mx-auto flex h-16 w-full max-w-full sm:max-w-xl items-center border-t border-[#EAE2D6] bg-[#FFFFFF]/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md shadow-lg">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 mx-auto flex h-16 w-full max-w-full sm:max-w-xl items-center border-t border-[#E7DBC6] bg-[#FFFFFF]/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-md shadow-lg">
         {[
           { key: "home", label: "Home", icon: "⌂" },
           { key: "bem-estar", label: "Bem-estar", icon: "♡" },
@@ -238,14 +238,14 @@ export function App() {
               onClick={() => setActiveTab(tab.key as TabType)}
               style={{ width: "20%", minWidth: 0 }}
               className={`flex h-full flex-1 w-1/5 min-w-0 cursor-pointer flex-col items-center justify-center gap-0.5 px-0.5 transition ${
-                isActive ? "text-[#C47882]" : "text-[#9B8F85] hover:text-[#6E6259]"
+                isActive ? "text-[#E8836B]" : "text-[#7A675A] hover:text-[#7A675A]"
               }`}
             >
-              <span className={`text-base sm:text-lg leading-none ${isActive ? "font-bold text-[#C47882]" : ""}`}>{tab.icon}</span>
-              <span className={`text-[10px] leading-tight truncate w-full text-center ${isActive ? "font-bold text-[#231B16]" : "font-medium"}`}>
+              <span className={`text-base sm:text-lg leading-none ${isActive ? "font-bold text-[#E8836B]" : ""}`}>{tab.icon}</span>
+              <span className={`text-[10px] leading-tight truncate w-full text-center ${isActive ? "font-bold text-[#2E2019]" : "font-medium"}`}>
                 {tab.label}
               </span>
-              {isActive && <span className="h-1 w-1 rounded-full bg-[#C47882]" />}
+              {isActive && <span className="h-1 w-1 rounded-full bg-[#E8836B]" />}
             </button>
           );
         })}
@@ -266,24 +266,24 @@ export function App() {
       {/* ======================================================== */}
       {isSearchOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-16 sm:pt-24 backdrop-blur-xs">
-          <div className="flex w-full max-w-lg flex-col rounded-3xl border border-[#EAE2D6] bg-[#FAF7F2] p-4 shadow-2xl">
+          <div className="flex w-full max-w-lg flex-col rounded-3xl border border-[#E7DBC6] bg-[#FAF4E8] p-4 shadow-2xl">
             {/* Input de busca */}
-            <div className="flex items-center gap-2.5 border-b border-[#EAE2D6] pb-3">
-              <span className="text-base text-[#9B8F85]">🔍</span>
+            <div className="flex items-center gap-2.5 border-b border-[#E7DBC6] pb-3">
+              <span className="text-base text-[#7A675A]">🔍</span>
               <input
                 autoFocus
                 type="text"
                 placeholder="Buscar compromisso, tarefa, gasto, receita, livro, exame..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent text-sm text-[#231B16] placeholder-[#9B8F85] focus:outline-hidden"
+                className="flex-1 bg-transparent text-sm text-[#2E2019] placeholder-[#7A675A] focus:outline-hidden"
               />
-              <kbd className="hidden sm:inline-block rounded-md border border-[#EAE2D6] bg-white px-2 py-0.5 text-[10px] font-bold text-[#9B8F85]">
+              <kbd className="hidden sm:inline-block rounded-md border border-[#E7DBC6] bg-white px-2 py-0.5 text-[10px] font-bold text-[#7A675A]">
                 ESC
               </kbd>
               <button
                 onClick={() => setIsSearchOpen(false)}
-                className="text-sm font-bold text-[#9B8F85] hover:text-[#231B16] px-1 cursor-pointer"
+                className="text-sm font-bold text-[#7A675A] hover:text-[#2E2019] px-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -292,13 +292,13 @@ export function App() {
             {/* Resultados */}
             <div className="mt-3 max-h-80 overflow-y-auto flex flex-col gap-1.5 pr-1">
               {searchQuery.trim().length === 0 ? (
-                <p className="py-6 text-center text-xs text-[#9B8F85]">
+                <p className="py-6 text-center text-xs text-[#7A675A]">
                   Digite qualquer palavra para buscar em tempo real por todo o Loma.
                 </p>
               ) : isSearching ? (
-                <p className="py-6 text-center text-xs text-[#9B8F85]">Buscando...</p>
+                <p className="py-6 text-center text-xs text-[#7A675A]">Buscando...</p>
               ) : searchResultsData?.results.length === 0 ? (
-                <p className="py-6 text-center text-xs text-[#9B8F85]">
+                <p className="py-6 text-center text-xs text-[#7A675A]">
                   Nenhum resultado encontrado para "{searchQuery}".
                 </p>
               ) : (
@@ -316,18 +316,18 @@ export function App() {
                       setIsSearchOpen(false);
                       setSearchQuery("");
                     }}
-                    className="flex cursor-pointer items-center justify-between rounded-2xl border border-[#EAE2D6] bg-white p-3 transition hover:border-[#C47882] hover:bg-[#FAF7F2]"
+                    className="flex cursor-pointer items-center justify-between rounded-2xl border border-[#E7DBC6] bg-white p-3 transition hover:border-[#E8836B] hover:bg-[#FAF4E8]"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="rounded-full bg-[#F2ECE3] px-2 py-0.5 text-[9px] font-bold uppercase text-[#6E6259]">
+                        <span className="rounded-full bg-[#F3E9D7] px-2 py-0.5 text-[9px] font-bold uppercase text-[#7A675A]">
                           {item.area}
                         </span>
-                        <h4 className="text-xs font-bold text-[#231B16] truncate">{item.title}</h4>
+                        <h4 className="text-xs font-bold text-[#2E2019] truncate">{item.title}</h4>
                       </div>
-                      <p className="text-[11px] text-[#6E6259] mt-0.5 truncate">{item.subtitle}</p>
+                      <p className="text-[11px] text-[#7A675A] mt-0.5 truncate">{item.subtitle}</p>
                     </div>
-                    <span className="text-xs text-[#C47882] shrink-0 font-bold ml-2">→</span>
+                    <span className="text-xs text-[#E8836B] shrink-0 font-bold ml-2">→</span>
                   </div>
                 ))
               )}
@@ -747,10 +747,10 @@ function CreateItemModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-xs">
-      <div className="w-full max-w-sm rounded-3xl border border-[#EAE2D6] bg-white p-5 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-[#EAE2D6] pb-3">
-          <h3 className="font-serif-loma text-base font-bold text-[#231B16]">{getModalTitle()}</h3>
-          <button onClick={onClose} className="cursor-pointer text-sm text-[#9B8F85] hover:text-[#231B16]">
+      <div className="w-full max-w-sm rounded-3xl border border-[#E7DBC6] bg-white p-5 shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[#E7DBC6] pb-3">
+          <h3 className="font-serif text-base font-bold text-[#2E2019]">{getModalTitle()}</h3>
+          <button onClick={onClose} className="cursor-pointer text-sm text-[#7A675A] hover:text-[#2E2019]">
             ✕
           </button>
         </div>
@@ -758,14 +758,14 @@ function CreateItemModal({
         <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 text-xs">
           {type !== "humor" && (
             <div>
-              <label className="block font-medium text-[#6E6259]">Título / Nome</label>
+              <label className="block font-medium text-[#7A675A]">Título / Nome</label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ex: Consulta, Treino, Salmo 23..."
-                className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2.5 text-xs text-[#231B16] focus:border-[#C47882] focus:outline-hidden"
+                className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2.5 text-xs text-[#2E2019] focus:border-[#E8836B] focus:outline-hidden"
               />
             </div>
           )}
@@ -775,11 +775,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Tipo</label>
+                  <label className="block font-medium text-[#7A675A]">Tipo</label>
                   <select
                     value={healthKind}
                     onChange={(e) => setHealthKind(e.target.value as any)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="consulta">Consulta</option>
                     <option value="exame">Exame</option>
@@ -788,23 +788,23 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Data</label>
+                  <label className="block font-medium text-[#7A675A]">Data</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Médico / Clínica</label>
+                <label className="block font-medium text-[#7A675A]">Médico / Clínica</label>
                 <input
                   type="text"
                   placeholder="Ex: Dr. Arnaldo Silveira"
                   value={notesText}
                   onChange={(e) => setNotesText(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -815,11 +815,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Modalidade</label>
+                  <label className="block font-medium text-[#7A675A]">Modalidade</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="musculacao">Musculação</option>
                     <option value="corrida">Corrida</option>
@@ -829,23 +829,23 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Duração (min)</label>
+                  <label className="block font-medium text-[#7A675A]">Duração (min)</label>
                   <input
                     type="number"
                     value={duration}
                     onChange={(e) => setDuration(parseInt(e.target.value) || 30)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Observações / Cargas (vai para Notas)</label>
+                <label className="block font-medium text-[#7A675A]">Observações / Cargas (vai para Notas)</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Ex: Supino 3x10, sensação de força..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -854,11 +854,11 @@ function CreateItemModal({
           {/* CUIDADO */}
           {type === "cuidado" && (
             <div>
-              <label className="block font-medium text-[#6E6259]">Área de Cuidado</label>
+              <label className="block font-medium text-[#7A675A]">Área de Cuidado</label>
               <select
                 value={careKind}
                 onChange={(e) => setCareKind(e.target.value as any)}
-                className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
               >
                 <option value="pele">Pele / Skincare</option>
                 <option value="cabelo">Cabelo</option>
@@ -873,11 +873,11 @@ function CreateItemModal({
           {type === "humor" && (
             <>
               <div>
-                <label className="block font-medium text-[#6E6259]">Como você está se sentindo?</label>
+                <label className="block font-medium text-[#7A675A]">Como você está se sentindo?</label>
                 <select
                   value={moodChoice}
                   onChange={(e) => setMoodChoice(e.target.value as any)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2.5 text-xs font-semibold"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2.5 text-xs font-semibold"
                 >
                   <option value="radiante">☀️ Radiante e entusiasmado</option>
                   <option value="calmo">🌿 Calmo e equilibrado</option>
@@ -888,36 +888,36 @@ function CreateItemModal({
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Energia (1 a 5)</label>
+                  <label className="block font-medium text-[#7A675A]">Energia (1 a 5)</label>
                   <input
                     type="number"
                     min={1}
                     max={5}
                     value={energyLevel}
                     onChange={(e) => setEnergyLevel(parseInt(e.target.value) || 3)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Sono (horas)</label>
+                  <label className="block font-medium text-[#7A675A]">Sono (horas)</label>
                   <input
                     type="number"
                     min={1}
                     max={18}
                     value={sleepHours}
                     onChange={(e) => setSleepHours(parseInt(e.target.value) || 8)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Reflexão do dia</label>
+                <label className="block font-medium text-[#7A675A]">Reflexão do dia</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="O que influenciou seu humor hoje?"
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -928,11 +928,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Tipo</label>
+                  <label className="block font-medium text-[#7A675A]">Tipo</label>
                   <select
                     value={devotionalKind}
                     onChange={(e) => setDevotionalKind(e.target.value as any)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="leitura">Leitura Bíblica</option>
                     <option value="oracao">Oração</option>
@@ -941,24 +941,24 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Passagem / Versículo</label>
+                  <label className="block font-medium text-[#7A675A]">Passagem / Versículo</label>
                   <input
                     type="text"
                     placeholder="Ex: Salmo 23:1"
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Reflexão (vai para Notas Agregadas)</label>
+                <label className="block font-medium text-[#7A675A]">Reflexão (vai para Notas Agregadas)</label>
                 <textarea
                   rows={3}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="O que Deus falou ao seu coração hoje?"
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs focus:border-[#C47882] focus:outline-hidden"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs focus:border-[#E8836B] focus:outline-hidden"
                 />
               </div>
             </>
@@ -969,11 +969,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Refeição</label>
+                  <label className="block font-medium text-[#7A675A]">Refeição</label>
                   <select
                     value={mealKind}
                     onChange={(e) => setMealKind(e.target.value as any)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="almoco">Almoço</option>
                     <option value="jantar">Jantar</option>
@@ -982,11 +982,11 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Dia da Semana</label>
+                  <label className="block font-medium text-[#7A675A]">Dia da Semana</label>
                   <select
                     value={mealDay}
                     onChange={(e) => setMealDay(e.target.value as any)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs capitalize"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs capitalize"
                   >
                     {["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"].map((d) => (
                       <option key={d} value={d}>
@@ -997,13 +997,13 @@ function CreateItemModal({
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Ingredientes / Modo de Preparo</label>
+                <label className="block font-medium text-[#7A675A]">Ingredientes / Modo de Preparo</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Ex: Arroz, salmão grelhado, brócolis ao vapor..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1013,11 +1013,11 @@ function CreateItemModal({
           {type === "item_mercado" && (
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-medium text-[#6E6259]">Categoria</label>
+                <label className="block font-medium text-[#7A675A]">Categoria</label>
                 <select
                   value={category || "despensa"}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 >
                   <option value="despensa">Despensa</option>
                   <option value="hortifruti">Hortifrúti</option>
@@ -1028,13 +1028,13 @@ function CreateItemModal({
                 </select>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Quantidade</label>
+                <label className="block font-medium text-[#7A675A]">Quantidade</label>
                 <input
                   type="text"
                   placeholder="Ex: 2 pct, 1 kg"
                   value={amountStr}
                   onChange={(e) => setAmountStr(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </div>
@@ -1044,11 +1044,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Cômodo</label>
+                  <label className="block font-medium text-[#7A675A]">Cômodo</label>
                   <select
                     value={category || "Geral"}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="Geral">Geral</option>
                     <option value="Cozinha">Cozinha</option>
@@ -1059,33 +1059,33 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Prazo</label>
+                  <label className="block font-medium text-[#7A675A]">Prazo</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Custo Estimado (R$)</label>
+                <label className="block font-medium text-[#7A675A]">Custo Estimado (R$)</label>
                 <input
                   type="text"
                   placeholder="Ex: 150,00"
                   value={amountStr}
                   onChange={(e) => setAmountStr(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                 />
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Observações (vai para Notas)</label>
+                <label className="block font-medium text-[#7A675A]">Observações (vai para Notas)</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Detalhes técnicos, peças ou profissional..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1095,11 +1095,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Categoria</label>
+                  <label className="block font-medium text-[#7A675A]">Categoria</label>
                   <select
                     value={category || "escola"}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="escola">Escola</option>
                     <option value="atividade">Atividade</option>
@@ -1108,23 +1108,23 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Data</label>
+                  <label className="block font-medium text-[#7A675A]">Data</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Notas Pedagógicas (vai para Notas)</label>
+                <label className="block font-medium text-[#7A675A]">Notas Pedagógicas (vai para Notas)</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Observações do desenvolvimento, notas..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1134,11 +1134,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Categoria</label>
+                  <label className="block font-medium text-[#7A675A]">Categoria</label>
                   <select
                     value={category || "casa"}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="casa">Casa</option>
                     <option value="tecnologia">Tecnologia</option>
@@ -1147,24 +1147,24 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Preço Estimado (R$)</label>
+                  <label className="block font-medium text-[#7A675A]">Preço Estimado (R$)</label>
                   <input
                     type="text"
                     placeholder="Ex: 450,00"
                     value={amountStr}
                     onChange={(e) => setAmountStr(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Loja ou Referência</label>
+                <label className="block font-medium text-[#7A675A]">Loja ou Referência</label>
                 <input
                   type="text"
                   placeholder="Ex: Amazon, Mercado Livre, Decathlon..."
                   value={notesText}
                   onChange={(e) => setNotesText(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1174,11 +1174,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Tipo de Cuidado</label>
+                  <label className="block font-medium text-[#7A675A]">Tipo de Cuidado</label>
                   <select
                     value={category || "consulta"}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="vacina">Vacina</option>
                     <option value="consulta">Veterinário</option>
@@ -1188,23 +1188,23 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Data</label>
+                  <label className="block font-medium text-[#7A675A]">Data</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Observações (vai para Notas)</label>
+                <label className="block font-medium text-[#7A675A]">Observações (vai para Notas)</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Clínica, peso, dosagem..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1213,34 +1213,34 @@ function CreateItemModal({
           {type === "contato_emergencia" && (
             <>
               <div>
-                <label className="block font-medium text-[#6E6259]">Relação / Função</label>
+                <label className="block font-medium text-[#7A675A]">Relação / Função</label>
                 <input
                   type="text"
                   placeholder="Ex: SAMU 192, Pediatra, Chaveiro 24h, Vizinho..."
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Telefone / Contato</label>
+                <label className="block font-medium text-[#7A675A]">Telefone / Contato</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: (11) 98765-4321 ou 192"
                   value={notesText}
                   onChange={(e) => setNotesText(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Endereço / Observações</label>
+                <label className="block font-medium text-[#7A675A]">Endereço / Observações</label>
                 <input
                   type="text"
                   placeholder="Detalhes ou endereço..."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1250,21 +1250,21 @@ function CreateItemModal({
           {type === "agenda" && (
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-medium text-[#6E6259]">Data</label>
+                <label className="block font-medium text-[#7A675A]">Data</label>
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Horário</label>
+                <label className="block font-medium text-[#7A675A]">Horário</label>
                 <input
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </div>
@@ -1272,11 +1272,11 @@ function CreateItemModal({
 
           {type === "habito" && (
             <div>
-              <label className="block font-medium text-[#6E6259]">Período do Dia</label>
+              <label className="block font-medium text-[#7A675A]">Período do Dia</label>
               <select
                 value={period}
                 onChange={(e) => setPeriod(e.target.value as any)}
-                className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
               >
                 <option value="manha">Manhã</option>
                 <option value="tarde">Tarde</option>
@@ -1289,11 +1289,11 @@ function CreateItemModal({
           {type === "tarefa" && (
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block font-medium text-[#6E6259]">Prioridade</label>
+                <label className="block font-medium text-[#7A675A]">Prioridade</label>
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as any)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 >
                   <option value="alta">Alta</option>
                   <option value="media">Média</option>
@@ -1301,12 +1301,12 @@ function CreateItemModal({
                 </select>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Data Limite</label>
+                <label className="block font-medium text-[#7A675A]">Data Limite</label>
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </div>
@@ -1315,11 +1315,11 @@ function CreateItemModal({
           {type === "nota" && (
             <>
               <div>
-                <label className="block font-medium text-[#6E6259]">Módulo de Origem</label>
+                <label className="block font-medium text-[#7A675A]">Módulo de Origem</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 >
                   <option value="Geral">Geral</option>
                   <option value="Devocional">Devocional</option>
@@ -1334,14 +1334,14 @@ function CreateItemModal({
                 </select>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Conteúdo da Anotação</label>
+                <label className="block font-medium text-[#7A675A]">Conteúdo da Anotação</label>
                 <textarea
                   rows={3}
                   required
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Escreva a anotação aqui..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs focus:border-[#C47882] focus:outline-hidden"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs focus:border-[#E8836B] focus:outline-hidden"
                 />
               </div>
             </>
@@ -1352,55 +1352,55 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Cliente / Empresa</label>
+                  <label className="block font-medium text-[#7A675A]">Cliente / Empresa</label>
                   <input
                     type="text"
                     placeholder="Ex: Fintech Alpha"
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Área</label>
+                  <label className="block font-medium text-[#7A675A]">Área</label>
                   <input
                     type="text"
                     placeholder="Ex: Desenvolvimento"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Honorários (R$)</label>
+                  <label className="block font-medium text-[#7A675A]">Honorários (R$)</label>
                   <input
                     type="text"
                     placeholder="Ex: 5.000,00"
                     value={amountStr}
                     onChange={(e) => setAmountStr(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Prazo de Entrega</label>
+                  <label className="block font-medium text-[#7A675A]">Prazo de Entrega</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Escopo / Anotações</label>
+                <label className="block font-medium text-[#7A675A]">Escopo / Anotações</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Detalhes da entrega..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1411,32 +1411,32 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Plataforma / Instituição</label>
+                  <label className="block font-medium text-[#7A675A]">Plataforma / Instituição</label>
                   <input
                     type="text"
                     placeholder="Ex: Alura / Coursera"
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Carga Horária (h)</label>
+                  <label className="block font-medium text-[#7A675A]">Carga Horária (h)</label>
                   <input
                     type="number"
                     placeholder="Ex: 60"
                     value={amountStr}
                     onChange={(e) => setAmountStr(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Categoria</label>
+                <label className="block font-medium text-[#7A675A]">Categoria</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 >
                   <option value="tecnologia">Tecnologia</option>
                   <option value="idiomas">Idiomas</option>
@@ -1453,34 +1453,34 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Autor(a)</label>
+                  <label className="block font-medium text-[#7A675A]">Autor(a)</label>
                   <input
                     type="text"
                     placeholder="Ex: James Clear"
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Total de Páginas</label>
+                  <label className="block font-medium text-[#7A675A]">Total de Páginas</label>
                   <input
                     type="number"
                     placeholder="Ex: 320"
                     value={amountStr}
                     onChange={(e) => setAmountStr(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Resenha / Citação (vai para Notas)</label>
+                <label className="block font-medium text-[#7A675A]">Resenha / Citação (vai para Notas)</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Trecho marcante ou aprendizado central..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1491,33 +1491,33 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Próximo Marco</label>
+                  <label className="block font-medium text-[#7A675A]">Próximo Marco</label>
                   <input
                     type="text"
                     placeholder="Ex: Lançamento v1.0"
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Prazo Alvo</label>
+                  <label className="block font-medium text-[#7A675A]">Prazo Alvo</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Observações / Ideias (vai para Notas)</label>
+                <label className="block font-medium text-[#7A675A]">Observações / Ideias (vai para Notas)</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Escopo do projeto..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1528,54 +1528,54 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Data Início</label>
+                  <label className="block font-medium text-[#7A675A]">Data Início</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Data Término</label>
+                  <label className="block font-medium text-[#7A675A]">Data Término</label>
                   <input
                     type="date"
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Hospedagem</label>
+                  <label className="block font-medium text-[#7A675A]">Hospedagem</label>
                   <input
                     type="text"
                     placeholder="Ex: Pousada Vila Inglesa"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Orçamento (R$)</label>
+                  <label className="block font-medium text-[#7A675A]">Orçamento (R$)</label>
                   <input
                     type="text"
                     placeholder="Ex: 4.500,00"
                     value={amountStr}
                     onChange={(e) => setAmountStr(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Checklist de Bagagem / Roteiro (vai para Notas)</label>
+                <label className="block font-medium text-[#7A675A]">Checklist de Bagagem / Roteiro (vai para Notas)</label>
                 <textarea
                   rows={2}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Ex: Casacos de frio, documentos, passeios..."
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1586,11 +1586,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Titular</label>
+                  <label className="block font-medium text-[#7A675A]">Titular</label>
                   <select
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="Marcos">Marcos</option>
                     <option value="Ana">Ana</option>
@@ -1598,23 +1598,23 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Data de Validade</label>
+                  <label className="block font-medium text-[#7A675A]">Data de Validade</label>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Número / Registro</label>
+                <label className="block font-medium text-[#7A675A]">Número / Registro</label>
                 <input
                   type="text"
                   placeholder="Ex: BR-984210"
                   value={amountStr}
                   onChange={(e) => setAmountStr(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1625,11 +1625,11 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Tipo</label>
+                  <label className="block font-medium text-[#7A675A]">Tipo</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="filme">Filme</option>
                     <option value="serie">Série</option>
@@ -1637,24 +1637,24 @@ function CreateItemModal({
                   </select>
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Plataforma</label>
+                  <label className="block font-medium text-[#7A675A]">Plataforma</label>
                   <input
                     type="text"
                     placeholder="Ex: Netflix, Apple TV+"
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Gênero / Recomendação</label>
+                <label className="block font-medium text-[#7A675A]">Gênero / Recomendação</label>
                 <input
                   type="text"
                   placeholder="Ex: Ficção Científica • Recomendado por Ana"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1665,21 +1665,21 @@ function CreateItemModal({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Artista / Curador</label>
+                  <label className="block font-medium text-[#7A675A]">Artista / Curador</label>
                   <input
                     type="text"
                     placeholder="Ex: Loma Curadoria"
                     value={notesText}
                     onChange={(e) => setNotesText(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-[#6E6259]">Momento / Humor</label>
+                  <label className="block font-medium text-[#7A675A]">Momento / Humor</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                    className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                   >
                     <option value="foco">Foco</option>
                     <option value="calma">Calma</option>
@@ -1690,13 +1690,13 @@ function CreateItemModal({
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Álbum / Playlist</label>
+                <label className="block font-medium text-[#7A675A]">Álbum / Playlist</label>
                 <input
                   type="text"
                   placeholder="Ex: Trabalho Sereno"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs"
                 />
               </div>
             </>
@@ -1710,7 +1710,7 @@ function CreateItemModal({
                     type="button"
                     onClick={() => setTxType("despesa")}
                     className={`flex-1 rounded-xl py-1.5 font-bold transition ${
-                      txType === "despesa" ? "bg-[#B36670] text-white" : "bg-[#F2ECE3] text-[#6E6259]"
+                      txType === "despesa" ? "bg-[#CF6248] text-white" : "bg-[#F3E9D7] text-[#7A675A]"
                     }`}
                   >
                     Despesa
@@ -1719,7 +1719,7 @@ function CreateItemModal({
                     type="button"
                     onClick={() => setTxType("receita")}
                     className={`flex-1 rounded-xl py-1.5 font-bold transition ${
-                      txType === "receita" ? "bg-[#3B7A6B] text-white" : "bg-[#F2ECE3] text-[#6E6259]"
+                      txType === "receita" ? "bg-[#7D8C6F] text-white" : "bg-[#F3E9D7] text-[#7A675A]"
                     }`}
                   >
                     Receita
@@ -1727,40 +1727,40 @@ function CreateItemModal({
                 </div>
               )}
               <div>
-                <label className="block font-medium text-[#6E6259]">Valor (R$)</label>
+                <label className="block font-medium text-[#7A675A]">Valor (R$)</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: 150,00"
                   value={amountStr}
                   onChange={(e) => setAmountStr(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs tabular-nums focus:border-[#C47882] focus:outline-hidden"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs tabular-nums focus:border-[#E8836B] focus:outline-hidden"
                 />
               </div>
               <div>
-                <label className="block font-medium text-[#6E6259]">Categoria</label>
+                <label className="block font-medium text-[#7A675A]">Categoria</label>
                 <input
                   type="text"
                   placeholder="Ex: Moradia, Mercado, Saúde, Lazer..."
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#EAE2D6] bg-[#FAF7F2] p-2 text-xs focus:border-[#C47882] focus:outline-hidden"
+                  className="mt-1 w-full rounded-xl border border-[#E7DBC6] bg-[#FAF4E8] p-2 text-xs focus:border-[#E8836B] focus:outline-hidden"
                 />
               </div>
             </>
           )}
 
-          <div className="mt-3 flex justify-end gap-2 border-t border-[#EAE2D6] pt-3">
+          <div className="mt-3 flex justify-end gap-2 border-t border-[#E7DBC6] pt-3">
             <button
               type="button"
               onClick={onClose}
-              className="cursor-pointer rounded-xl bg-[#F2ECE3] px-3 py-2 font-medium text-[#6E6259] hover:bg-[#EAE2D6]"
+              className="cursor-pointer rounded-xl bg-[#F3E9D7] px-3 py-2 font-medium text-[#7A675A] hover:bg-[#E7DBC6]"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="cursor-pointer rounded-xl bg-[#C47882] px-4 py-2 font-bold text-white shadow-xs transition hover:bg-[#B36670]"
+              className="cursor-pointer rounded-xl bg-[#E8836B] px-4 py-2 font-bold text-white shadow-xs transition hover:bg-[#CF6248]"
             >
               Salvar
             </button>

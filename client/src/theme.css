@@ -3,29 +3,31 @@
 
 :root {
   color-scheme: light;
-  --font-serif: "DM Serif Display", Georgia, serif;
+  --font-serif: "Fraunces", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  --color-cream: #FAF7F2;
-  --color-sand: #F2ECE3;
-  --color-white: #FFFFFF;
-  --color-espresso: #231B16;
-  --color-espresso-soft: #3A2E27;
-  --color-text-sec: #6E6259;
-  --color-text-muted: #9B8F85;
-  --color-rose: #C47882;
-  --color-rose-hover: #B36670;
-  --color-rose-soft: #F8ECEE;
-  --color-sage: #3B7A6B;
-  --color-sage-soft: #E9F3F0;
-  --color-amber: #9E6123;
-  --color-amber-soft: #FBF2E6;
-  --color-slate: #465768;
-  --color-slate-soft: #EDF1F5;
-  --color-plum: #6F4C7D;
-  --color-plum-soft: #F3EDF6;
-  --color-border: #EAE2D6;
-  --color-border-focus: #DDD2C3;
+  /* Paleta oficial do Loma Atual (PADRONIZACAO-VISUAL-LOMA.md) */
+  --color-bg-page: #FAF4E8;        /* Fundo da página (creme quente) */
+  --color-surface-card: #FFFDF8;   /* Superfície do cartão */
+  --color-surface-warm: #F3E9D7;   /* Superfície morna */
+  --color-text-main: #2E2019;      /* Texto principal / Cacau */
+  --color-text-meta: #7A675A;      /* Texto suave (meta) */
+  --color-border-delicate: #E7DBC6;/* Borda / linha delicada */
+  --color-accent-coral: #E8836B;   /* Destaque (coral) - substitui rosa antigo #C47882 */
+  --color-accent-strong: #CF6248;  /* Destaque forte */
+  --color-cocoa: #2E2019;          /* Cacau (cartão escuro / botões) */
+  --color-cocoa-soft: #4A382C;     /* Cacau suave */
+  --color-sage: #7D8C6F;           /* Verde sálvia */
+  --color-gold: #C79A3B;           /* Dourado */
+  --color-danger: #B3402E;         /* Perigo */
+
+  /* Cartão-Herói: Degradê linear 135° Vinho → Roxo/Violeta */
+  --hero-start: #7E354F;
+  --hero-mid: #653259;
+  --hero-end: #4C2B57;
+  --hero-glow: #A85D7A;
+  --hero-text: #FFF7EA;
+  --hero-highlight: #F3C6D2;
 }
 
 *, *::before, *::after {
@@ -38,8 +40,8 @@ html, body {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  background-color: var(--color-cream);
-  color: var(--color-espresso);
+  background-color: var(--color-bg-page);
+  color: var(--color-text-main);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
@@ -48,12 +50,25 @@ html, body {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  background-color: var(--color-bg-page);
 }
 
-.font-serif-loma {
+.font-serif, .font-serif-loma {
   font-family: var(--font-serif);
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* Cartão Herói Canônico Loma Atual */
+.loma-hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: radial-gradient(circle at top right, rgba(168, 93, 122, 0.20) 0%, transparent 60%),
+              linear-gradient(135deg, #7E354F 0%, #653259 55%, #4C2B57 100%);
+  color: #FFF7EA;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(76, 43, 87, 0.12);
 }
