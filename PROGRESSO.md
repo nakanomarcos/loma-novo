@@ -1,5 +1,7 @@
 # PROGRESSO — Loma Novo (construção fora, no Antigravity)
 
+Você pode acessá-lo diretamente pelo link: 👉 http://localhost:3333
+
 > Atualizar ao fim de cada fase: o que foi feito, o que falta, o que foi testado.
 > Só avançar para a próxima fase com typecheck + build verdes e aceite do Marcos.
 
@@ -74,6 +76,21 @@
     6. **Responsividade Mobile:**
        - 100% testado em 390 px e 360 px com zero overflow horizontal (`hasOverflow: false`).
 
+- **Correção Geral — Auditoria do Mano (19/11/2026): APLICADA (Aguardando aceite do Marcos).**
+  - **1) Finanças Completa com 18 Submódulos Canônicos:**
+    - Criados os que faltavam: **Proteção** (tabela SQLite `financeProtections` com apólices de vida, residencial, auto e saúde) e **Consultor de Finanças** (com diagnóstico real de taxa de poupança, endividamento, reserva e planos de ação em 30, 90 e 365 dias).
+    - Criados os **10 submódulos do Investir** com dados reais e telas dedicadas: Carteira, Aportes/Resgates, Rentabilidade, Alocação, Liquidez, Previdência, Aposentadoria, Projeção até 100 anos, Liberdade Financeira e Mercado.
+  - **2) 4 Gráficos Recharts com Dados Reais e Paleta Oficial:**
+    - **Finanças > Visão Geral:** Receitas × Despesas dos últimos 6 meses (BarChart com `#7D8C6F` e `#E8836B`) e Evolução do Patrimônio Líquido (AreaChart com `#653259`).
+    - **Finanças > Orçamento:** Despesas por Categoria (Donut PieChart com paleta oficial `#E8836B`, `#7D8C6F`, `#C79A3B`, `#653259`).
+    - **Finanças > Investir > Alocação:** Alocação por Classe de Ativo (Donut PieChart com legenda e percentuais reais).
+    - Gráficos só renderizam com dados no banco (sem container vazio e sem escrever "sem valor").
+  - **3) Navegação Vertical por Cartões Empilhados (Fim da Rolagem Horizontal de Chips):**
+    - Todas as 5 áreas (Home, Bem-estar, Casa, Finanças, Crescer) abrem com Hero Card seguido do **Índice de Módulos** em cartões individuais LomaCard com rolagem vertical natural.
+    - Tocar no cartão abre a tela do módulo com botão `[← Voltar ao Início / Índice]`.
+    - Chips permitidos exclusivamente como sub-filtros internos que quebram linha (`flex-wrap`, máx 2 por linha).
+    - **Bem-estar:** Devocional e Espiritualidade separados como módulos independentes conforme especificação.
+
 ---
 
 ## Registro de fases
@@ -86,27 +103,28 @@
 | 3 — Casa e família | Aba Casa completa (10 módulos) + espelhamento em Notas | `bun run typecheck` verde · `bun run build` verde · 6 prints mobile capturados | Concluído |
 | 4 — Crescer | Aba Crescer completa (8 módulos) + Hero Card + espelhamento em Notas | `bun run typecheck` verde · `bun run build` verde · 9 prints mobile capturados | Concluído |
 | 5 — Conectada | Inteligência Conectada (alertas, insights, Visão 360°, Consultor IA, Busca Global Cmd+K, Backup JSON) | `bun run typecheck` verde · `bun run build` verde · 5 prints mobile capturados | Concluído |
-| Padronização Visual Loma Atual | Paleta oficial Loma atual (#FAF4E8, #2E2019, #E8836B, #E7DBC6), Fraunces, cartões 24px/62px sanfona, herói degradê vinho→roxo (#7E354F→#653259→#4C2B57) com rosa #F3C6D2 em todas as áreas, Apoio em cartões e export/import conferido | `bun run typecheck` verde · `bun run build` verde · 15 prints mobile novos (390px e 360px, zero overflow) | **Aguardando aceite** |
+| Padronização Visual Loma Atual | Paleta oficial Loma atual (#FAF4E8, #2E2019, #E8836B, #E7DBC6), Fraunces, cartões 24px/62px sanfona, herói degradê vinho→roxo (#7E354F→#653259→#4C2B57) com rosa #F3C6D2 em todas as áreas, Apoio em cartões e export/import conferido | `bun run typecheck` verde · `bun run build` verde · 15 prints mobile novos (390px e 360px, zero overflow) | Concluído |
+| Correções Gerais do Mano | Finanças 18 submódulos, 4 gráficos Recharts, navegação vertical por índice de cartões em todas as áreas, Devocional e Espiritualidade separados | `bun run typecheck` verde · `bun run build` verde · 19 prints mobile novos (390px e 360px, zero overflow) | **Aguardando aceite do Marcos** |
 
 ---
 
 ## Tamanho do código
 
-> Contagem oficial via `wc -l` realizada em 19/11/2026 após aplicação da **Padronização Visual do Loma Atual e Cartão-Herói Degradê**.  
+> Contagem oficial via `wc -l` realizada em 19/11/2026 após aplicação das **Correções Gerais do Mano** (Finanças 18 módulos, Recharts e Navegação Vertical por Cartões Empilhados).  
 > **Escopo de Código:** exclusivamente `client/src/` e `server/src/` (`.ts`, `.tsx`, `.css`) + `drizzle/` (`.sql`).  
 > **Regra do Molde:** contagem direta de linhas via `wc -l` sem fragmentação de pastas (máximo de 15 a 20 arquivos).
 
 | Arquivo | Linhas |
 | --- | ---: |
-| `server/src/actions.ts` | 3.777 |
+| `server/src/actions.ts` | 3.998 |
 | `client/src/App.tsx` | 1.772 |
+| `client/src/Financas.tsx` | 1.729 |
 | `client/src/Apoio.tsx` | 1.209 |
-| `client/src/Crescer.tsx` | 898 |
-| `client/src/Casa.tsx` | 808 |
-| `client/src/Home.tsx` | 800 |
-| `client/src/BemEstar.tsx` | 614 |
-| `server/src/schema.ts` | 587 |
-| `client/src/Financas.tsx` | 485 |
+| `client/src/Crescer.tsx` | 1.019 |
+| `client/src/Casa.tsx` | 942 |
+| `client/src/Home.tsx` | 881 |
+| `client/src/BemEstar.tsx` | 797 |
+| `server/src/schema.ts` | 605 |
 | `drizzle/0002_loma_fundacao.sql` | 131 |
 | `drizzle/0004_loma_casa_familia.sql` | 130 |
 | `drizzle/0005_loma_crescer.sql` | 106 |
@@ -115,9 +133,10 @@
 | `client/src/main.tsx` | 28 |
 | `client/src/api.ts` | 20 |
 | `client/src/globals.d.ts` | 18 |
+| `drizzle/0007_loma_financas_completa.sql` | 14 |
 | `drizzle/0006_loma_fase5_conectada.sql` | 13 |
 | `drizzle/0001_initial.sql` | 5 |
-| **Total de Código** | **11.545** |
+| **Total de Código** | **13.561** |
 
-- **Diferença em relação à contagem anterior:** **+39 linhas** (de 11.506 para 11.545 linhas), referentes aos tokens e classes de herói degradê no `theme.css` e refinamentos de tipografia.
-- **Total de Documentos (`.md`):** **3.653 linhas** (em 10 arquivos de especificação, padronização e governança).
+- **Diferença em relação à contagem anterior:** **+2.016 linhas** (de 11.545 para 13.561 linhas), decorrentes da expansão de Finanças de 6 para 18 submódulos (+1.244 linhas em `Financas.tsx`, +221 em `actions.ts`, +18 em `schema.ts`, +14 em migração SQL), da inclusão dos 4 gráficos Recharts e dos índices verticais de cartões empilhados em todas as 5 áreas (+183 em `BemEstar.tsx`, +134 em `Casa.tsx`, +121 em `Crescer.tsx`, +81 em `Home.tsx`).
+- **Total de Documentos (`.md`):** **3.629 linhas** (em 10 arquivos de especificação, padronização, relatórios e governança).

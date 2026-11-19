@@ -157,6 +157,24 @@ export const financeInvestments = sqliteTable("finance_investments", {
     .$defaultFn(() => new Date()),
 });
 
+// Finanças — Proteção & Seguros
+export const financeProtections = sqliteTable("finance_protections", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  type: text("type").notNull().default("vida"), // vida, saude, residencial, veiculo, viagem
+  insurer: text("insurer").notNull(), // Porto Seguro, Bradesco, Tokio Marine, SulAmérica
+  coverageAmountCents: integer("coverage_amount_cents").notNull().default(0),
+  premiumMonthlyCents: integer("premium_monthly_cents").notNull().default(0),
+  policyNumber: text("policy_number").notNull().default(""),
+  renewsAt: text("renews_at").notNull().default(""), // YYYY-MM-DD
+  beneficiaries: text("beneficiaries").notNull().default(""),
+  notes: text("notes"),
+  isDemo: integer("is_demo").notNull().default(1),
+  createdAt: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
 // Logs do Sistema e Auditoria
 export const systemLogs = sqliteTable("system_logs", {
   id: integer("id").primaryKey({ autoIncrement: true }),

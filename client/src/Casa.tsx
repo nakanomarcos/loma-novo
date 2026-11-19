@@ -23,8 +23,9 @@ function LomaCard({
   onDelete,
   children,
   badge,
+  onClick,
 }: {
-  id: number;
+  id?: number | string;
   title: string;
   meta?: string | null;
   category?: string | null;
@@ -33,8 +34,17 @@ function LomaCard({
   onDelete?: () => void;
   children?: React.ReactNode;
   badge?: React.ReactNode;
+  onClick?: () => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleHeaderClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      setIsExpanded(!isExpanded);
+    }
+  };
 
   return (
     <div
@@ -44,7 +54,7 @@ function LomaCard({
       }`}
     >
       <div
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleHeaderClick}
         className="flex min-h-[62px] items-center justify-between gap-3 py-3 px-4 cursor-pointer select-none"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -89,13 +99,20 @@ function LomaCard({
 
         <div className="flex items-center gap-2 shrink-0">
           {badge}
-          <span className={`text-[#7A675A] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
-            ▼
-          </span>
+          {!onClick && children && (
+            <span
+              className={`text-[#7A675A] text-xs transition-transform duration-200 ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            >
+              ▼
+            </span>
+          )}
+          {onClick && <span className="text-[#7A675A] text-xs">→</span>}
         </div>
       </div>
 
-      {isExpanded && (
+      {!onClick && isExpanded && children && (
         <div className="border-t border-[#E7DBC6] bg-[#FAF4E8]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
           {children}
 
@@ -254,34 +271,6 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
 
   return (
     <div className="flex flex-col gap-4 pb-24">
-      {/* Sub-navegação dos módulos de Casa & Família */}
-      <div className="w-full max-w-full min-w-0 flex gap-1.5 overflow-x-auto pb-1 text-xs">
-        {[
-          { key: "resumo", label: "Visão Geral" },
-          { key: "mercado", label: "Mercado & Despensa" },
-          { key: "manutencoes", label: "Manutenções" },
-          { key: "filhos", label: "Filhos & Escola" },
-          { key: "compras", label: "Desejos & Compras" },
-          { key: "pets", label: "Pets" },
-          { key: "veiculos", label: "Veículos" },
-          { key: "patrimonio", label: "Patrimônio" },
-          { key: "seguranca", label: "Segurança" },
-          { key: "relacionamentos", label: "Família & Rede" },
-        ].map((item) => (
-          <button
-            key={item.key}
-            onClick={() => setSubTab(item.key as any)}
-            className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
-              subTab === item.key
-                ? "bg-[#2E2019] text-[#FAF4E8] shadow-xs"
-                : "bg-[#F3E9D7] text-[#7A675A] hover:bg-[#E7DBC6]"
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-
       {/* ======================================================== */}
       {/* 1. VISÃO GERAL (RESUMO CASA & FAMÍLIA) */}
       {/* ======================================================== */}
@@ -326,6 +315,97 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* ÍNDICE DE MÓDULOS DA CASA (10 MÓDULOS EMPILHADOS VERTICALMENTE) */}
+          {/* ======================================================== */}
+          <div className="flex flex-col gap-2 mt-1">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <div>
+                <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">
+                  Índice de Módulos (10)
+                </h3>
+                <p className="text-[13px] text-[#7A675A]">
+                  Toque para gerenciar cada aspecto da rotina doméstica e familiar
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <LomaCard
+                id="mod_mercado"
+                title="Mercado & Despensa"
+                category="Abastecimento"
+                meta={`${groceries.length} itens na lista`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#2E2019] tabular-nums">{summary.groceriesToBuyCount} a comprar</span>}
+                onClick={() => setSubTab("mercado")}
+              />
+              <LomaCard
+                id="mod_manutencoes"
+                title="Casa & Manutenções"
+                category="Conservação"
+                meta={`${maintenances.length} tarefas de reparo e limpeza`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#C79A3B] tabular-nums">{summary.pendingMaintenancesCount} pendentes</span>}
+                onClick={() => setSubTab("manutencoes")}
+              />
+              <LomaCard
+                id="mod_filhos"
+                title="Filhos & Escola"
+                category="Desenvolvimento"
+                meta={`${childrenRoutines.length} atividades cadastradas`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#7D8C6F] tabular-nums">{childrenRoutines.length} rotinas</span>}
+                onClick={() => setSubTab("filhos")}
+              />
+              <LomaCard
+                id="mod_compras"
+                title="Desejos & Compras"
+                category="Planejamento"
+                meta={`${wishlist.length} itens na lista de desejos`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#E8836B] tabular-nums">{wishlist.length} itens</span>}
+                onClick={() => setSubTab("compras")}
+              />
+              <LomaCard
+                id="mod_pets"
+                title="Pets & Cuidados"
+                category="Animais"
+                meta={`${pets.length} pets da família`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#2E2019] tabular-nums">{pets.length} pets</span>}
+                onClick={() => setSubTab("pets")}
+              />
+              <LomaCard
+                id="mod_veiculos"
+                title="Veículos & Garagem"
+                category="Transporte"
+                meta={`${vehicles.length} veículos registrados`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#465768] tabular-nums">{vehicles.length} veículos</span>}
+                onClick={() => setSubTab("veiculos")}
+              />
+              <LomaCard
+                id="mod_patrimonio"
+                title="Patrimônio & Bens"
+                category="Inventário"
+                meta={`${propertyAssets.length} bens imóveis e eletros`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#7D8C6F] tabular-nums">{propertyAssets.length} bens</span>}
+                onClick={() => setSubTab("patrimonio")}
+              />
+              <LomaCard
+                id="mod_seguranca"
+                title="Segurança & Emergências"
+                category="Proteção"
+                meta={`${emergencyContacts.length} contatos de emergência`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#CF6248] tabular-nums">{emergencyContacts.length} contatos</span>}
+                onClick={() => setSubTab("seguranca")}
+              />
+              <LomaCard
+                id="mod_relacionamentos"
+                title="Família & Relacionamentos"
+                category="Vínculos"
+                meta={`${relationships.length} pessoas importantes mapeadas`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#C79A3B] tabular-nums">{relationships.length} vínculos</span>}
+                onClick={() => setSubTab("relacionamentos")}
+              />
             </div>
           </div>
 
@@ -414,6 +494,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "mercado" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Lista de Mercado</h3>
@@ -460,6 +546,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "manutencoes" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Manutenções da Casa</h3>
@@ -513,6 +605,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "filhos" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Rotina dos Filhos</h3>
@@ -558,6 +656,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "compras" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Desejos & Compras</h3>
@@ -612,6 +716,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "pets" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Pets da Família</h3>
@@ -665,6 +775,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "veiculos" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="mb-1 px-1">
             <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Veículos da Família</h3>
             <p className="text-[13px] text-[#7A675A]">Quilometragem, histórico de manutenções e revisões.</p>
@@ -706,6 +822,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "patrimonio" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="mb-1 px-1">
             <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Patrimônio & Bens da Casa</h3>
             <p className="text-[13px] text-[#7A675A]">Inventário doméstico, equipamentos e garantias.</p>
@@ -742,6 +864,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "seguranca" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Contatos de Emergência</h3>
@@ -779,6 +907,12 @@ export function CasaView({ data, isLoading, onOpenAddModal }: CasaProps) {
       {/* ======================================================== */}
       {subTab === "relacionamentos" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar à Casa
+          </button>
           <div className="mb-1 px-1">
             <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Rede Familiar & Relacionamentos</h3>
             <p className="text-[13px] text-[#7A675A]">Datas especiais e frequência de contato com pessoas queridas.</p>

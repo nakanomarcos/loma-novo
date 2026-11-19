@@ -23,8 +23,9 @@ function LomaCard({
   onDelete,
   children,
   badge,
+  onClick,
 }: {
-  id: number;
+  id?: number | string;
   title: string;
   meta?: string | null;
   category?: string | null;
@@ -33,8 +34,17 @@ function LomaCard({
   onDelete?: () => void;
   children?: React.ReactNode;
   badge?: React.ReactNode;
+  onClick?: () => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleHeaderClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      setIsExpanded(!isExpanded);
+    }
+  };
 
   return (
     <div
@@ -44,7 +54,7 @@ function LomaCard({
       }`}
     >
       <div
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleHeaderClick}
         className="flex min-h-[62px] items-center justify-between gap-3 py-3 px-4 cursor-pointer select-none"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -89,13 +99,20 @@ function LomaCard({
 
         <div className="flex items-center gap-2 shrink-0">
           {badge}
-          <span className={`text-[#7A675A] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
-            ▼
-          </span>
+          {!onClick && children && (
+            <span
+              className={`text-[#7A675A] text-xs transition-transform duration-200 ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            >
+              ▼
+            </span>
+          )}
+          {onClick && <span className="text-[#7A675A] text-xs">→</span>}
         </div>
       </div>
 
-      {isExpanded && (
+      {!onClick && isExpanded && children && (
         <div className="border-t border-[#E7DBC6] bg-[#FAF4E8]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
           {children}
 
@@ -256,33 +273,6 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
 
   return (
     <div className="flex flex-col gap-4 pb-24">
-      {/* Sub-navegação dos módulos de Crescer */}
-      <div className="w-full max-w-full min-w-0 flex gap-1.5 overflow-x-auto pb-1 text-xs">
-        {[
-          { key: "resumo", label: "Visão Geral" },
-          { key: "trabalho", label: "Trabalho & Carreira" },
-          { key: "estudos", label: "Estudos & Cursos" },
-          { key: "livros", label: "Livros & Leituras" },
-          { key: "projetos", label: "Projetos Autorais" },
-          { key: "viagens", label: "Viagens" },
-          { key: "documentos", label: "Documentos" },
-          { key: "filmes", label: "Filmes & Séries" },
-          { key: "musica", label: "Música & Playlists" },
-        ].map((item) => (
-          <button
-            key={item.key}
-            onClick={() => setSubTab(item.key as any)}
-            className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
-              subTab === item.key
-                ? "bg-[#2E2019] text-[#FAF4E8] shadow-xs"
-                : "bg-[#F3E9D7] text-[#7A675A] hover:bg-[#E7DBC6]"
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-
       {/* ======================================================== */}
       {/* 1. VISÃO GERAL (RESUMO CRESCER) */}
       {/* ======================================================== */}
@@ -327,6 +317,89 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* ÍNDICE DE MÓDULOS DO CRESCER (8 MÓDULOS EMPILHADOS VERTICALMENTE) */}
+          {/* ======================================================== */}
+          <div className="flex flex-col gap-2 mt-1">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <div>
+                <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">
+                  Índice de Módulos (8)
+                </h3>
+                <p className="text-[13px] text-[#7A675A]">
+                  Toque para gerenciar cada dimensão do seu desenvolvimento pessoal
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <LomaCard
+                id="mod_trabalho"
+                title="Trabalho & Carreira"
+                category="Profissional"
+                meta={`${workProjects.length} projetos de carreira`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#2E2019] tabular-nums">{workProjects.length} projetos</span>}
+                onClick={() => setSubTab("trabalho")}
+              />
+              <LomaCard
+                id="mod_estudos"
+                title="Estudos & Cursos"
+                category="Formação"
+                meta={`${courses.length} cursos cadastrados`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#7D8C6F] tabular-nums">{summary.activeCoursesCount} ativos</span>}
+                onClick={() => setSubTab("estudos")}
+              />
+              <LomaCard
+                id="mod_livros"
+                title="Livros & Leituras"
+                category="Conhecimento"
+                meta={`${books.length} livros na estante`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#C79A3B] tabular-nums">{summary.booksReadThisYear} lidos</span>}
+                onClick={() => setSubTab("livros")}
+              />
+              <LomaCard
+                id="mod_projetos"
+                title="Projetos Autorais"
+                category="Criação"
+                meta={`${personalProjects.length} iniciativas pessoais`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#E8836B] tabular-nums">{summary.activePersonalProjectsCount} em andamento</span>}
+                onClick={() => setSubTab("projetos")}
+              />
+              <LomaCard
+                id="mod_viagens"
+                title="Viagens & Experiências"
+                category="Horizontes"
+                meta={`${trips.length} viagens no histórico`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#653259] tabular-nums">{trips.length} roteiros</span>}
+                onClick={() => setSubTab("viagens")}
+              />
+              <LomaCard
+                id="mod_documentos"
+                title="Documentos & Registros"
+                category="Arquivo Seguro"
+                meta={`${documents.length} documentos arquivados`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#2E2019] tabular-nums">{documents.length} docs</span>}
+                onClick={() => setSubTab("documentos")}
+              />
+              <LomaCard
+                id="mod_filmes"
+                title="Filmes & Séries"
+                category="Cultura & Lazer"
+                meta={`${culturalMedia.length} títulos salvos`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#465768] tabular-nums">{culturalMedia.length} mídias</span>}
+                onClick={() => setSubTab("filmes")}
+              />
+              <LomaCard
+                id="mod_musica"
+                title="Música & Playlists"
+                category="Inspiração"
+                meta={`${musicTracks.length} faixas e playlists familiares`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#7D8C6F] tabular-nums">{musicTracks.length} faixas</span>}
+                onClick={() => setSubTab("musica")}
+              />
             </div>
           </div>
 
@@ -459,6 +532,12 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* ======================================================== */}
       {subTab === "trabalho" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Crescer
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Trabalho & Carreira</h3>
@@ -522,6 +601,12 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* ======================================================== */}
       {subTab === "estudos" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Crescer
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Estudos & Cursos</h3>
@@ -573,6 +658,12 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* ======================================================== */}
       {subTab === "livros" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Crescer
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Livros & Leituras</h3>
@@ -648,6 +739,12 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* ======================================================== */}
       {subTab === "projetos" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Crescer
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Projetos Autorais</h3>
@@ -699,6 +796,12 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* ======================================================== */}
       {subTab === "viagens" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Crescer
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Viagens & Roteiros</h3>
@@ -756,6 +859,12 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* ======================================================== */}
       {subTab === "documentos" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Crescer
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Documentos & Validades</h3>
@@ -794,6 +903,12 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* ======================================================== */}
       {subTab === "filmes" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Crescer
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Filmes & Séries</h3>
@@ -851,6 +966,12 @@ export function CrescerView({ data, isLoading, onOpenAddModal }: CrescerProps) {
       {/* ======================================================== */}
       {subTab === "musica" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Crescer
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Música & Memórias</h3>

@@ -47,6 +47,9 @@ Números/destaques no herói: #F3C6D2 (rosa claro, como no anexo)
 - Corpo e interface: a sans atual do Loma (sem serifar texto corrido).
 - Números, datas e valores: `tabular-nums`.
 
+EMENDA ao item 2 (gráficos): os gráficos seguem a espec do arquivo ESPEC-GRAFICOS-LOMA.md que coloquei na raiz — 4 padrões apenas: (1) Real × Meta, como o dos Hábitos do Loma atual; (2) Progresso com Marca da Meta, como o do Dashplan (barra do Real com % concluída + traço vertical da meta, cor por situação); (3) Donut de composição; (4) Série no tempo. Aplicar a tabela "onde cada padrão entra" da espec, com Recharts e só a paleta oficial. Nenhum gráfico fora desses padrões sem listar antes no RELATORIO-VERIFICACAO.md.
+
+
 ## 3. Cartões — padrão do Loma atual, nas medidas reduzidas (já aprovadas pelo Marcos)
 
 - Cada item é um **cartão individual empilhado** — nada de um cartão grande agrupando a lista inteira com linhas divisórias dentro.

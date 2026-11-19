@@ -23,6 +23,7 @@ function LomaCard({
   onDelete,
   children,
   badge,
+  onClick,
 }: {
   id?: string | number;
   title: string;
@@ -33,8 +34,17 @@ function LomaCard({
   onDelete?: () => void;
   children?: React.ReactNode;
   badge?: React.ReactNode;
+  onClick?: () => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleHeaderClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      setIsExpanded(!isExpanded);
+    }
+  };
 
   return (
     <div
@@ -44,7 +54,7 @@ function LomaCard({
     >
       {/* Cabeçalho do Cartão Fechado (min-h ≈62-64px, py-3 px-4) */}
       <div
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleHeaderClick}
         className="flex min-h-[62px] items-center justify-between gap-3 py-3 px-4 cursor-pointer select-none"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -89,14 +99,21 @@ function LomaCard({
 
         <div className="flex items-center gap-2 shrink-0">
           {badge}
-          <span className={`text-[#7A675A] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
-            ▼
-          </span>
+          {!onClick && children && (
+            <span
+              className={`text-[#7A675A] text-xs transition-transform duration-200 ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            >
+              ▼
+            </span>
+          )}
+          {onClick && <span className="text-[#7A675A] text-xs">→</span>}
         </div>
       </div>
 
       {/* Sanfona / Detalhe Expansível */}
-      {isExpanded && (
+      {!onClick && isExpanded && children && (
         <div className="border-t border-[#F3E9D7] bg-[#FAF4E8]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
           {children}
 
@@ -276,29 +293,6 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
         </div>
       </div>
 
-      {/* Navegação Secundária (Pills) */}
-      <div className="flex gap-2 overflow-x-auto py-1 text-xs">
-        {[
-          { key: "inicio", label: "Início" },
-          { key: "agenda", label: "Agenda & Aniversários" },
-          { key: "habitos", label: "Hábitos" },
-          { key: "tarefas", label: "Tarefas" },
-          { key: "notas", label: "Notas" },
-        ].map((item) => (
-          <button
-            key={item.key}
-            onClick={() => setSubTab(item.key as any)}
-            className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
-              subTab === item.key
-                ? "bg-[#2E2019] text-[#FAF4E8] shadow-xs"
-                : "bg-[#F3E9D7] text-[#7A675A] hover:bg-[#E7DBC6]"
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-
       {/* ======================================================== */}
       {/* SUB-ABA: INÍCIO (PAINEL DO DIA) */}
       {/* ======================================================== */}
@@ -349,6 +343,57 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
                   </span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* ÍNDICE DE MÓDULOS DA HOME (EMPILHADOS VERTICALMENTE) */}
+          {/* ======================================================== */}
+          <div className="flex flex-col gap-2 mt-1">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <div>
+                <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">
+                  Índice de Módulos
+                </h3>
+                <p className="text-[13px] text-[#7A675A]">
+                  Toque para gerenciar cada módulo em tela própria
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <LomaCard
+                id="mod_agenda"
+                title="Agenda & Aniversários"
+                category="Tempo & Eventos"
+                meta={`${upcomingEvents.length} compromissos nos próximos 14 dias`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#2E2019] tabular-nums">{upcomingEvents.length} eventos</span>}
+                onClick={() => setSubTab("agenda")}
+              />
+              <LomaCard
+                id="mod_habitos"
+                title="Hábitos & Rotinas"
+                category="Constância"
+                meta={`${completedHabitsCount} de ${habits.length} concluídos hoje`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#7D8C6F] tabular-nums">{completedHabitsCount}/{habits.length}</span>}
+                onClick={() => setSubTab("habitos")}
+              />
+              <LomaCard
+                id="mod_tarefas"
+                title="Tarefas Prioritárias"
+                category="Execução"
+                meta={`${pendingTasksCount} tarefas pendentes`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#E8836B] tabular-nums">{pendingTasksCount} pendentes</span>}
+                onClick={() => setSubTab("tarefas")}
+              />
+              <LomaCard
+                id="mod_notas"
+                title="Notas & Reflexões"
+                category="Pensamento"
+                meta="Caderno rápido de anotações familiares"
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#C79A3B] tabular-nums">Notas</span>}
+                onClick={() => setSubTab("notas")}
+              />
             </div>
           </div>
 
@@ -549,6 +594,12 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
       {/* ======================================================== */}
       {subTab === "agenda" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("inicio")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Início
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Agenda & Aniversários</h3>
             <button
@@ -589,6 +640,12 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
       {/* ======================================================== */}
       {subTab === "habitos" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("inicio")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Início
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Hábitos & Rotina</h3>
             <button
@@ -630,6 +687,12 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
       {/* ======================================================== */}
       {subTab === "tarefas" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("inicio")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Início
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Tarefas da Vida</h3>
             <button
@@ -678,17 +741,35 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
       {/* SUB-ABA: NOTAS AGREGADAS */}
       {/* ======================================================== */}
       {subTab === "notas" && (
-        <NotasAgregadasView onOpenAddModal={() => onOpenAddModal("nota")} onDeleteNote={(id) => deleteNote.mutate(id)} />
+        <NotasAgregadasView
+          onBack={() => setSubTab("inicio")}
+          onOpenAddModal={() => onOpenAddModal("nota")}
+          onDeleteNote={(id) => deleteNote.mutate(id)}
+        />
       )}
     </div>
   );
 }
 
-function NotasAgregadasView({ onOpenAddModal, onDeleteNote }: { onOpenAddModal: () => void; onDeleteNote: (id: number) => void }) {
+function NotasAgregadasView({
+  onBack,
+  onOpenAddModal,
+  onDeleteNote,
+}: {
+  onBack: () => void;
+  onOpenAddModal: () => void;
+  onDeleteNote: (id: number) => void;
+}) {
   const [filterModule, setFilterModule] = useState<string>("todos");
 
   return (
     <div className="flex flex-col gap-3">
+      <button
+        onClick={onBack}
+        className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+      >
+        ← Voltar ao Início
+      </button>
       <div className="flex items-center justify-between mb-1 px-1">
         <div className="min-w-0 flex-1">
           <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Notas Agregadas</h3>
@@ -734,8 +815,8 @@ function NotasContent({
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Filtro de Módulo de Origem */}
-      <div className="flex gap-1.5 overflow-x-auto text-xs py-1">
+      {/* Filtro de Módulo de Origem (chips com quebra de linha) */}
+      <div className="flex flex-wrap gap-1.5 text-xs py-1">
         <button
           onClick={() => setFilterModule("todos")}
           className={`cursor-pointer rounded-full px-4 py-1.5 font-medium transition ${

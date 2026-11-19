@@ -43,6 +43,13 @@
       "when": 1794785000000,
       "tag": "0006_loma_fase5_conectada",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1794786000000,
+      "tag": "0007_loma_financas_completa",
+      "breakpoints": true
     }
   ]
 }

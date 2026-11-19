@@ -23,8 +23,9 @@ function LomaCard({
   onDelete,
   children,
   badge,
+  onClick,
 }: {
-  id: number;
+  id?: number | string;
   title: string;
   meta?: string | null;
   category?: string | null;
@@ -33,8 +34,17 @@ function LomaCard({
   onDelete?: () => void;
   children?: React.ReactNode;
   badge?: React.ReactNode;
+  onClick?: () => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleHeaderClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      setIsExpanded(!isExpanded);
+    }
+  };
 
   return (
     <div
@@ -44,7 +54,7 @@ function LomaCard({
       }`}
     >
       <div
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleHeaderClick}
         className="flex min-h-[62px] items-center justify-between gap-3 py-3 px-4 cursor-pointer select-none"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -89,13 +99,20 @@ function LomaCard({
 
         <div className="flex items-center gap-2 shrink-0">
           {badge}
-          <span className={`text-[#7A675A] text-xs transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
-            ▼
-          </span>
+          {!onClick && children && (
+            <span
+              className={`text-[#7A675A] text-xs transition-transform duration-200 ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            >
+              ▼
+            </span>
+          )}
+          {onClick && <span className="text-[#7A675A] text-xs">→</span>}
         </div>
       </div>
 
-      {isExpanded && (
+      {!onClick && isExpanded && children && (
         <div className="border-t border-[#E7DBC6] bg-[#FAF4E8]/60 px-4 py-3 text-xs flex flex-col gap-2.5">
           {children}
 
@@ -134,7 +151,7 @@ function LomaCard({
 export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps) {
   const initialSub = (new URLSearchParams(window.location.search).get("sub") as any) || "resumo";
   const [subTab, setSubTab] = useState<
-    "resumo" | "saude" | "treinos" | "cuidados" | "humor" | "devocional" | "cozinha"
+    "resumo" | "saude" | "treinos" | "cuidados" | "humor" | "devocional" | "espiritualidade" | "cozinha"
   >(initialSub);
 
   const queryClient = useQueryClient();
@@ -201,31 +218,6 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
 
   return (
     <div className="flex flex-col gap-4 pb-24">
-      {/* Sub-navegação dos módulos de Bem-estar */}
-      <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs max-w-full min-w-0">
-        {[
-          { key: "resumo", label: "Visão Geral" },
-          { key: "saude", label: "Saúde" },
-          { key: "treinos", label: "Corpo & Treinos" },
-          { key: "cuidados", label: "Cuidados" },
-          { key: "humor", label: "Humor & Sono" },
-          { key: "devocional", label: "Devocional" },
-          { key: "cozinha", label: "Alimentação" },
-        ].map((item) => (
-          <button
-            key={item.key}
-            onClick={() => setSubTab(item.key as any)}
-            className={`cursor-pointer whitespace-nowrap rounded-full px-4 py-2 font-medium transition ${
-              subTab === item.key
-                ? "bg-[#2E2019] text-[#FAF4E8] shadow-xs"
-                : "bg-[#F3E9D7] text-[#7A675A] hover:bg-[#E7DBC6]"
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-
       {/* ======================================================== */}
       {/* 1. VISÃO GERAL (RESUMO BEM-ESTAR) */}
       {/* ======================================================== */}
@@ -263,6 +255,81 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
                   <span className="font-serif text-base sm:text-lg font-bold text-[#FFF7EA] tabular-nums truncate w-full">{summary.avgSleepHours}h</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* ======================================================== */}
+          {/* ÍNDICE DE MÓDULOS DE BEM-ESTAR (EMPILHADOS VERTICALMENTE) */}
+          {/* ======================================================== */}
+          <div className="flex flex-col gap-2 mt-1">
+            <div className="flex items-center justify-between mb-1 px-1">
+              <div>
+                <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">
+                  Índice de Módulos (7)
+                </h3>
+                <p className="text-[13px] text-[#7A675A]">
+                  Toque para gerenciar cada dimensão do seu bem-estar
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <LomaCard
+                id="mod_saude"
+                title="Saúde Preventiva"
+                category="Prevenção & Exames"
+                meta={`${healthRecords.length} registros cadastrados`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#2E2019] tabular-nums">{summary.pendingHealthCount} pendentes</span>}
+                onClick={() => setSubTab("saude")}
+              />
+              <LomaCard
+                id="mod_treinos"
+                title="Corpo & Treinos"
+                category="Esporte & Performance"
+                meta={`${workouts.length} treinos realizados`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#7D8C6F] tabular-nums">{workouts.length} treinos</span>}
+                onClick={() => setSubTab("treinos")}
+              />
+              <LomaCard
+                id="mod_cuidados"
+                title="Cuidados & Autocuidado"
+                category="Rotina Pessoal"
+                meta={`${careRoutines.length} hábitos de cuidado`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#C79A3B] tabular-nums">{careRoutines.length} rotinas</span>}
+                onClick={() => setSubTab("cuidados")}
+              />
+              <LomaCard
+                id="mod_humor"
+                title="Humor & Sono"
+                category="Recuperação Emocional"
+                meta={`Média de ${summary.avgSleepHours}h de sono`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#653259] tabular-nums">{summary.avgSleepHours}h</span>}
+                onClick={() => setSubTab("humor")}
+              />
+              <LomaCard
+                id="mod_devocional"
+                title="Devocional Bíblico"
+                category="Leitura & Versículos"
+                meta={`${devotionals.length} passagens salvas e reflexões`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#E8836B] tabular-nums">{devotionals.length} registros</span>}
+                onClick={() => setSubTab("devocional")}
+              />
+              <LomaCard
+                id="mod_espiritualidade"
+                title="Espiritualidade & Vida de Oração"
+                category="Práticas & Comunidade"
+                meta="Oração, jejum, gratidão e vida comunitária"
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#7D8C6F] tabular-nums">Práticas</span>}
+                onClick={() => setSubTab("espiritualidade")}
+              />
+              <LomaCard
+                id="mod_cozinha"
+                title="Alimentação & Cozinha"
+                category="Nutrição Familiar"
+                meta={`${mealPlans.length} refeições planejadas`}
+                badge={<span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-xs font-semibold text-[#C79A3B] tabular-nums">{mealPlans.length} planos</span>}
+                onClick={() => setSubTab("cozinha")}
+              />
             </div>
           </div>
 
@@ -345,6 +412,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
       {/* ======================================================== */}
       {subTab === "saude" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Índice
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Saúde & Consultas</h3>
@@ -389,6 +462,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
       {/* ======================================================== */}
       {subTab === "treinos" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Índice
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Corpo & Esporte</h3>
@@ -431,6 +510,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
       {/* ======================================================== */}
       {subTab === "cuidados" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Índice
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Cuidados & Autocuidado</h3>
@@ -475,6 +560,12 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
       {/* ======================================================== */}
       {subTab === "humor" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Índice
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Humor, Sono & Energia</h3>
@@ -523,14 +614,20 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
       )}
 
       {/* ======================================================== */}
-      {/* 6. DEVOCIONAL & ESPIRITUALIDADE */}
+      {/* 6. DEVOCIONAL DIÁRIO (MÓDULO SEPARADO) */}
       {/* ======================================================== */}
       {subTab === "devocional" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Índice
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Devocional & Vida Espiritual</h3>
-              <p className="text-[13px] text-[#7A675A]">Leituras bíblicas, orações e motivos de gratidão.</p>
+              <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Devocional Diário</h3>
+              <p className="text-[13px] text-[#7A675A]">Leituras bíblicas, versículos salvos e meditação na Palavra.</p>
             </div>
             <button
               onClick={() => onOpenAddModal("devocional")}
@@ -567,10 +664,96 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
       )}
 
       {/* ======================================================== */}
-      {/* 7. ALIMENTAÇÃO & COZINHA */}
+      {/* 7. ESPIRITUALIDADE & VIDA DE ORAÇÃO (MÓDULO SEPARADO) */}
+      {/* ======================================================== */}
+      {subTab === "espiritualidade" && (
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Índice
+          </button>
+          <div className="mb-1 px-1">
+            <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Espiritualidade & Vida de Oração</h3>
+            <p className="text-[13px] text-[#7A675A]">Perfil espiritual, orações, jejum, gratidão e vida comunitária.</p>
+          </div>
+
+          <div className="flex flex-col space-y-2">
+            <LomaCard
+              id="esp_oracao"
+              title="Vida de Oração & Intercessão"
+              category="Prática Diária"
+              meta="Clamor pela família, filhos, projetos e decisões"
+              badge={<span className="text-xs font-bold text-[#7D8C6F]">Constante</span>}
+            >
+              <p className="text-xs text-[#7A675A]">
+                Momentos intencionais de conversa com Deus no início e ao fim de cada dia.
+              </p>
+            </LomaCard>
+
+            <LomaCard
+              id="esp_jejum"
+              title="Prática do Jejum & Consagração"
+              category="Disciplina"
+              meta="Propósitos espirituais e clareza de discernimento"
+              badge={<span className="text-xs font-bold text-[#C79A3B]">Semanal</span>}
+            >
+              <p className="text-xs text-[#7A675A]">
+                Jejum periódico com foco em sabedoria, quebra de ansiedade e alinhamento com a vontade divina.
+              </p>
+            </LomaCard>
+
+            <LomaCard
+              id="esp_gratidao"
+              title="Caderno de Gratidão Familiar"
+              category="Louvor & Reconhecimento"
+              meta="Memórias de bênçãos e respostas de oração"
+              badge={<span className="text-xs font-bold text-[#E8836B]">Diário</span>}
+            >
+              <p className="text-xs text-[#7A675A]">
+                Registrar 3 motivos de gratidão a cada noite com as pessoas da casa.
+              </p>
+            </LomaCard>
+
+            <LomaCard
+              id="esp_comunidade"
+              title="Comunidade & Igreja Local"
+              category="Comunhão"
+              meta="Cultos, pequenos grupos e serviço ao próximo"
+              badge={<span className="text-xs font-bold text-[#653259]">Domingo & Terça</span>}
+            >
+              <p className="text-xs text-[#7A675A]">
+                Participação ativa no corpo comunitário para fortalecimento mútuo da fé.
+              </p>
+            </LomaCard>
+
+            <LomaCard
+              id="esp_metas"
+              title="Metas Espirituais do Ano"
+              category="Crescimento"
+              meta="Leitura completa dos Provérbios e Salmos"
+              badge={<span className="text-xs font-bold text-[#2E2019]">Em Andamento</span>}
+            >
+              <p className="text-xs text-[#7A675A]">
+                Meta de 1 capítulo diário e memorização de passagens-chave para a liderança do lar.
+              </p>
+            </LomaCard>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
+      {/* 8. ALIMENTAÇÃO & COZINHA */}
       {/* ======================================================== */}
       {subTab === "cozinha" && (
         <div className="flex flex-col gap-3">
+          <button
+            onClick={() => setSubTab("resumo")}
+            className="self-start text-xs font-semibold text-[#7A675A] hover:text-[#2E2019] flex items-center gap-1.5 py-1 px-2 rounded-full bg-[#F3E9D7] transition cursor-pointer"
+          >
+            ← Voltar ao Índice
+          </button>
           <div className="flex items-center justify-between mb-1 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-serif text-[20px] font-medium text-[#2E2019]">Alimentação & Cozinha</h3>
