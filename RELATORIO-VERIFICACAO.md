@@ -33,25 +33,35 @@ Todos os 18 submódulos combinados em `specs/01` e `specs/04:69` foram construí
 
 ---
 
-## 2. Problema 2: Gráficos Recharts Integrados com Dados Reais
+## 2. Emenda ao Item 2: Padronização dos Gráficos (`ESPEC-GRAFICOS-LOMA.md`)
 
-Biblioteca `recharts@3.11.0` instalada e integrada nos componentes sem dependências externas adicionais. Os gráficos utilizam estritamente a paleta oficial do Loma (`#7D8C6F` sálvia, `#E8836B` coral, `#C79A3B` dourado, `#653259` violeta).
+Os gráficos do aplicativo foram rigorosamente unificados sob a especificação oficial de **4 padrões apenas**, unindo as referências do Loma atual (**Real × Meta dos Hábitos**) e do Dashplan (**Barra de Progresso com Marca da Meta**). Nenhum gráfico foi criado fora desses 4 padrões.
 
-1. **Finanças > Visão Geral (BarChart):**
-   - Receitas × Despesas dos últimos 6 meses (Jun a Nov/2026).
-   - Cores: `#7D8C6F` (receitas) e `#E8836B` (despesas).
-   - Eixos formatados com escala em milhares (`R$12k`), tooltips customizados no padrão do design system.
-2. **Finanças > Visão Geral (AreaChart):**
-   - Evolução do Patrimônio Líquido Familiar nos últimos 6 meses.
-   - Cor da linha e degradê: `#653259` (violeta) com opacidade suave de 25% a 0%.
-3. **Finanças > Orçamento (PieChart Donut):**
-   - Despesas agrupadas por categoria real (Moradia, Alimentação, Transporte, Saúde, etc.).
-   - Raio interno de 45px e externo de 70px, com fatias coloridas pela paleta oficial e badges com percentuais e valores.
-4. **Finanças > Investir > Alocação (PieChart Donut):**
-   - Alocação da carteira por classes de ativos (Renda Fixa, Fundos Imobiliários, Ações Brasil, Internacional).
-   - Cores oficiais da paleta e legenda detalhada com percentuais.
-5. **Comportamento Sem Dados:**
-   - Se o array de dados for vazio (`length === 0`), o container do gráfico não é renderizado. Nunca é exibido "sem valor" na interface.
+### Os 4 Padrões Oficiais e Onde Entram
+
+| Tela | Padrão Aplicado | Descrição da Implementação |
+| --- | --- | --- |
+| **Finanças > Visão Geral** | **Padrão 4: Série no Tempo** | Recharts `BarChart` pareado por mês (receitas `#7D8C6F` × despesas `#E8836B`) dos últimos 6 meses + Recharts `AreaChart` da evolução do patrimônio líquido familiar em violeta `#653259` com preenchimento em degradê até transparente. |
+| **Finanças > Orçamento (mês)** | **Padrão 2: Progresso com Marca da Meta** | Barra de 8px em trilha `#E7DBC6` com preenchimento do Real (despesas do mês) e **porcentagem concluída à direita**. **Marca da meta:** traço vertical de 2px em cacau `#2E2019` no ritmo do mês (dia decorrido / dias do mês) com rótulo `Dia/Meta`. Cor por situação: sálvia dentro do ritmo, coral acima do ritmo, coral forte se estourar teto. Abaixo: `Real R$ 7.800 · Meta R$ 9.750`. |
+| **Finanças > Orçamento (categorias)** | **Padrão 3: Donut de Composição** + **Padrão 1: Real × Meta** | Recharts `PieChart` Donut com o **total de despesas no centro** (`formatMoney`) em Fraunces serif `tabular-nums` e legenda com fatias por categoria (máx 6 fatias). Abaixo, lista em **Padrão 1 (Real × Meta)**: nome à esquerda, barra do Real e texto no fim `Real R$ 3.500 × Meta R$ 4.375`. |
+| **Finanças > Cartões** | **Padrão 2: Progresso com Marca da Meta** | Em cada cartão de crédito, barra de 8px com preenchimento do limite utilizado, porcentagem à direita, **marca da meta de segurança em 70%** em traço de 2px cacau `#2E2019`, e texto suave abaixo `Real R$ 4.250 · Meta R$ 10.000`. |
+| **Finanças > Metas** | **Padrão 2: Progresso com Marca da Meta** | Em cada meta familiar (Reserva, Viagem, etc.), barra de 8px com preenchimento do valor acumulado, porcentagem à direita, **marca da meta em 100%**, cor sálvia/coral e texto abaixo `Real R$ 18.000 · Meta R$ 30.000`. |
+| **Finanças > Investir** | **Padrão 3: Donut de Composição** + **Padrão 1: Real × Meta** + **Padrão 4: Área de Evolução** | Em `investir_alocacao`: Donut Recharts com o **total investido no centro** (`formatMoney`) e legenda por classe de ativo (Renda Fixa, FIIs, Ações BR, Internacional). Abaixo, lista **Real × Meta**: barra do Real e `Real 50% × Meta 40%`. Em `investir_rentabilidade`: Recharts `AreaChart` de evolução do patrimônio investido ao longo do tempo. |
+| **Home > Hábitos** / **Bem-estar > Hábitos** | **Padrão 1: Real × Meta da Semana** | No cartão e no detalhe de cada hábito, barra horizontal do Real (dias concluídos na semana) e meta semanal: `Real 4 × Meta 5` (formato do Loma atual) em `tabular-nums`. |
+| **Bem-estar > Treinos & Cuidados** | **Padrão 1: Real × Meta** | Treinos: `Real 3 × Meta 4` sessões na semana. Cuidados: `Real 3 × Meta 4` rotinas cumpridas. |
+| **Bem-estar > Humor & Sono** | **Padrão 4: Série Simples (Linha)** | Recharts `LineChart` com o histórico de sono (horas em violeta `#653259`) e energia (nível 1 a 5 em dourado `#C79A3B`) ao longo do tempo. Só é renderizado se houver dados no banco (sem dados o gráfico não aparece). |
+
+### Paleta dos Gráficos Cumprida
+- Coral `#E8836B` e Coral forte `#CF6248` (despesas/abaixo da meta/estouro de teto)
+- Verde sálvia `#7D8C6F` (receitas/dentro da meta/superando marca)
+- Dourado `#C79A3B` (energia/metas/fatias de composição)
+- Violeta `#653259` (área de patrimônio/sono/classes)
+- Vinho `#7E354F` (fatias e herói)
+- Cacau `#2E2019` (traço da marca da meta vertical de 2px e textos)
+- Trilha `#E7DBC6` (fundo das barras de progresso)
+- Texto suave `#7A675A` (metas, legendas e rótulos)
+- **Números sempre com classe `tabular-nums`**.
+- **Regra de ouro cumprida:** se não houver dados, o gráfico não aparece (nunca exibe "sem valor").
 
 ---
 
@@ -115,12 +125,33 @@ Todos os testes via Chrome DevTools Protocol retornaram `hasOverflow: false` est
 
 ## 5. Galeria de Screenshots Mobile Registrados
 
-### Mobile 390px (iPhone 14/15/16)
+### Gráficos nos 4 Padrões Oficiais (`ESPEC-GRAFICOS-LOMA.md`) — Mobile 390px e 360px
+- **Padrão 4 (Série no Tempo — Finanças Visão Geral):** [screenshot-390-grafico-padrao4-financas-geral.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao4-financas-geral.png)
+  *(Receitas × Despesas últimos 6 meses em barras sálvia/coral + Área de patrimônio em violeta com degradê)*
+- **Padrão 2 + 3 + 1 (Finanças Orçamento):** [screenshot-390-grafico-padrao2-3-1-orcamento.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao2-3-1-orcamento.png)
+  *(Padrão 2: Ritmo do mês com traço vertical da meta no dia decorrido; Padrão 3: Donut com total no centro; Padrão 1: Real × Meta por categoria)*
+- **Padrão 2 (Progresso com Marca da Meta — Cartões de Crédito):** [screenshot-390-grafico-padrao2-cartoes.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao2-cartoes.png)
+  *(Barra de 8px com % à direita, traço vertical da meta de segurança em 70% e `Real · Meta` abaixo)*
+- **Padrão 2 (Progresso com Marca da Meta — Metas Familiares):** [screenshot-390-grafico-padrao2-metas.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao2-metas.png)
+  *(Barra de 8px com % à direita, marca vertical da meta em 100% e `Real · Meta` abaixo)*
+- **Padrão 3 + 1 (Donut com Total no Centro + Real × Meta — Investir Alocação):** [screenshot-390-grafico-padrao3-1-investir-alocacao.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao3-1-investir-alocacao.png)
+  *(Donut com total investido no centro + lista Real × Meta por classe: `Real 50% × Meta 40%`)*
+- **Padrão 4 (Área de Evolução — Investir Rentabilidade):** [screenshot-390-grafico-padrao4-investir-rentabilidade.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao4-investir-rentabilidade.png)
+  *(Recharts AreaChart de valorização patrimonial ao longo do tempo)*
+- **Padrão 1 (Real × Meta da Semana — Home Hábitos):** [screenshot-390-grafico-padrao1-home-habitos.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao1-home-habitos.png)
+  *(Cada hábito com barra horizontal e `Real 4 × Meta 5` no formato oficial do Loma atual)*
+- **Padrão 1 (Real × Meta — Treinos):** [screenshot-390-grafico-padrao1-treinos.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao1-treinos.png)
+  *(Sessões realizadas na semana vs meta)*
+- **Padrão 4 (Série Simples em Linha — Bem-Estar Humor & Sono):** [screenshot-390-grafico-padrao4-humor-sono.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-grafico-padrao4-humor-sono.png)
+  *(Recharts LineChart de sono em horas e energia 1-5)*
+- **Mobile 360px (Compact Android):**
+  - Orçamento Padrões 2, 3 e 1 em 360px: [screenshot-360-grafico-padrao2-3-1-orcamento.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-360-grafico-padrao2-3-1-orcamento.png)
+  - Humor & Sono Padrão 4 em 360px: [screenshot-360-grafico-padrao4-humor-sono.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-360-grafico-padrao4-humor-sono.png)
+  - Alocação Padrões 3 e 1 em 360px: [screenshot-360-grafico-padrao3-1-investir-alocacao.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-360-grafico-padrao3-1-investir-alocacao.png)
+
+### Navegação e Índices Verticais — Mobile 390px (iPhone)
 - **Home — Índice de Módulos:** [screenshot-390-home-indice.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-home-indice.png)
-- **Finanças — Visão Geral com Gráficos Recharts:** [screenshot-390-financas-geral-graficos.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-financas-geral-graficos.png)
 - **Finanças — Índice dos 18 Módulos:** [screenshot-390-financas-indice-18.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-financas-indice-18.png)
-- **Finanças — Orçamento Donut Recharts:** [screenshot-390-financas-orcamento-donut.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-financas-orcamento-donut.png)
-- **Finanças — Investir Alocação Donut Recharts:** [screenshot-390-financas-investir-alocacao-donut.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-financas-investir-alocacao-donut.png)
 - **Finanças — Proteção & Seguros:** [screenshot-390-financas-protecao.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-financas-protecao.png)
 - **Finanças — Consultor Financeiro Familiar:** [screenshot-390-financas-consultor.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-financas-consultor.png)
 - **Bem-Estar — Índice de Módulos (com Devocional e Espiritualidade separados):** [screenshot-390-bem-estar-indice.png](file:///Users/nakanomarcos/.gemini/antigravity/brain/fe525336-6c33-42b3-b7df-14264d282228/screenshots/screenshot-390-bem-estar-indice.png)

@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 import { api, type ApiResponse } from "./api";
+import { LomaRealMeta } from "./Financas";
 
 type BemEstarData = ApiResponse<typeof api, "getBemEstarOverview">;
 
@@ -481,6 +490,19 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
             </button>
           </div>
 
+          {/* Padrão 1: Real × Meta de Treinos Semanais */}
+          <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-2">
+            <h4 className="font-serif text-[16px] font-medium text-[#2E2019]">
+              Meta Semanal de Treinos
+            </h4>
+            <LomaRealMeta
+              label="Sessões Realizadas na Semana"
+              real={workouts.length}
+              meta={4}
+              unit=" sessões"
+            />
+          </div>
+
           <div className="flex flex-col space-y-2">
             {workouts.map((w) => (
               <LomaCard
@@ -528,6 +550,21 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
               + Rotina
             </button>
           </div>
+
+          {/* Padrão 1: Real × Meta de Cuidados Semanais */}
+          {careRoutines.length > 0 && (
+            <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-2">
+              <h4 className="font-serif text-[16px] font-medium text-[#2E2019]">
+                Constância dos Cuidados
+              </h4>
+              <LomaRealMeta
+                label="Rotinas Cumpridas"
+                real={careRoutines.filter((c) => c.completed === 1).length}
+                meta={careRoutines.length}
+                unit=" rotinas"
+              />
+            </div>
+          )}
 
           <div className="flex flex-col space-y-2">
             {sortedCare.map((c) => (
@@ -578,6 +615,61 @@ export function BemEstarView({ data, isLoading, onOpenAddModal }: BemEstarProps)
               + Registrar
             </button>
           </div>
+
+          {/* Padrão 4: Série simples (linha) de Sono & Energia ao longo do tempo */}
+          {moodLogs.length > 0 && (
+            <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-serif text-[16px] font-medium text-[#2E2019]">
+                    Série Histórica: Sono & Energia
+                  </h4>
+                  <p className="text-[12px] text-[#7A675A]">Evolução diária de descanso e vitalidade</p>
+                </div>
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="flex items-center gap-1 text-[#653259] font-semibold">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#653259] inline-block" /> Sono (h)
+                  </span>
+                  <span className="flex items-center gap-1 text-[#C79A3B] font-semibold">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#C79A3B] inline-block" /> Energia
+                  </span>
+                </div>
+              </div>
+              <div className="w-full h-[170px] min-w-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={moodLogs.slice().reverse()} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#7A675A" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 10, fill: "#7A675A" }} axisLine={false} tickLine={false} domain={[0, 10]} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#FFFDF8",
+                        border: "1px solid #E7DBC6",
+                        borderRadius: "16px",
+                        fontSize: "12px",
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="sleepHours"
+                      name="Sono (h)"
+                      stroke="#653259"
+                      strokeWidth={2.5}
+                      dot={{ fill: "#653259", r: 4 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="energyLevel"
+                      name="Energia (1-5)"
+                      stroke="#C79A3B"
+                      strokeWidth={2}
+                      strokeDasharray="4 4"
+                      dot={{ fill: "#C79A3B", r: 3 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col space-y-2">
             {moodLogs.map((m) => (

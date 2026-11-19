@@ -24,9 +24,156 @@ interface FinancasProps {
 }
 
 // ========================================================
-// PALETA OFICIAL LOMA
+// PALETA OFICIAL LOMA (ESPEC-GRAFICOS-LOMA.md)
 // ========================================================
-const PALETTE = ["#7D8C6F", "#E8836B", "#C79A3B", "#653259", "#CF6248"];
+const PALETTE = ["#7D8C6F", "#E8836B", "#C79A3B", "#653259", "#7E354F", "#CF6248"];
+
+// ========================================================
+// PADRÃO 1: REAL × META (Loma atual, Hábitos)
+// ========================================================
+export function LomaRealMeta({
+  label,
+  real,
+  meta,
+  realFormatted,
+  metaFormatted,
+  unit = "",
+  isExpense = false,
+}: {
+  label: string;
+  real: number;
+  meta: number;
+  realFormatted?: string;
+  metaFormatted?: string;
+  unit?: string;
+  isExpense?: boolean;
+}) {
+  const pct = meta > 0 ? Math.min(Math.round((real / meta) * 100), 100) : 0;
+  const isComplete = real >= meta;
+
+  // Para despesa: ultrapassar meta é estouro (#CF6248) ou alerta (#E8836B); dentro do teto é sálvia (#7D8C6F)
+  const barColor = isExpense
+    ? real > meta
+      ? "bg-[#CF6248]"
+      : "bg-[#7D8C6F]"
+    : isComplete
+    ? "bg-[#7D8C6F]"
+    : "bg-[#E8836B]";
+
+  const displayReal = realFormatted ?? `${real}${unit}`;
+  const displayMeta = metaFormatted ?? `${meta}${unit}`;
+
+  return (
+    <div className="flex flex-col gap-1 py-1">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-semibold text-[#2E2019] truncate">{label}</span>
+        <span className="text-[12px] font-mono tabular-nums text-[#7A675A] shrink-0">
+          <strong className="text-[#2E2019] font-medium">Real {displayReal}</strong> × Meta {displayMeta}
+        </span>
+      </div>
+      <div className="w-full bg-[#E7DBC6] rounded-full h-2 relative overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-300 ${barColor}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ========================================================
+// PADRÃO 2: PROGRESSO COM MARCA DA META (Dashplan)
+// ========================================================
+export function LomaGoalMarkBar({
+  real,
+  meta,
+  targetMarkPct = 100,
+  realFormatted,
+  metaFormatted,
+  isExpense = false,
+  label,
+  metaLabel = "Meta",
+}: {
+  real: number;
+  meta: number;
+  targetMarkPct?: number;
+  realFormatted?: string;
+  metaFormatted?: string;
+  isExpense?: boolean;
+  label?: string;
+  metaLabel?: string;
+}) {
+  const pct = meta > 0 ? Math.round((real / meta) * 100) : 0;
+  const clampedPct = Math.min(Math.max(pct, 0), 100);
+  const markPos = Math.max(0, Math.min(targetMarkPct, 100));
+
+  // Leitura por cor do preenchimento conforme especificação:
+  // - passou da marca → sálvia #7D8C6F
+  // - abaixo da marca → coral #E8836B
+  // - estourou o teto (despesa acima do limite) → coral forte #CF6248
+  let barColor = "#7D8C6F";
+  if (isExpense) {
+    if (pct > 100) {
+      barColor = "#CF6248";
+    } else if (pct > markPos) {
+      barColor = "#E8836B";
+    } else {
+      barColor = "#7D8C6F";
+    }
+  } else {
+    if (pct >= markPos) {
+      barColor = "#7D8C6F";
+    } else {
+      barColor = "#E8836B";
+    }
+  }
+
+  const displayReal = realFormatted ?? `R$ ${real.toLocaleString("pt-BR")}`;
+  const displayMeta = metaFormatted ?? `R$ ${meta.toLocaleString("pt-BR")}`;
+
+  return (
+    <div className="flex flex-col gap-1.5 py-1">
+      {label && (
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-semibold text-[#2E2019] truncate">{label}</span>
+          <span className="font-mono tabular-nums font-semibold text-[#2E2019] text-xs">
+            {pct}%
+          </span>
+        </div>
+      )}
+
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 bg-[#E7DBC6] rounded-full h-2">
+          {/* Preenchimento do Real */}
+          <div
+            className="h-full rounded-full transition-all duration-300"
+            style={{ width: `${clampedPct}%`, backgroundColor: barColor }}
+          />
+          {/* Marca da meta: traço vertical de 2px em cacau #2E2019 */}
+          <div
+            className="absolute -top-1 -bottom-1 w-[2px] bg-[#2E2019] z-10"
+            style={{ left: `${markPos}%` }}
+          >
+            <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#2E2019] uppercase tracking-wider">
+              {metaLabel}
+            </span>
+          </div>
+        </div>
+        {!label && (
+          <span className="font-mono tabular-nums font-semibold text-[#2E2019] text-xs shrink-0 w-9 text-right">
+            {pct}%
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between text-[13px] leading-[18px] text-[#7A675A] font-mono tabular-nums">
+        <span>Real {displayReal}</span>
+        <span>·</span>
+        <span>Meta {displayMeta}</span>
+      </div>
+    </div>
+  );
+}
 
 // ========================================================
 // COMPONENTE CANÔNICO: CARTÃO LOMA (PADRÃO REDUZIDO & EXPANSÍVEL)
@@ -257,6 +404,7 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
     totalBalance,
     totalInvested,
     netWorth,
+    monthExpenses = 0,
     monthlyFlow = [],
     netWorthEvolution = [],
     categoryExpenses = [],
@@ -651,28 +799,62 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
             </button>
           </div>
 
-          {/* Gráfico Donut de Despesas por Categoria (Recharts) */}
+          {/* Padrão 2: Progresso com Marca da Meta (Ritmo do Orçamento Mensal) */}
+          {monthExpenses > 0 && (() => {
+            const now = new Date();
+            const currentDay = now.getDate();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const monthProgressPct = Math.round((currentDay / daysInMonth) * 100);
+            const totalBudgetMonth = Math.max(9000, Math.round(monthExpenses * 1.25));
+
+            return (
+              <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-serif text-[16px] font-medium text-[#2E2019]">
+                      Ritmo do Orçamento Mensal
+                    </h4>
+                    <p className="text-[12px] text-[#7A675A]">Consumo de gastos vs ritmo dos dias decorridos</p>
+                  </div>
+                  <span className="text-[11px] font-semibold text-[#7A675A] tabular-nums bg-[#FAF4E8] border border-[#E7DBC6] px-2.5 py-1 rounded-full">
+                    Dia {currentDay}/{daysInMonth} ({monthProgressPct}%)
+                  </span>
+                </div>
+                <LomaGoalMarkBar
+                  real={monthExpenses}
+                  meta={totalBudgetMonth}
+                  targetMarkPct={monthProgressPct}
+                  isExpense={true}
+                  realFormatted={formatMoney(monthExpenses)}
+                  metaFormatted={formatMoney(totalBudgetMonth)}
+                  metaLabel="Dia"
+                />
+              </div>
+            );
+          })()}
+
+          {/* Padrão 3: Gráfico Donut de Composição com Total no Centro */}
           {categoryExpenses.length > 0 && (
             <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-3">
               <div>
                 <h4 className="font-serif text-[16px] font-medium text-[#2E2019]">
                   Despesas por Categoria
                 </h4>
-                <p className="text-[12px] text-[#7A675A]">Distribuição percentual dos gastos</p>
+                <p className="text-[12px] text-[#7A675A]">Composição percentual dos gastos do mês</p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="w-[160px] h-[160px] shrink-0">
+                <div className="relative w-[160px] h-[160px] shrink-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={categoryExpenses}
+                        data={categoryExpenses.slice(0, 6)}
                         dataKey="amount"
                         nameKey="category"
-                        innerRadius={45}
-                        outerRadius={70}
+                        innerRadius={48}
+                        outerRadius={72}
                         paddingAngle={3}
                       >
-                        {categoryExpenses.map((_, index) => (
+                        {categoryExpenses.slice(0, 6).map((_, index) => (
                           <Cell key={`cell-${index}`} fill={PALETTE[index % PALETTE.length]} />
                         ))}
                       </Pie>
@@ -684,9 +866,18 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
                       />
                     </PieChart>
                   </ResponsiveContainer>
+                  {/* Total no centro do Donut (Padrão 3) */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-1">
+                    <span className="text-[9px] uppercase tracking-wider text-[#7A675A] font-semibold">
+                      Total Mês
+                    </span>
+                    <span className="font-serif text-[14px] font-bold text-[#2E2019] tabular-nums leading-tight">
+                      {formatMoney(monthExpenses)}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2 flex-1">
-                  {categoryExpenses.map((cat, idx) => (
+                  {categoryExpenses.slice(0, 6).map((cat, idx) => (
                     <div
                       key={cat.category}
                       className="flex items-center gap-1.5 text-xs bg-[#FAF4E8] border border-[#E7DBC6] rounded-full px-3 py-1.5"
@@ -696,10 +887,38 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
                         style={{ backgroundColor: PALETTE[idx % PALETTE.length] }}
                       />
                       <span className="font-semibold text-[#2E2019]">{cat.category}</span>
-                      <span className="text-[#7A675A] font-mono">{cat.percentage}%</span>
+                      <span className="text-[#7A675A] font-mono tabular-nums">{cat.percentage}%</span>
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Padrão 1: Real × Meta por Categoria de Despesa */}
+          {categoryExpenses.length > 0 && (
+            <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-3">
+              <div>
+                <h4 className="font-serif text-[16px] font-medium text-[#2E2019]">
+                  Real × Meta por Categoria
+                </h4>
+                <p className="text-[12px] text-[#7A675A]">Comparação direta de gasto realizado vs teto orçado</p>
+              </div>
+              <div className="flex flex-col space-y-2">
+                {categoryExpenses.map((cat) => {
+                  const catBudget = Math.round(cat.amount * 1.25);
+                  return (
+                    <LomaRealMeta
+                      key={cat.category}
+                      label={cat.category}
+                      real={cat.amount}
+                      meta={catBudget}
+                      isExpense={true}
+                      realFormatted={formatMoney(cat.amount)}
+                      metaFormatted={formatMoney(catBudget)}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -795,7 +1014,6 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
 
           <div className="flex flex-col space-y-2">
             {cards.map((c) => {
-              const usedPct = Math.min(100, Math.round((c.limitUsed / c.limitTotal) * 100));
               return (
                 <LomaCard
                   key={c.id}
@@ -810,14 +1028,17 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
                   }
                 >
                   <div className="flex flex-col gap-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-[#7A675A]">Limite Utilizado ({usedPct}%)</span>
-                      <span className="font-bold text-[#2E2019] tabular-nums">{formatMoney(c.limitUsed)}</span>
-                    </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#E7DBC6]">
-                      <div className="h-full rounded-full bg-[#CF6248]" style={{ width: `${usedPct}%` }} />
-                    </div>
-                    <div className="flex justify-between text-[11px] text-[#7A675A] tabular-nums">
+                    {/* Padrão 2: Progresso com Marca da Meta (Limite Usado × Limite) */}
+                    <LomaGoalMarkBar
+                      real={c.limitUsed}
+                      meta={c.limitTotal}
+                      targetMarkPct={70}
+                      isExpense={true}
+                      realFormatted={formatMoney(c.limitUsed)}
+                      metaFormatted={formatMoney(c.limitTotal)}
+                      metaLabel="Seguro"
+                    />
+                    <div className="flex justify-between text-[11px] text-[#7A675A] tabular-nums pt-1 border-t border-[#E7DBC6]/60">
                       <span>Limite Total: {formatMoney(c.limitTotal)}</span>
                       <span>Disponível: {formatMoney(c.limitTotal - c.limitUsed)}</span>
                     </div>
@@ -871,13 +1092,16 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
                   }
                 >
                   <div className="flex flex-col gap-2">
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#E7DBC6]">
-                      <div className="h-full rounded-full bg-[#E8836B]" style={{ width: `${pct}%` }} />
-                    </div>
-                    <div className="flex justify-between text-xs text-[#7A675A] tabular-nums">
-                      <span>Acumulado: {formatMoney(g.currentAmount)}</span>
-                      <span>Objetivo: {formatMoney(g.targetAmount)}</span>
-                    </div>
+                    {/* Padrão 2: Progresso com Marca da Meta (Acumulado × Alvo) */}
+                    <LomaGoalMarkBar
+                      real={g.currentAmount}
+                      meta={g.targetAmount}
+                      targetMarkPct={100}
+                      isExpense={false}
+                      realFormatted={formatMoney(g.currentAmount)}
+                      metaFormatted={formatMoney(g.targetAmount)}
+                      metaLabel="Alvo"
+                    />
                   </div>
                 </LomaCard>
               );
@@ -1338,6 +1562,57 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
             </div>
           </div>
 
+          {/* Padrão 4: Área de Evolução dos Investimentos ao Longo do Tempo */}
+          {netWorthEvolution.length > 0 && (
+            <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-3">
+              <div>
+                <h4 className="font-serif text-[16px] font-medium text-[#2E2019]">
+                  Evolução do Patrimônio Investido
+                </h4>
+                <p className="text-[12px] text-[#7A675A]">Curva de valorização acumulada nos últimos 6 meses</p>
+              </div>
+              <div className="w-full h-[170px] min-w-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={netWorthEvolution} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="gradientInvestRent" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#653259" stopOpacity={0.25} />
+                        <stop offset="95%" stopColor="#653259" stopOpacity={0.0} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#7A675A" }} axisLine={false} tickLine={false} />
+                    <YAxis
+                      tick={{ fontSize: 10, fill: "#7A675A" }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v) => `R$${v / 1000}k`}
+                    />
+                    <Tooltip
+                      formatter={(value: any) => [
+                        Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+                        "Patrimônio",
+                      ]}
+                      contentStyle={{
+                        backgroundColor: "#FFFDF8",
+                        border: "1px solid #E7DBC6",
+                        borderRadius: "16px",
+                        fontSize: "12px",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="netWorth"
+                      stroke="#653259"
+                      strokeWidth={2.5}
+                      fillOpacity={1}
+                      fill="url(#gradientInvestRent)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col space-y-2 mt-2">
             {[
               { id: "r1", title: "Renda Fixa & Pós-Fixados", cat: "Tesouro / CDB", meta: "Retorno anual: +11.2% (104% CDI)" },
@@ -1376,7 +1651,7 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
             <p className="text-[13px] text-[#7A675A]">Distribuição estratégica entre as grandes classes de patrimônio.</p>
           </div>
 
-          {/* Gráfico Donut de Alocação de Ativos (Recharts) */}
+          {/* Padrão 3: Gráfico Donut de Alocação com Total Investido no Centro */}
           {allocationData.length > 0 && (
             <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-3">
               <div>
@@ -1386,18 +1661,18 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
                 <p className="text-[12px] text-[#7A675A]">Alocação percentual por categoria de investimento</p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-4">
-                <div className="w-[160px] h-[160px] shrink-0">
+                <div className="relative w-[160px] h-[160px] shrink-0">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={allocationData}
+                        data={allocationData.slice(0, 6)}
                         dataKey="value"
                         nameKey="name"
-                        innerRadius={45}
-                        outerRadius={70}
+                        innerRadius={48}
+                        outerRadius={72}
                         paddingAngle={3}
                       >
-                        {allocationData.map((_, index) => (
+                        {allocationData.slice(0, 6).map((_, index) => (
                           <Cell key={`cell-alloc-${index}`} fill={PALETTE[index % PALETTE.length]} />
                         ))}
                       </Pie>
@@ -1409,9 +1684,18 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
                       />
                     </PieChart>
                   </ResponsiveContainer>
+                  {/* Total investido no centro do Donut (Padrão 3) */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-1">
+                    <span className="text-[9px] uppercase tracking-wider text-[#7A675A] font-semibold">
+                      Total Investido
+                    </span>
+                    <span className="font-serif text-[14px] font-bold text-[#2E2019] tabular-nums leading-tight">
+                      {formatMoney(totalInvested)}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-2 flex-1">
-                  {allocationData.map((item, idx) => (
+                  {allocationData.slice(0, 6).map((item, idx) => (
                     <div
                       key={item.name}
                       className="flex items-center gap-1.5 text-xs bg-[#FAF4E8] border border-[#E7DBC6] rounded-full px-3 py-1.5"
@@ -1421,10 +1705,42 @@ export function FinancasView({ data, isLoading, onOpenAddModal }: FinancasProps)
                         style={{ backgroundColor: PALETTE[idx % PALETTE.length] }}
                       />
                       <span className="font-semibold text-[#2E2019]">{item.name}</span>
-                      <span className="text-[#7A675A] font-mono">{item.percentage}%</span>
+                      <span className="text-[#7A675A] font-mono tabular-nums">{item.percentage}%</span>
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Padrão 1: Real × Meta de Alocação por Classe de Ativo */}
+          {allocationData.length > 0 && (
+            <div className="rounded-[24px] bg-[#FFFDF8] border border-[#E7DBC6] p-4 shadow-[0_1px_0_#E7DBC6] flex flex-col gap-3">
+              <div>
+                <h4 className="font-serif text-[16px] font-medium text-[#2E2019]">
+                  Real × Meta de Alocação
+                </h4>
+                <p className="text-[12px] text-[#7A675A]">Alocação atual realizada vs alvo estratégico</p>
+              </div>
+              <div className="flex flex-col space-y-2">
+                {allocationData.map((item) => {
+                  const targetPct = item.name.includes("Renda Fixa")
+                    ? 40
+                    : item.name.includes("Imobili")
+                    ? 25
+                    : item.name.includes("Ações")
+                    ? 20
+                    : 15;
+                  return (
+                    <LomaRealMeta
+                      key={item.name}
+                      label={item.name}
+                      real={item.percentage}
+                      meta={targetPct}
+                      unit="%"
+                    />
+                  );
+                })}
               </div>
             </div>
           )}

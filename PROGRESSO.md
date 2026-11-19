@@ -76,20 +76,38 @@ Você pode acessá-lo diretamente pelo link: 👉 http://localhost:3333
     6. **Responsividade Mobile:**
        - 100% testado em 390 px e 360 px com zero overflow horizontal (`hasOverflow: false`).
 
-- **Correção Geral — Auditoria do Mano (19/11/2026): APLICADA (Aguardando aceite do Marcos).**
+- **Correção Geral — Auditoria do Mano (19/11/2026): APLICADA.**
   - **1) Finanças Completa com 18 Submódulos Canônicos:**
     - Criados os que faltavam: **Proteção** (tabela SQLite `financeProtections` com apólices de vida, residencial, auto e saúde) e **Consultor de Finanças** (com diagnóstico real de taxa de poupança, endividamento, reserva e planos de ação em 30, 90 e 365 dias).
     - Criados os **10 submódulos do Investir** com dados reais e telas dedicadas: Carteira, Aportes/Resgates, Rentabilidade, Alocação, Liquidez, Previdência, Aposentadoria, Projeção até 100 anos, Liberdade Financeira e Mercado.
-  - **2) 4 Gráficos Recharts com Dados Reais e Paleta Oficial:**
-    - **Finanças > Visão Geral:** Receitas × Despesas dos últimos 6 meses (BarChart com `#7D8C6F` e `#E8836B`) e Evolução do Patrimônio Líquido (AreaChart com `#653259`).
-    - **Finanças > Orçamento:** Despesas por Categoria (Donut PieChart com paleta oficial `#E8836B`, `#7D8C6F`, `#C79A3B`, `#653259`).
-    - **Finanças > Investir > Alocação:** Alocação por Classe de Ativo (Donut PieChart com legenda e percentuais reais).
-    - Gráficos só renderizam com dados no banco (sem container vazio e sem escrever "sem valor").
-  - **3) Navegação Vertical por Cartões Empilhados (Fim da Rolagem Horizontal de Chips):**
+  - **2) Navegação Vertical por Cartões Empilhados (Fim da Rolagem Horizontal de Chips):**
     - Todas as 5 áreas (Home, Bem-estar, Casa, Finanças, Crescer) abrem com Hero Card seguido do **Índice de Módulos** em cartões individuais LomaCard com rolagem vertical natural.
-    - Tocar no cartão abre a tela do módulo com botão `[← Voltar ao Início / Índice]`.
+    - Tocar no cartão abre a tela do módulo com botão `[← Voltar ao Início / Área]`.
     - Chips permitidos exclusivamente como sub-filtros internos que quebram linha (`flex-wrap`, máx 2 por linha).
     - **Bem-estar:** Devocional e Espiritualidade separados como módulos independentes conforme especificação.
+
+- **Emenda dos Gráficos — ESPEC-GRAFICOS-LOMA.md (19/11/2026): APLICADA (Aguardando aceite do Marcos).**
+  - Unificação completa sob os **4 padrões canônicos** com Recharts e paleta oficial exclusiva:
+    1. **Padrão 1 — Real × Meta (do Loma atual, Hábitos):**
+       - Home > Hábitos: dias concluídos na semana vs meta (`Real 4 × Meta 5` no formato oficial).
+       - Bem-estar > Treinos: sessões realizadas vs meta (`Real 3 × Meta 4` sessões).
+       - Bem-estar > Cuidados: rotinas cumpridas vs meta (`Real 3 × Meta 4` rotinas).
+       - Finanças > Orçamento por categoria: gasto realizado vs teto orçado (`Real R$ 3.500 × Meta R$ 4.375`).
+       - Finanças > Investir > Alocação: alocação atual vs alvo estratégico (`Real 50% × Meta 40%`).
+    2. **Padrão 2 — Progresso com Marca da Meta (do Dashplan) ⭐:**
+       - Barra de 8px em trilha `#E7DBC6`, preenchimento do Real com porcentagem à direita, marca vertical de 2px em cacau `#2E2019` com rótulo, cor por situação (sálvia, coral ou coral forte) e `Real · Meta` abaixo em 13px suave.
+       - Finanças > Orçamento do Mês: ritmo do mês (despesas vs teto total, marca no dia proporcional do mês).
+       - Finanças > Cartões: limite utilizado vs limite total com marca de segurança em 70%.
+       - Finanças > Metas: acumulado vs alvo com marca da meta em 100%.
+    3. **Padrão 3 — Donut de Composição:**
+       - Donut Recharts com o **total no centro** em Fraunces serif `tabular-nums` e legenda ao lado (máx 6 fatias).
+       - Finanças > Orçamento: despesas por categoria com total do mês no centro.
+       - Finanças > Investir > Alocação: distribuição por classe com total investido no centro.
+    4. **Padrão 4 — Série no Tempo:**
+       - Finanças > Visão Geral: barras pareadas receita (`#7D8C6F`) × despesa (`#E8836B`) dos últimos 6 meses + Área de evolução do patrimônio líquido em violeta `#653259` com degradê até transparente.
+       - Finanças > Investir > Rentabilidade: Área de evolução do patrimônio investido ao longo do tempo.
+       - Bem-estar > Humor & Sono: Recharts LineChart de sono (horas) e energia (1 a 5) ao longo dos dias registrados.
+    - **Regra de ouro:** Sem dados o gráfico não aparece (nunca exibe "sem valor").
 
 ---
 
@@ -104,26 +122,27 @@ Você pode acessá-lo diretamente pelo link: 👉 http://localhost:3333
 | 4 — Crescer | Aba Crescer completa (8 módulos) + Hero Card + espelhamento em Notas | `bun run typecheck` verde · `bun run build` verde · 9 prints mobile capturados | Concluído |
 | 5 — Conectada | Inteligência Conectada (alertas, insights, Visão 360°, Consultor IA, Busca Global Cmd+K, Backup JSON) | `bun run typecheck` verde · `bun run build` verde · 5 prints mobile capturados | Concluído |
 | Padronização Visual Loma Atual | Paleta oficial Loma atual (#FAF4E8, #2E2019, #E8836B, #E7DBC6), Fraunces, cartões 24px/62px sanfona, herói degradê vinho→roxo (#7E354F→#653259→#4C2B57) com rosa #F3C6D2 em todas as áreas, Apoio em cartões e export/import conferido | `bun run typecheck` verde · `bun run build` verde · 15 prints mobile novos (390px e 360px, zero overflow) | Concluído |
-| Correções Gerais do Mano | Finanças 18 submódulos, 4 gráficos Recharts, navegação vertical por índice de cartões em todas as áreas, Devocional e Espiritualidade separados | `bun run typecheck` verde · `bun run build` verde · 19 prints mobile novos (390px e 360px, zero overflow) | **Aguardando aceite do Marcos** |
+| Correções Gerais do Mano | Finanças 18 submódulos, 4 gráficos Recharts, navegação vertical por índice de cartões em todas as áreas, Devocional e Espiritualidade separados | `bun run typecheck` verde · `bun run build` verde · 19 prints mobile novos (390px e 360px, zero overflow) | Concluído |
+| Emenda Gráficos Loma (`ESPEC-GRAFICOS-LOMA.md`) | 4 padrões canônicos Recharts (P1 Real×Meta, P2 Progresso Marca da Meta, P3 Donut total centro, P4 Série no tempo), paleta oficial exclusiva | `bun run typecheck` verde · `bun run build` verde · 12 prints mobile novos (390px e 360px, zero overflow) | **Aguardando aceite do Marcos** |
 
 ---
 
 ## Tamanho do código
 
-> Contagem oficial via `wc -l` realizada em 19/11/2026 após aplicação das **Correções Gerais do Mano** (Finanças 18 módulos, Recharts e Navegação Vertical por Cartões Empilhados).  
+> Contagem oficial via `wc -l` realizada em 19/11/2026 após aplicação da **Emenda dos Gráficos do Loma (`ESPEC-GRAFICOS-LOMA.md`)**.  
 > **Escopo de Código:** exclusivamente `client/src/` e `server/src/` (`.ts`, `.tsx`, `.css`) + `drizzle/` (`.sql`).  
 > **Regra do Molde:** contagem direta de linhas via `wc -l` sem fragmentação de pastas (máximo de 15 a 20 arquivos).
 
 | Arquivo | Linhas |
 | --- | ---: |
 | `server/src/actions.ts` | 3.998 |
+| `client/src/Financas.tsx` | 2.045 |
 | `client/src/App.tsx` | 1.772 |
-| `client/src/Financas.tsx` | 1.729 |
 | `client/src/Apoio.tsx` | 1.209 |
 | `client/src/Crescer.tsx` | 1.019 |
 | `client/src/Casa.tsx` | 942 |
-| `client/src/Home.tsx` | 881 |
-| `client/src/BemEstar.tsx` | 797 |
+| `client/src/Home.tsx` | 906 |
+| `client/src/BemEstar.tsx` | 889 |
 | `server/src/schema.ts` | 605 |
 | `drizzle/0002_loma_fundacao.sql` | 131 |
 | `drizzle/0004_loma_casa_familia.sql` | 130 |
@@ -136,7 +155,7 @@ Você pode acessá-lo diretamente pelo link: 👉 http://localhost:3333
 | `drizzle/0007_loma_financas_completa.sql` | 14 |
 | `drizzle/0006_loma_fase5_conectada.sql` | 13 |
 | `drizzle/0001_initial.sql` | 5 |
-| **Total de Código** | **13.561** |
+| **Total de Código** | **13.994** |
 
-- **Diferença em relação à contagem anterior:** **+2.016 linhas** (de 11.545 para 13.561 linhas), decorrentes da expansão de Finanças de 6 para 18 submódulos (+1.244 linhas em `Financas.tsx`, +221 em `actions.ts`, +18 em `schema.ts`, +14 em migração SQL), da inclusão dos 4 gráficos Recharts e dos índices verticais de cartões empilhados em todas as 5 áreas (+183 em `BemEstar.tsx`, +134 em `Casa.tsx`, +121 em `Crescer.tsx`, +81 em `Home.tsx`).
-- **Total de Documentos (`.md`):** **3.629 linhas** (em 10 arquivos de especificação, padronização, relatórios e governança).
+- **Diferença em relação à contagem anterior:** **+433 linhas** (de 13.561 para 13.994 linhas), decorrentes dos componentes reutilizáveis dos 4 padrões (`LomaRealMeta`, `LomaGoalMarkBar`), total no centro do Donut Recharts, série de linha de Sono & Energia no Bem-estar, e barras de ritmo/limites em Orçamento, Metas e Cartões.
+- **Total de Documentos (`.md`):** **3.740 linhas** (em 11 arquivos de especificação, padronização, relatórios e governança).

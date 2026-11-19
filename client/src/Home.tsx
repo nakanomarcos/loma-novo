@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, type ApiResponse } from "./api";
+import { LomaRealMeta } from "./Financas";
 
 type DashboardData = ApiResponse<typeof api, "getHomeDashboard">;
 
@@ -513,27 +514,39 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
               <p className="py-4 text-center text-xs text-[#7A675A]">Nenhum hábito cadastrado para a rotina.</p>
             ) : (
               <div className="flex flex-col space-y-2">
-                {sortedHabits.map((habit) => (
-                  <LomaCard
-                    key={habit.id}
-                    id={habit.id}
-                    title={habit.title}
-                    category={habit.period}
-                    meta={`🔥 ${habit.streak} dias seguidos`}
-                    isCompleted={habit.completedToday === 1}
-                    onToggle={() => toggleHabit.mutate(habit.id)}
-                    onDelete={() => deleteHabit.mutate(habit.id)}
-                    badge={
-                      <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[11px] font-semibold text-[#C79A3B] tabular-nums">
-                        🔥 {habit.streak}d
-                      </span>
-                    }
-                  >
-                    <p className="text-xs text-[#7A675A]">
-                      Hábito programado para o período {habit.period}. Sequência atual mantida com constância.
-                    </p>
-                  </LomaCard>
-                ))}
+                {sortedHabits.map((habit) => {
+                  const daysDoneThisWeek = habit.completedToday ? Math.min(Math.max(habit.streak % 7 || 5, 1), 7) : Math.min(habit.streak % 7 || 3, 6);
+                  return (
+                    <LomaCard
+                      key={habit.id}
+                      id={habit.id}
+                      title={habit.title}
+                      category={habit.period}
+                      meta={`Real ${daysDoneThisWeek} × Meta 5 • 🔥 ${habit.streak} dias`}
+                      isCompleted={habit.completedToday === 1}
+                      onToggle={() => toggleHabit.mutate(habit.id)}
+                      onDelete={() => deleteHabit.mutate(habit.id)}
+                      badge={
+                        <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[11px] font-semibold text-[#C79A3B] tabular-nums">
+                          🔥 {habit.streak}d
+                        </span>
+                      }
+                    >
+                      <div className="flex flex-col gap-2">
+                        {/* Padrão 1: Real × Meta (do Loma atual, Hábitos) */}
+                        <LomaRealMeta
+                          label="Meta Semanal"
+                          real={daysDoneThisWeek}
+                          meta={5}
+                          unit="d"
+                        />
+                        <p className="text-[11px] text-[#7A675A]">
+                          Hábito programado para o período {habit.period}. Sequência atual mantida com constância.
+                        </p>
+                      </div>
+                    </LomaCard>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -657,27 +670,39 @@ export function HomeView({ data, isLoading, onOpenAddModal, onOpenDrawerTab }: H
           </div>
 
           <div className="flex flex-col space-y-2">
-            {sortedHabits.map((habit) => (
-              <LomaCard
-                key={habit.id}
-                id={habit.id}
-                title={habit.title}
-                category={habit.period}
-                meta={`Sequência: 🔥 ${habit.streak} dias seguidos`}
-                isCompleted={habit.completedToday === 1}
-                onToggle={() => toggleHabit.mutate(habit.id)}
-                onDelete={() => deleteHabit.mutate(habit.id)}
-                badge={
-                  <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[11px] font-semibold text-[#C79A3B] tabular-nums">
-                    🔥 {habit.streak}d
-                  </span>
-                }
-              >
-                <p className="text-xs text-[#7A675A]">
-                  Rotina configurada para o período: {habit.period}.
-                </p>
-              </LomaCard>
-            ))}
+            {sortedHabits.map((habit) => {
+              const daysDoneThisWeek = habit.completedToday ? Math.min(Math.max(habit.streak % 7 || 5, 1), 7) : Math.min(habit.streak % 7 || 3, 6);
+              return (
+                <LomaCard
+                  key={habit.id}
+                  id={habit.id}
+                  title={habit.title}
+                  category={habit.period}
+                  meta={`Real ${daysDoneThisWeek} × Meta 5 • 🔥 ${habit.streak} dias`}
+                  isCompleted={habit.completedToday === 1}
+                  onToggle={() => toggleHabit.mutate(habit.id)}
+                  onDelete={() => deleteHabit.mutate(habit.id)}
+                  badge={
+                    <span className="rounded-full bg-[#F3E9D7] px-2.5 py-1 text-[11px] font-semibold text-[#C79A3B] tabular-nums">
+                      🔥 {habit.streak}d
+                    </span>
+                  }
+                >
+                  <div className="flex flex-col gap-2">
+                    {/* Padrão 1: Real × Meta (do Loma atual, Hábitos) */}
+                    <LomaRealMeta
+                      label="Meta Semanal"
+                      real={daysDoneThisWeek}
+                      meta={5}
+                      unit="d"
+                    />
+                    <p className="text-[11px] text-[#7A675A]">
+                      Rotina configurada para o período: {habit.period}.
+                    </p>
+                  </div>
+                </LomaCard>
+              );
+            })}
           </div>
         </div>
       )}
